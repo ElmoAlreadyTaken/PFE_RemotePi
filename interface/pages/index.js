@@ -11,8 +11,12 @@ export default function HomePage() {
   }
 
   return (
+
     <div>
+      
       <button onClick={fetchData}>Fetch Data</button>
+      
     </div>
+
   )
 }
