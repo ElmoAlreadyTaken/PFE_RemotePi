@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase'
+import FileUpload from '../components/FileUpload';
 
 export default function HomePage() {
   async function fetchData() {
@@ -11,12 +12,9 @@ export default function HomePage() {
   }
 
   return (
-
     <div>
-      
       <button onClick={fetchData}>Fetch Data</button>
-      
+      <FileUpload />
     </div>
-
-  )
+  );
 }
