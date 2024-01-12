@@ -214,3 +214,18 @@ body {
 .submitButton:hover {
   background-color: #003d4d;
 }
+
+
+/* pages/index.css */
+.aceEditorContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Utilisez la hauteur de la fenêtre pour centrer verticalement */
+}
+
+.aceEditor {
+  width: 90%; /* ou une largeur fixe si vous préférez */
+  height: 500px; /* ou toute autre hauteur appropriée */
+  margin: auto; /* Ceci ajoute une marge automatique autour de l'éditeur */
+}
