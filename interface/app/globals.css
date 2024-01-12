@@ -217,15 +217,22 @@ body {
 
 
 /* pages/index.css */
+.streamContainer {
+  margin-bottom: 20px; /* ajoute un espace entre FileUpload et AceEditor */
+}
+.fileUploadContainer {
+  /* styles pour le conteneur de téléchargement de fichier */
+  margin-bottom: 20px; /* ajoute un espace entre FileUpload et AceEditor */
+}
+
 .aceEditorContainer {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Utilisez la hauteur de la fenêtre pour centrer verticalement */
 }
 
 .aceEditor {
   width: 90%; /* ou une largeur fixe si vous préférez */
-  height: 500px; /* ou toute autre hauteur appropriée */
+  height: 70px; /* ou toute autre hauteur appropriée */
   margin: auto; /* Ceci ajoute une marge automatique autour de l'éditeur */
 }

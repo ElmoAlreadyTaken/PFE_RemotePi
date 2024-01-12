@@ -1,4 +1,3 @@
-// pages/register.js
 import Head from 'next/head';
 import Image from 'next/image';
 import styles from '../app/globals.css'; // Ensure this points to your CSS module file

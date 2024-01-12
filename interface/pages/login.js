@@ -1,4 +1,3 @@
-// pages/login.js
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../app/globals.css' // This assumes you'll create a corresponding CSS module file.
