@@ -15,12 +15,14 @@
     "@supabase/supabase-js": "^2.36.0",
     "@tailwindcss/forms": "^0.5.3",
     "@tailwindcss/typography": "^0.5.8",
+    "debug": "^4.3.4",
     "markdown-it": "^13.0.1",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
     "react-hook-form": "^7.43.9",
-    "tailwindcss-font-inter": "^3.0.1"
+    "tailwindcss-font-inter": "^3.0.1",
+    "websocket": "^1.0.34"
   },
   "devDependencies": {
     "autoprefixer": "latest",
