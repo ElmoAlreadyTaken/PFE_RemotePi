@@ -21,24 +21,21 @@ export default function Register() {
       return;
     }
 
-    const { user, error: signUpError } = await supabase.auth.signUp({ email, password, options:{name,prénom,promotion,verifyPassword}});
-    
-    if (signUpError) {
+    const { data, error: signUpError } = await supabase.auth.signUp({ email:email, password:password});
+     if (signUpError) {
       setError(signUpError.message);
       return;
-    }else if (user) {
-      console.log('User:', user);
     }
 
-    const { data, error: insertError } = await supabase
-      .from('user_profiles')
-      .insert([{ user_id: user.id, nom: name, prénom, promotion }])
-      .single();
 
+    const { data_user_profiles, error: insertError } = await supabase
+      .from('user_profiles')
+      .insert([{ user_id: data.user.id, nom: name, prénom, promotion }])
+      .single();
     if (insertError) {
       setError(insertError.message);
     } else {
-      console.log('User created:', data);
+      console.log('User created:', data_user_profiles);
       // Redirect or handle the successful sign-up
     }
   };
