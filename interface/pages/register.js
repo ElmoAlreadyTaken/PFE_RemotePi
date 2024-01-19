@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { supabase } from '../lib/supabase'; // Ensure the path is correct
 import styles from '../app/globals.css'; // Ensure this points to your CSS module file
+  const router = useRouter();
 
 export default function Register() {
   const [name, setName] = useState('');
@@ -11,6 +13,7 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [verifyPassword, setVerifyPassword] = useState('');
   const [error, setError] = useState('');
+  const router = useRouter();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -36,7 +39,7 @@ export default function Register() {
       setError(insertError.message);
     } else {
       console.log('User created:', data_user_profiles);
-      // Redirect or handle the successful sign-up
+      router.push('/login');// Redirect or handle the successful sign-up
     }
   };
 

@@ -1,15 +1,25 @@
 import React from 'react';
 import AceEditor from 'react-ace';
+import { useRouter } from 'next/router';
 import { supabase } from '../lib/supabase';
 import FileUpload from './FileUpload';
+
 
 import 'ace-builds/src-noconflict/mode-c_cpp';
 import 'ace-builds/src-noconflict/theme-monokai';
 
-export default function HomePage() {
+export default function HomePage(props) {
+  const router = useRouter();
   function onChange(newValue) {
     console.log('change', newValue);
   }
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    console.log("Disconnected");
+    router.push('/');
+    
+  };
 
   return (
     <div className="container">
@@ -36,6 +46,21 @@ export default function HomePage() {
           className="aceEditor"
         />
       </div>
+      <button onClick={handleLogout} className="logoutButton">
+        Log Out
+      </button>
+
+      {/* Style your button accordingly */}
+      <style jsx>{`
+        .logoutButton {
+          padding: 10px;
+          margin: 10px;
+          background-color: red;
+          color: white;
+          border: none;
+          cursor: pointer;
+        }
+      `}</style>
     </div>
   );
 }
