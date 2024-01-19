@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { supabase } from '../lib/supabase'; // Ensure the path is correct
 import styles from '../app/globals.css'; // Ensure this points to your CSS module file
 
@@ -11,6 +12,7 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [verifyPassword, setVerifyPassword] = useState('');
   const [error, setError] = useState('');
+  const router = useRouter();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -21,25 +23,22 @@ export default function Register() {
       return;
     }
 
-    const { user, error: signUpError } = await supabase.auth.signUp({ email, password, options:{name,prénom,promotion,verifyPassword}});
-    
-    if (signUpError) {
+    const { data, error: signUpError } = await supabase.auth.signUp({ email:email, password:password});
+     if (signUpError) {
       setError(signUpError.message);
       return;
-    }else if (user) {
-      console.log('User:', user);
     }
 
-    const { data, error: insertError } = await supabase
-      .from('user_profiles')
-      .insert([{ user_id: user.id, nom: name, prénom, promotion }])
-      .single();
 
+    const { data_user_profiles, error: insertError } = await supabase
+      .from('user_profiles')
+      .insert([{ user_id: data.user.id, nom: name, prénom, promotion }])
+      .single();
     if (insertError) {
       setError(insertError.message);
     } else {
-      console.log('User created:', data);
-      // Redirect or handle the successful sign-up
+      console.log('User created:', data_user_profiles);
+      router.push('/login');// Redirect or handle the successful sign-up
     }
   };
 

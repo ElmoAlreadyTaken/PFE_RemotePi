@@ -1,13 +1,36 @@
-import { useContext } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import Link from 'next/link'
 import Image from 'next/image'
-import React, { useState } from 'react';
+import { supabase } from '../lib/supabase';
 
 export default function Header({ theme, setTheme }){
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isSubMenuOpen, setSubMenuOpen] = useState(false);
+  const router = useRouter();
 
   const handleSubMenuToggle = () => {
     setSubMenuOpen(!isSubMenuOpen);
+  }
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: session } = await supabase.auth.getSession();
+      setIsLoggedIn(!!session);
+    };
+
+    checkSession();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+    });
+
+    
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/');
   };
   return (
     <header className="bg-white">
@@ -133,10 +156,19 @@ export default function Header({ theme, setTheme }){
       <a href="#" className="text-sm font-semibold leading-6 text-gray-900">Company</a>
     </div>
     <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-    <Link href="/login">
-      <div className="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></div>
-    </Link>
-    </div>
+        {isLoggedIn ? (
+          <>
+            <Link href="/profile" className="text-sm font-semibold leading-6 text-gray-900">Profile
+            </Link>
+            <button onClick={handleLogout} className="text-sm font-semibold leading-6 text-gray-900">
+              Déconnexion
+            </button>
+          </>
+        ) : (
+          <Link href="/login" className="text-sm font-semibold leading-6 text-gray-900">Log in
+          </Link>
+        )}
+      </div>
   </nav>
   <div className="lg:hidden" role="dialog" aria-modal="true">
     <div className="fixed inset-0 z-10"></div>

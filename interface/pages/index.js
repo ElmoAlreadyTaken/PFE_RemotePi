@@ -1,41 +1,35 @@
-import React from 'react';
-import AceEditor from 'react-ace';
+import React, { useEffect, useState } from 'react';
+import Head from 'next/head';
+import HomePage from '../components/HomePage';
 import { supabase } from '../lib/supabase';
-import FileUpload from '../components/FileUpload';
 
-import 'ace-builds/src-noconflict/mode-c_cpp';
-import 'ace-builds/src-noconflict/theme-monokai';
+export default function MainComponent() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-export default function HomePage() {
-  function onChange(newValue) {
-    console.log('change', newValue);
-  }
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: session } = await supabase.auth.getSession();
+      setIsLoggedIn(!!session);
+    };
+
+    checkSession();
+
+    // Set up a listener for authentication state changes
+    const subscription  = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+    });
+
+   
+  }, []);
 
   return (
-    <div className="container">
-      <div className="streamContainer">
-      <iframe
-        src="https://player.twitch.tv/?channel=domingo&parent=localhost"
-        height="720"
-        width="1280"
-        frameBorder="0"
-        scrolling="no"
-        allowFullScreen={true}>
-      </iframe>
+    <>
+      <Head>
+        <title>Remote-PI Dashboard</title>
+      </Head>
+      <div>
+        {isLoggedIn ? <HomePage /> : <div>Hello, CONNECTE TOI ENFLURE</div>}
       </div>
-      <div className="fileUploadContainer">
-        <FileUpload />
-      </div>
-      <div className="aceEditorContainer">
-        <AceEditor
-          mode="c_cpp"
-          theme="monokai"
-          onChange={onChange}
-          name="UNIQUE_ID_OF_DIV"
-          editorProps={{ $blockScrolling: true }}
-          className="aceEditor"
-        />
-      </div>
-    </div>
+    </>
   );
 }
