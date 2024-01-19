@@ -9,11 +9,12 @@ export default function FileUpload() {
     formData.append("file", file);
 
     // Adresse IP du serveur
-    const serverIP = "192.168.1.100"; // Remplacez par votre adresse IP
+    const serverIP = "4.tcp.eu.ngrok.io"; // Remplacez par votre adresse IP
+    const portIP = 17707; // Remplacez par le port
 
     try {
       // Utiliser l'API Fetch pour envoyer le fichier au serveur
-      const response = await fetch(`http://${serverIP}/upload`, {
+      const response = await fetch(`http://${serverIP}:${portIP}/upload`, {
         method: "POST",
         body: formData,
       });
