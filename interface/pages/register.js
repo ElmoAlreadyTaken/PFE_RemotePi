@@ -3,7 +3,6 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { supabase } from '../lib/supabase'; // Ensure the path is correct
 import styles from '../app/globals.css'; // Ensure this points to your CSS module file
-  const router = useRouter();
 
 export default function Register() {
   const [name, setName] = useState('');
