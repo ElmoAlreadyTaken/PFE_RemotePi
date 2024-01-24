@@ -10,10 +10,14 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetError, setResetError] = useState(null);
+  const [resetSuccess, setResetSuccess] = useState(false);
+
   const router = useRouter();
 
   const handleLogin = async (e) => {
-    
+
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -27,7 +31,26 @@ export default function Login() {
       router.push('/');// Redirect to index
     }
   };
-    
+  const handleResetPassword = async () => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: 'http://localhost:3000/update-password', // URL de redirection après la réinitialisation
+      });
+  
+      if (error) {
+        throw error;
+      }
+  
+      setResetSuccess(true);
+    } catch (error) {
+      setResetError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+
 
   return (
     <div className={styles.loginContainer}>
@@ -38,29 +61,42 @@ export default function Login() {
       <form onSubmit={handleLogin} className={styles.loginForm}>
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <div className={styles.inputGroup}>
-        <label htmlFor="email" className={styles.label}>Email: </label>
-          <input 
-            type="email" 
-            placeholder="Email" 
-            className={styles.inputField} 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
+          <label htmlFor="email" className={styles.label}>Email: </label>
+          <input
+            type="email"
+            placeholder="Email"
+            className={styles.inputField}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </div>
         <div className={styles.inputGroup}>
-        <label htmlFor="password" className={styles.label}>Mot de passe: </label>
-          <input 
-            type="password" 
-            placeholder="Password" 
-            className={styles.inputField} 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
+          <label htmlFor="password" className={styles.label}>Mot de passe: </label>
+          <input
+            type="password"
+            placeholder="Password"
+            className={styles.inputField}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </div>
         <button type="submit" className={styles.loginButton} disabled={loading}>
           {loading ? 'Chargement...' : 'LOGIN'}
         </button>
         <a href="register" className={styles.signInLink}>sign-in</a>
+        <div>
+          <input
+            type="email"
+            placeholder="Email pour réinitialiser le mot de passe"
+            value={resetEmail}
+            onChange={(e) => setResetEmail(e.target.value)}
+          />
+          <button onClick={handleResetPassword} disabled={loading}>
+            Réinitialiser le Mot de Passe
+          </button>
+          {resetError && <p style={{ color: 'red' }}>{resetError}</p>}
+          {resetSuccess && <p style={{ color: 'green' }}>Email de réinitialisation envoyé</p>}
+        </div>
       </form>
     </div>
   );
