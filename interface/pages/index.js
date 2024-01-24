@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
+import Accueil from '../components/Accueil'; 
 import HomePage from '../components/HomePage';
 import { supabase } from '../lib/supabase';
 
@@ -40,7 +41,7 @@ export default function MainComponent() {
   }, []);
 
   if (!isLoggedIn) {
-    return <div>Hello, CONNECTE TOI ENFLURE</div>;
+    return <Accueil />;
   }
 
   if (!isAccountValidated) {

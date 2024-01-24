@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
@@ -10,7 +11,6 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [resetEmail, setResetEmail] = useState('');
   const [resetError, setResetError] = useState(null);
   const [resetSuccess, setResetSuccess] = useState(false);
 
@@ -34,14 +34,14 @@ export default function Login() {
   const handleResetPassword = async () => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: 'http://localhost:3000/update-password', // URL de redirection après la réinitialisation
       });
-  
+
       if (error) {
         throw error;
       }
-  
+
       setResetSuccess(true);
     } catch (error) {
       setResetError(error.message);
@@ -49,7 +49,7 @@ export default function Login() {
       setLoading(false);
     }
   };
-  
+
 
 
   return (
@@ -60,43 +60,25 @@ export default function Login() {
 
       <form onSubmit={handleLogin} className={styles.loginForm}>
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        <div className={styles.inputGroup}>
-          <label htmlFor="email" className={styles.label}>Email: </label>
-          <input
-            type="email"
-            placeholder="Email"
-            className={styles.inputField}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div className={styles.inputGroup}>
-          <label htmlFor="password" className={styles.label}>Mot de passe: </label>
-          <input
-            type="password"
-            placeholder="Password"
-            className={styles.inputField}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <button type="submit" className={styles.loginButton} disabled={loading}>
-          {loading ? 'Chargement...' : 'LOGIN'}
-        </button>
-        <a href="register" className={styles.signInLink}>sign-in</a>
-        <div>
-          <input
-            type="email"
-            placeholder="Email pour réinitialiser le mot de passe"
-            value={resetEmail}
-            onChange={(e) => setResetEmail(e.target.value)}
-          />
-          <button onClick={handleResetPassword} disabled={loading}>
-            Réinitialiser le Mot de Passe
-          </button>
-          {resetError && <p style={{ color: 'red' }}>{resetError}</p>}
-          {resetSuccess && <p style={{ color: 'green' }}>Email de réinitialisation envoyé</p>}
-        </div>
+          <div class="mb-6">
+            <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Adresse email </label>
+            <input type="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"  value={email}
+            onChange={(e) => setEmail(e.target.value)}   />
+          </div>
+          <div class="mb-6">
+            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Mot de passe</label>
+            <input type="password" id="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" value={password}
+            onChange={(e) => setPassword(e.target.value)} />
+          </div>
+          
+        
+        <button type="submit" class="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2" disabled={loading} >{loading ? 'Chargement...' : 'LOGIN'}</button>
+        
+        <button type="submit" class="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2" onClick={handleResetPassword} disabled={loading} >Réinitialiser le mot de passe</button>
+        
+        <Link href="/register" class="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2" disabled={loading} >sign-in</Link> 
+        {resetError && <p style={{ color: 'red' }}>{resetError}</p>}
+        {resetSuccess && <p style={{ color: 'green' }}>Email de réinitialisation envoyé</p>}
       </form>
     </div>
   );

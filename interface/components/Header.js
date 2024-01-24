@@ -53,15 +53,19 @@ export default function Header({ theme, setTheme }){
     <div className="hidden lg:flex lg:flex-1 lg:justify-end">
         {isLoggedIn ? (
           <>
-            <Link href="/profile" className="text-sm font-semibold leading-6 text-gray-900">Profile
+            <Link href="/profile" class="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Profile
             </Link>
-            <button onClick={handleLogout} className="text-sm font-semibold leading-6 text-gray-900">
+            <button onClick={handleLogout} class="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
               Déconnexion
             </button>
           </>
         ) : (
-          <Link href="/login" className="text-sm font-semibold leading-6 text-gray-900">Log in
+          <div>
+          <Link href="/login" class="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Se connnecter
           </Link>
+          <Link href="/register" class="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">S'inscrire
+          </Link>
+          </div>
         )}
       </div>
   </nav>

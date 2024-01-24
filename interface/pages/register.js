@@ -48,46 +48,42 @@ export default function Register() {
         <title>Register - Remote-PI</title>
       </Head>
 
-      <div className={styles.container}>
-        <main className={styles.main}>
-          <form onSubmit={handleSignUp} className={styles.form}>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            <div className={styles.inputGroup}>
-              <label htmlFor="name">Nom : </label>
-              <input type="text" id="name" name="name" required value={name} onChange={(e) => setName(e.target.value)} />
-            </div>
-            
-            <div className={styles.inputGroup}>
-              <label htmlFor="prénom">Prénom : </label>
-              <input type="text" id="prénom" name="prénom" required value={prénom} onChange={(e) => setPrénom(e.target.value)} />
-            </div>
+      <form>
+    <div class="grid gap-6 mb-6 md:grid-cols-2">
+        <div>
+            <label for="prenom" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Prénom</label>
+            <input type="text" id="first_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"  required/>
+        </div>
+        <div>
+            <label for="nom" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nom</label>
+            <input type="text" id="last_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"  required/>
+        </div>
+        <div>
+            <label for="promotion" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Promotion</label>
+            <input type="text" id="company" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"  required/>
+        </div>  
+        <div>
+            <label for="TD" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">TD</label>
+            <input type="text" id="TD" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"   required/>
+        </div>
+    </div>
+    <div class="mb-6">
+        <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Adresse email </label>
+        <input type="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required/>
+    </div> 
+    <div class="mb-6">
+        <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Mot de passe</label>
+        <input type="password" id="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"  required/>
+    </div> 
+    <div class="mb-6">
+        <label for="confirm_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirmez le mot de passe</label>
+        <input type="password" id="confirm_password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"  required/>
+    </div> 
 
-            <div className={styles.inputGroup}>
-              <label htmlFor="promotion">Promotion : </label>
-              <input type="text" id="promotion" name="promotion" required value={promotion} onChange={(e) => setPromotion(e.target.value)} />
-            </div>
-            
-            <div className={styles.inputGroup}>
-              <label htmlFor="email">Mail : </label>
-              <input type="email" id="email" name="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-            </div>
-            
-            <div className={styles.inputGroup}>
-              <label htmlFor="password">Password : </label>
-              <input type="password" id="password" name="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
-            </div>
+    <button type="submit" class="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Submit</button>
 
-            <div className={styles.inputGroup}>
-              <label htmlFor="verify-password">Verify Password : </label>
-              <input type="password" id="verify-password" name="verify-password" required value={verifyPassword} onChange={(e) => setVerifyPassword(e.target.value)} />
-            </div>
+  </form>
 
-            <div className={styles.submitGroup}>
-              <button type="submit" className={styles.submitButton}>Sign Up</button>
-            </div>
-          </form>
-        </main>
-      </div>
     </>
   );
 }
