@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Head from "next/head";
-import HomePage from "../components/HomePage";
 import { supabase } from "../lib/supabase";
 
 export default function MainComponent() {
