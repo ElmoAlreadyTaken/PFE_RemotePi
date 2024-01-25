@@ -64,7 +64,7 @@ export default function Profile() {
   return (
     <div className={styles.profileContainer}>
       <Head>
-        <title>Profil - Remote-PI</title>
+        <title>Profile - Remote-PI</title>
       </Head>
 
       <h1>Profil utilisateur</h1>

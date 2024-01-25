@@ -12,7 +12,7 @@ export default function Footer(){
                 <div class="col-lg-6 col-xs-12">
                     <div class="right-text-content">
                             <ul class="social-icons">
-                                <li><p>Follow Us</p></li>
+                                <li><p>Suivez-Nous</p></li>
                                 <li><a rel="nofollow" href="https://fb.com/templatemo"><i class="fa fa-facebook"></i></a></li>
                                 <li><a rel="nofollow" href="https://fb.com/templatemo"><i class="fa fa-twitter"></i></a></li>
                                 <li><a rel="nofollow" href="https://fb.com/templatemo"><i class="fa fa-linkedin"></i></a></li>

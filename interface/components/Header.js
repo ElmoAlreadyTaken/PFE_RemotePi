@@ -50,19 +50,19 @@ export default function Header({ theme, setTheme }) {
                     </a>
                     <ul class="nav">
                       <li class="scroll-to-section">
-                        <a href="/">Home</a>
+                        <a href="/">ACCUEIL</a>
                       </li>
                       <li class="scroll-to-section">
-                        <a href="/about">About</a>
+                        <a href="/about">à PROPOS</a>
                       </li>
 
                       {isLoggedIn ? (
                         <>
                           <li class="scroll-to-section">
-                            <a href="/upload">Upload</a>
+                            <a href="/upload">téléverser</a>
                           </li>
                           <li class="scroll-to-section">
-                            <a href="/profile">Profile</a>
+                            <a href="/profile">Profil</a>
                           </li>
                           <li class="scroll-to-section">
                             <a>
@@ -70,7 +70,7 @@ export default function Header({ theme, setTheme }) {
                                 class="scroll-to-section"
                                 onClick={handleLogout}
                               >
-                                LOG OUT
+                                DÉCONNEXION
                               </button>
                             </a>
                           </li>
@@ -78,7 +78,7 @@ export default function Header({ theme, setTheme }) {
                       ) : (
                         <div>
                           <li class="scroll-to-section">
-                            <a href="/login">LOG IN</a>
+                            <a href="/login">SE CONNECTER</a>
                           </li>
                         </div>
                       )}

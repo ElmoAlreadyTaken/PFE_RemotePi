@@ -52,7 +52,7 @@ export default function MainComponent() {
   return (
     <>
       <Head>
-        <title>Remote-PI Dashboard</title>
+        <title>Dashboard - Remote-PI</title>
       </Head>
       <HomePage />
     </>

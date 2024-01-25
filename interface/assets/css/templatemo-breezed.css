@@ -1053,7 +1053,7 @@ subscribe
 
 #subscribe {
   padding: 80px 0px;
-  background-image: url(../images/slide-02.jpg);
+  background-image: url(/slide-02.jpg);
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -1113,7 +1113,7 @@ testimonials
   margin-top: 120px;
   padding: 80px 0px;
   padding: 120px 0px;
-  background-image: url(../images/slide-03.jpg);
+  background-image: url(/slide-03.jpg);
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -1276,7 +1276,7 @@ contact
 
 #contact-us {
   padding: 120px 0px;
-  background-image: url(../images/dotted-map-bg.png);
+  background-image: url(/dotted-map-bg.png);
   background-position: center center;
   background-repeat: no-repeat;
 }

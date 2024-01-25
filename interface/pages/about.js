@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
-
+import Head from "next/head";
 
 export default function MainComponent() {
 
   return (
     <>
+    <Head>
+        <title>À Propos - Remote-PI</title>
+    </Head>
+
     <section class="section " id="about">
         <div class="container">
             <div class="row">
