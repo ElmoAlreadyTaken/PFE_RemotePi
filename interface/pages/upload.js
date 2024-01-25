@@ -38,38 +38,23 @@ export default function MainComponent() {
     });
   }, []);
 
-
+  if (!isLoggedIn) {
+    return <>You have to log in to see this content.</>;
+  }
+  
+  if (!isAccountValidated) {
+    return (
+      <div>
+        Votre compte est en attente de validation par un administrateur.
+      </div>
+    );
+  }
   return (
     <>
       <Head>
-        <title>Remote-PI</title>
+        <title>Remote-PI Dashboard</title>
       </Head>
-      <div className="header-container2 min-h-screen ">
-        <div class="Modern-Slider  ">
-          <div class="item ">
-            <div class="img-fill">
-              <div class="text-content">
-                <h3>Bienvenue sur RemotePi</h3>
-                <h5>UPLOADER</h5>
-                <a href="/about" class="main-stroked-button">
-                  Learn More
-                </a>
-                {isLoggedIn ? (
-                  <>
-                    <a href="/upload" class="main-filled-button">
-                      Upload Now
-                    </a>
-                  </>
-                ) : (
-                  <a href="/login" class="main-filled-button">
-                    Upload Now
-                  </a>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <HomePage />
     </>
   );
 }

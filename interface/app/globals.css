@@ -2,237 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
-/* wt stands for Web Tech */
 
-.wt-title {
-  @apply text-3xl font-bold underline mb-10;
-}
-.comments-section {
-  margin-top: 20px;  /* add space at the top */
-}
-
-.comment {
-  margin-bottom: 20px;  /* add space at the bottom */
-}
-:root.light {
-  --bg-color: white;
-  --text-color: black;
+/* Ajoutez le style pour l'image de fond sur le conteneur parent (header) */
+.header-container {
+  background-image: url('/slide-01.jpg'); /* chemin de votre image de fond */
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  height: 100px; /* ajustez la hauteur selon vos besoins */
+  position: relative;
 }
 
-:root.dark {
-  --bg-color: black;
-  --text-color: white;
-}
+.header-container2 {
+    background-image: url('/slide-01.jpg'); /* chemin de votre image de fond */
+    background-size: cover;
+    background-position: center top ;
+    background-repeat: no-repeat;
+    height: 800px; /* ajustez la hauteur selon vos besoins */
+    position: relative;
+    margin-top: -100px
+  }
+  .custom-footer {
+    height: 10px; 
+  }
 
-body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-}
-
-/* login.css */
-.loginContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background-color: #f0f0f0;
-}
-
-.header {
-  margin-bottom: 20px;
-}
-
-.loginForm {
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 300px;
-}
-
-.inputGroup {
-  margin-bottom: 15px;
-}
-
-.inputField {
-  width: 100%;
-  padding: 10px;
-  margin: 5px 0;
-  border: 1px solid #cccccc;
-  border-radius: 4px;
-}
-
-.loginButton {
-  width: 100%;
-  background-color: #004d40;
-  color: white;
-  padding: 10px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-bottom: 10px;
-}
-
-.loginButton:hover {
-  background-color: #00332a;
-}
-
-.signInLink {
-  display: block;
-  text-align: center;
-  color: #004d40;
-  text-decoration: none;
-  font-size: 0.9em;
-}
-
-.signInLink:hover {
-  text-decoration: underline;
-}
-
-
-/* Register.js page */
-.registerContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background-color: #f0f0f0;
-}
-
-.header {
-  margin-bottom: 20px;
-}
-
-.registerForm {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 600px; /* Adjust the width as needed */
-}
-
-.formGroup {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 15px;
-}
-
-.formGroup label {
-  margin-bottom: 5px;
-}
-
-.formGroup input {
-  padding: 10px;
-  border: 1px solid #cccccc;
-  border-radius: 4px;
-}
-
-.formActions {
-  grid-column: span 2; /* Makes the button span across both columns */
-}
-
-.registerButton {
-  width: 100%;
-  background-color: #004d40;
-  color: white;
-  padding: 10px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.registerButton:hover {
-  background-color: #00332a;
-}
-
-/* register.css */
-.container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: #e5e5e5;
-}
-
-.header {
-  margin-bottom: 2rem;
-}
-
-.main {
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  background-color: white;
-}
-
-.form {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-
-.inputGroup {
-  display: flex;
-  flex-direction: column;
-}
-
-.label {
-  margin-bottom: 0.5rem;
-}
-
-.inputGroup input {
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.submitGroup {
-  grid-column: span 2;
-  display: flex;
-  justify-content: center;
-}
-
-.submitButton {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 4px;
-  background-color: #005f73;
-  color: white;
-  cursor: pointer;
-  text-transform: uppercase;
-  font-weight: bold;
-}
-
-.submitButton:hover {
-  background-color: #003d4d;
-}
-
-
-/* pages/index.css */
-.streamContainer {
-  margin-bottom: 20px; /* ajoute un espace entre FileUpload et AceEditor */
-}
-.fileUploadContainer {
-  /* styles pour le conteneur de téléchargement de fichier */
-  margin-bottom: 20px; /* ajoute un espace entre FileUpload et AceEditor */
-}
-
-.aceEditorContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.aceEditor {
-  width: 90%; /* ou une largeur fixe si vous préférez */
-  height: 70px; /* ou toute autre hauteur appropriée */
-  margin: auto; /* Ceci ajoute une marge automatique autour de l'éditeur */
-}
+ 

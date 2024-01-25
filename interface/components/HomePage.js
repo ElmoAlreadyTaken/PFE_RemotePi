@@ -39,12 +39,6 @@ export default function HomePage(props) {
     };
   }, []);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    console.log("Disconnected");
-    router.push('/');
-  };
-
   function onChange(newValue) {
     console.log('change', newValue);
   }
@@ -81,21 +75,7 @@ export default function HomePage(props) {
           className="aceEditor"
         />
       </div>
-      <button onClick={handleLogout} className="logoutButton">
-        Log Out
-      </button>
 
-      {/* Style your button accordingly */}
-      <style jsx>{`
-        .logoutButton {
-          padding: 10px;
-          margin: 10px;
-          background-color: red;
-          color: white;
-          border: none;
-          cursor: pointer;
-        }
-      `}</style>
     </div>
   );
 }
