@@ -13,10 +13,10 @@ export default function Footer(){
                     <div class="right-text-content">
                             <ul class="social-icons">
                                 <li><p>Suivez-Nous</p></li>
-                                <li><a rel="nofollow" href="https://fb.com/templatemo"><i class="fa fa-facebook"></i></a></li>
-                                <li><a rel="nofollow" href="https://fb.com/templatemo"><i class="fa fa-twitter"></i></a></li>
-                                <li><a rel="nofollow" href="https://fb.com/templatemo"><i class="fa fa-linkedin"></i></a></li>
-                                <li><a rel="nofollow" href="https://fb.com/templatemo"><i class="fa fa-dribbble"></i></a></li>
+                                <li><a rel="nofollow" href=""><i class="fa fa-facebook"></i></a></li>
+                                <li><a rel="nofollow" href=""><i class="fa fa-twitter"></i></a></li>
+                                <li><a rel="nofollow" href=""><i class="fa fa-linkedin"></i></a></li>
+                                <li><a rel="nofollow" href=""><i class="fa fa-dribbble"></i></a></li>
                             </ul>
                     </div>
                 </div>

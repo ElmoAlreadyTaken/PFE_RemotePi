@@ -104,10 +104,6 @@ export default function MainComponent() {
                 l'informatique. Notre équipe a choisi de fusionner ces
                 compétences pour concrétiser RemotePi, une solution innovante
                 qui marque la conclusion de notre formation.
-                <br></br>Redistributing this template as a downloadable ZIP file
-                on any template collection website is strictly prohibited. You
-                will need to talk to us if you want to redistribute this
-                template. Thank you.
                 <br></br>
                 <br></br>
                 <h3 className="text-black">RemotePi, c'est quoi ?</h3>
