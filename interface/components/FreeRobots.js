@@ -42,7 +42,6 @@ const FreeRobots = () => {
 
       {selectedRobot && (
         <div>
-          <h2>Informations sur le robot sélectionné :</h2>
           <p>
             <strong>Robot ID:</strong> {selectedRobot.id}, <strong>Status:</strong> {selectedRobot.status}, <strong>Board:</strong> {selectedRobot.board}
           </p>
