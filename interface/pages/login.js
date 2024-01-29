@@ -92,7 +92,7 @@ export default function Login() {
             />
 
             <button
-              type="submit"
+              type="button"
               onClick={handleResetPassword}
               disabled={loading}
               class="text-blue-600 focus:outline-none text-xs"
