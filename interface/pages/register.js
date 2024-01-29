@@ -18,6 +18,15 @@ export default function Register() {
     e.preventDefault();
     setError("");
 
+    // Liste des promotions valides
+    const validPromotions = ["ING5", "ING4", "ING3", "ING2", "ING1"];
+
+    // Vérification de la promotion
+    if (!validPromotions.includes(promotion)) {
+      setError("La promotion doit être parmi les suivantes: ING5, ING4, ING3, ING2, ING1");
+      return;
+    }
+
     if (password !== verifyPassword) {
       setError("Les mots de passe ne correspondent pas.");
       return;
@@ -52,7 +61,7 @@ export default function Register() {
       <br></br>
       <br></br>
       <div className="flex justify-center items-center ">
-        <form class="px-4">
+        <form class="px-4" onSubmit={handleSignUp}>
           <div class="grid gap-6 mb-6 md:grid-cols-2">
             <div>
               <label
@@ -66,6 +75,7 @@ export default function Register() {
                 id="first_name"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-40 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 required
+                value={prénom} onChange={(e) => setPrénom(e.target.value)}
               />
             </div>
             <div>
@@ -80,6 +90,7 @@ export default function Register() {
                 id="last_name"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-40 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 required
+                value={name} onChange={(e) => setName(e.target.value)}
               />
             </div>
             <div>
@@ -94,6 +105,7 @@ export default function Register() {
                 id="company"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-40 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 required
+                value={promotion} onChange={(e) => setPromotion(e.target.value)}
               />
             </div>
             <div>
@@ -124,6 +136,7 @@ export default function Register() {
               id="email"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-100 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               required
+              value={email} onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div class="mb-6">
@@ -138,6 +151,7 @@ export default function Register() {
               id="password"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-100 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               required
+              value={password} onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <div class="mb-6">
@@ -152,8 +166,10 @@ export default function Register() {
               id="confirm_password"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-100 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               required
+              value={verifyPassword} onChange={(e) => setVerifyPassword(e.target.value)}
             />
           </div>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
           <br></br>
           <div class="flex justify-center items-center">
             <button
