@@ -3,7 +3,8 @@ import AceEditor from 'react-ace';
 import { useRouter } from 'next/router';
 import { supabase } from '../lib/supabase';
 import FileUpload from './FileUpload';
-
+import FreeRobots from './FreeRobots'; 
+import AllRobots from './AllRobots'; 
 
 import 'ace-builds/src-noconflict/mode-c_cpp';
 import 'ace-builds/src-noconflict/theme-monokai';
@@ -110,6 +111,11 @@ export default function HomePage(props) {
           editorProps={{ $blockScrolling: true }}
           className="aceEditor"
         />
+      </div>
+      <br></br>
+      <div className="freeRobotsContainer">
+        <AllRobots />
+        <FreeRobots />
       </div>
       <br></br>
       
