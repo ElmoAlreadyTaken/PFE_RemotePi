@@ -9,7 +9,12 @@ import AllRobots from "./AllRobots";
 import "ace-builds/src-noconflict/mode-c_cpp";
 import "ace-builds/src-noconflict/theme-monokai";
 
-export default function HomePage(props) {
+export default function HomePage(props) {const [refreshKey, setRefreshKey] = useState(0);
+
+  const refreshComponents = () => {
+    // Incrémente la clé de rafraîchissement pour forcer le re-render des composants
+    setRefreshKey((prevKey) => prevKey + 1);
+  };
   var template = `#include <espConfig.h>
 
   void setup() {
@@ -103,23 +108,34 @@ export default function HomePage(props) {
     <div className="">
       <br></br>
       <div className="freeRobotsContainer flex justify-center items-center">
-        <FreeRobots />
+        <FreeRobots  key={refreshKey}/>
       </div>
-
+      
+      <img
+        src="refresh-icon.png"
+        alt="Refresh Icon"
+        onClick={refreshComponents}
+        style={{ marginLeft: "1200px",marginTop: "-25px", cursor: "pointer",position: "absolute", width: "35px", height: "35px" }}
+      />
       <div>
-        <button onClick={toggleAllRobotsVisibility} style={{
-          marginLeft: "875px",
-        }} >
+        <button
+          onClick={toggleAllRobotsVisibility}
+          style={{
+            marginLeft: "875px",
+          }}
+        >
           {isAllRobotsVisible ? "Masquer les robots" : "Afficher les robots"}
         </button>
         {isAllRobotsVisible && (
-          <div className="AllRobotsContainer flex justify-center items-center " >
+          <div className="AllRobotsContainer flex justify-center items-center ">
             <br></br>
-            <AllRobots />
+            <AllRobots  key={refreshKey}/>
           </div>
         )}
       </div>
       
+      
+  
       <br></br>
       <div className="fileUploadContainer flex justify-center items-center">
         <FileUpload />
@@ -162,8 +178,7 @@ export default function HomePage(props) {
         {boutonTexte}
       </button>
       <br></br>
-      
-
+     
       <br></br>
     </div>
   );
