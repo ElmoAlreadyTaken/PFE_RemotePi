@@ -29,7 +29,11 @@ export default function HomePage(props) {
   const [boutonTexte, setBoutonTexte] = useState("Téléverser");
   const [serverIP, setServerIP] = useState("4.tcp.eu.ngrok.io"); // Nouvelle adresse IP du serveur
   const [portIP, setPortIP] = useState(17707); // Nouveau port
+  const [isAllRobotsVisible, setAllRobotsVisibility] = useState(false);
 
+  const toggleAllRobotsVisibility = () => {
+    setAllRobotsVisibility(!isAllRobotsVisible);
+  };
   useEffect(() => {
     // Diviser le template en lignes ou en éléments clés
     const lignesTemplate = template.split("\n");
@@ -101,6 +105,21 @@ export default function HomePage(props) {
       <div className="freeRobotsContainer flex justify-center items-center">
         <FreeRobots />
       </div>
+
+      <div>
+        <button onClick={toggleAllRobotsVisibility} style={{
+          marginLeft: "875px",
+        }} >
+          {isAllRobotsVisible ? "Masquer les robots" : "Afficher les robots"}
+        </button>
+        {isAllRobotsVisible && (
+          <div className="AllRobotsContainer flex justify-center items-center " >
+            <br></br>
+            <AllRobots />
+          </div>
+        )}
+      </div>
+      
       <br></br>
       <div className="fileUploadContainer flex justify-center items-center">
         <FileUpload />
@@ -118,8 +137,8 @@ export default function HomePage(props) {
             allowFullScreen={true}
           ></iframe>
         </div>
-        <div className="aceEditorContainer ml-2"> 
-        <AceEditor
+        <div className="aceEditorContainer ml-2">
+          <AceEditor
             mode="c_cpp"
             theme="monokai"
             onChange={onChange}
@@ -129,12 +148,21 @@ export default function HomePage(props) {
             className="aceEditor"
           />
         </div>
-        
-      </div><br></br>
-      <button onClick={verifierContenu} class={boutonStyle} style={{ marginLeft: '1300px', position: 'absolute', marginTop: '-225px' }}>
-          {boutonTexte}
-        </button>
+      </div>
       <br></br>
+      <button
+        onClick={verifierContenu}
+        class={boutonStyle}
+        style={{
+          marginLeft: "1300px",
+          position: "absolute",
+          marginTop: "-225px",
+        }}
+      >
+        {boutonTexte}
+      </button>
+      <br></br>
+      
 
       <br></br>
     </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
 import styles from "../app/globals.css";
 import { data } from "autoprefixer";
@@ -19,22 +19,22 @@ export default function Profile() {
 
     checkSession();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsLoggedIn(!!session);
-    });
-
-    
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setIsLoggedIn(!!session);
+      }
+    );
   }, []);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         setLoading(true);
-  
+
         // Fetch the current user
         const { data: user, error: userError } = await supabase.auth.getUser();
         if (userError) throw userError;
-  
+
         if (user) {
           // Fetch user profile data
           const { data: profileData, error: profileError } = await supabase
@@ -42,14 +42,14 @@ export default function Profile() {
             .select()
             .eq("user_id", user.user.id)
             .single();
-          console.log("request : ",profileData);
-          console.log("user : ",user);
+          console.log("request : ", profileData);
+          console.log("user : ", user);
           if (profileError) throw profileError;
-          const userData ={...profileData,...user};
-          console.log("userData : ",userData);
+          const userData = { ...profileData, ...user };
+          console.log("userData : ", userData);
           setUserProfile(userData);
         } else {
-          router.push('/'); // Redirect to index if not logged in
+          router.push("/"); // Redirect to index if not logged in
         }
       } catch (error) {
         console.error("Error fetching profile:", error.message);
@@ -57,25 +57,52 @@ export default function Profile() {
         setLoading(false);
       }
     };
-  
+
     fetchProfile();
   }, []); // Dependencies array is empty as we want this to run only once on component mount
 
   return (
     <div className={styles.profileContainer}>
+      <br></br>
       <Head>
         <title>Profile - Remote-PI</title>
       </Head>
-
-      <h1>Profil utilisateur</h1>
-
+      <div className="flex justify-center">
+        <div class=" items-center">
+          <h1>Profil utilisateur</h1>
+        </div>
+      </div>
       {loading ? (
         <p>Chargement du profil...</p>
       ) : isLoggedIn ? (
-        <div>
-          <p>Nom: {userProfile.nom}</p>
-          <p>Prénom: {userProfile.prénom}</p>
-          <p>Email: {userProfile.user.email}</p>
+        <div className="flex justify-center">
+          <div class=" items-center">
+            <br></br>
+            <p>Nom: {userProfile.nom}</p>
+            <p>Prénom: {userProfile.prénom}</p>
+            <p>Email: {userProfile.user.email}</p>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+          </div>
         </div>
       ) : (
         <p>Veuillez vous connecter pour accéder à votre profil.</p>

@@ -22,7 +22,6 @@ const AllRobots = () => {
 
   return (
     <div>
-      <h2>Robots :</h2>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
