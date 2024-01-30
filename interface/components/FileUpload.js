@@ -1,10 +1,7 @@
 // components/FileUpload.js
 import React, { useState } from 'react';
 
-export default function FileUpload() {
-  const [serverIP, setServerIP] = useState('4.tcp.eu.ngrok.io'); // Nouvelle adresse IP du serveur
-  const [portIP, setPortIP] = useState(17707); // Nouveau port
-
+export default function FileUpload({ serverIP, setServerIP, portIP, setPortIP }) {
   async function handleUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -74,7 +71,14 @@ export default function FileUpload() {
   // Fonction pour gérer le changement de l'adresse IP du serveur
   const handleServerIPChange = (e) => {
     setServerIP(e.target.value);
-  };
+    let ip = e.target.value;
+    // Vérifier si la chaîne se termine par un slash et le supprimer
+    if (ip.endsWith('/')) {
+      ip = ip.slice(0, -1);
+    }
+    setServerIP(ip);
+    console.log("ip :", serverIP);
+    };
 
   // Fonction pour gérer le changement du port du serveur
   const handlePortIPChange = (e) => {

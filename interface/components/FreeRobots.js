@@ -23,6 +23,7 @@ const FreeRobots = () => {
     const selectedRobotId = parseInt(event.target.value, 10);
     const selectedRobot = robots.find((robot) => robot.id === selectedRobotId);
     setSelectedRobot(selectedRobot);
+    onRobotSelect(selectedRobot);
   };
 
   return (

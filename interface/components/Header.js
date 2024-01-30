@@ -10,13 +10,10 @@ import "../assets/css/templatemo-breezed.css";
 
 export default function Header({ theme, setTheme }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isSubMenuOpen, setSubMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
 
-  const handleSubMenuToggle = () => {
-    setSubMenuOpen(!isSubMenuOpen);
-  };
-
+  
   useEffect(() => {
     const checkSession = async () => {
       const { data: session } = await supabase.auth.getSession();

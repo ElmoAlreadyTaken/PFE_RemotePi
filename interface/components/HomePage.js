@@ -31,6 +31,7 @@ export default function HomePage(props) {const [refreshKey, setRefreshKey] = use
   const [boutonStyle, setBoutonStyle] = useState(
     "text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
   );
+  const [selectedRobot, setSelectedRobot] = useState(null);
   const [boutonTexte, setBoutonTexte] = useState("Téléverser");
   const [serverIP, setServerIP] = useState("4.tcp.eu.ngrok.io"); // Nouvelle adresse IP du serveur
   const [portIP, setPortIP] = useState(17707); // Nouveau port
@@ -68,7 +69,8 @@ export default function HomePage(props) {const [refreshKey, setRefreshKey] = use
     );
     if (templateEstPresent) {
       alert("La configuration ESP est présente dans le contenu.");
-      try {
+      console.log("ip : ",serverIP, "port :",portIP );
+      try { 
         // Créer un Blob avec le contenu de l'éditeur
         const blob = new Blob([editorContent], { type: "text/plain" });
 
@@ -108,9 +110,13 @@ export default function HomePage(props) {const [refreshKey, setRefreshKey] = use
     <div className="">
       <br></br>
       <div className="freeRobotsContainer flex justify-center items-center">
-        <FreeRobots  key={refreshKey}/>
+        <FreeRobots  key={refreshKey}  onRobotSelect={setSelectedRobot} />
       </div>
-      
+      {!selectedRobot && (
+        <p style={{ color: 'red', marginLeft: "1300px", position: "absolute", marginTop: "0px" }}>
+          Veuillez sélectionner un robot.
+        </p>
+      )}
       <img
         src="refresh-icon.png"
         alt="Refresh Icon"
@@ -138,7 +144,12 @@ export default function HomePage(props) {const [refreshKey, setRefreshKey] = use
   
       <br></br>
       <div className="fileUploadContainer flex justify-center items-center">
-        <FileUpload />
+      <FileUpload 
+          serverIP={serverIP} 
+          setServerIP={setServerIP} 
+          portIP={portIP} 
+          setPortIP={setPortIP} 
+        />
       </div>
 
       <br></br>
@@ -174,6 +185,7 @@ export default function HomePage(props) {const [refreshKey, setRefreshKey] = use
           position: "absolute",
           marginTop: "-225px",
         }}
+        //disabled={!selectedRobot} // Désactiver le bouton si aucun robot n'est sélectionné
       >
         {boutonTexte}
       </button>
