@@ -61,7 +61,7 @@ export default function FileUpload({ serverIP, setServerIP, portIP, setPortIP })
         // Gérer les erreurs réseau ici
       }
     }else {
-      alert("Le contenu de l'éditeur doit au moins contenir le template de base.");
+      alert("Le contenu du fichier doit au moins contenir le template de base.");
     }
   }; reader.onerror = (error) => {
     console.log("Erreur lors de la lecture du fichier", error);
