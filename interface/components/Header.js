@@ -41,53 +41,53 @@ export default function Header({ theme, setTheme }) {
               <div class="row">
                 <div class="col-12">
                   <nav class="main-nav">
-                    <a href="/" class="logo">
+                    <Link href="/" class="logo">
                       .REMOTEPI
-                    </a>
+                    </Link>
                     <ul class="nav">
                       <li class="scroll-to-section">
-                        <a href="/">ACCUEIL</a>
+                        <Link href="/">ACCUEIL</Link>
                       </li>
                       <li class="scroll-to-section">
-                        <a href="/about">à PROPOS</a>
+                        <Link href="/about">à PROPOS</Link>
                       </li>
 
                       {isLoggedIn ? (
                         <>
                           <li class="scroll-to-section">
-                            <a href="/upload">téléverser</a>
+                            <Link href="/upload">téléverser</Link>
                           </li>
                           <li class="scroll-to-section">
-                            <a href="/profile">Profil</a>
+                            <Link href="/profile">Profil</Link>
                           </li>
                           <li class="scroll-to-section">
-                            <a>
+                            <Link>
                               <button
                                 class="scroll-to-section"
                                 onClick={handleLogout}
                               >
                                 DÉCONNEXION
                               </button>
-                            </a>
+                            </Link>
                           </li>
                         </>
                       ) : (
                         <div>
                           <li class="scroll-to-section">
-                            <a href="/login">SE CONNECTER</a>
+                            <Link href="/login">SE CONNECTER</Link>
                           </li>
                         </div>
                       )}
 
                       <div class="search-icon">
-                        <a href="#search">
+                        <Link href="#search">
                           <i class="fa fa-search"></i>
-                        </a>
+                        </Link>
                       </div>
                     </ul>
-                    <a class="menu-trigger">
+                    <Link class="menu-trigger">
                       <span>Menu</span>
-                    </a>
+                    </Link>
                   </nav>
                 </div>
               </div>

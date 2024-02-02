@@ -28,7 +28,7 @@ export default function Accueil() {
           </p>
           <div className={styles.buttons}>
             <button className={styles.button}>Se connecter</button>
-            <button className={`${styles.button} ${styles.signupButton}`}>S'inscrire</button>
+            <button className={`${styles.button} ${styles.signupButton}`}>S&apos;inscrire</button>
           </div>
         </div>
       </main>

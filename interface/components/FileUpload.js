@@ -2,6 +2,60 @@
 import React, { useState } from 'react';
 
 export default function FileUpload({ serverIP, setServerIP, portIP, setPortIP }) {
+  const [selectedFile, setSelectedFile] = useState(null);
+  
+  function handleFileSelection(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+  
+    // Vérifier l'extension du fichier
+    const fileExtension = file.name.split('.').pop();
+    if (fileExtension.toLowerCase() !== "ino") {
+      alert("Seuls les fichiers .ino sont acceptés.");
+      event.target.value = ''; // Réinitialiser la sélection de fichier
+      return;
+    }
+  
+    setSelectedFile(file); // Stocker le fichier sélectionné
+  }
+  
+  async function sendFile() {
+    if (!selectedFile) {
+      alert("Veuillez sélectionner un fichier avant d'envoyer.");
+      return;
+    }
+  
+    // Ici, vous pouvez inclure la logique de vérification du contenu du fichier
+    // ou tout autre prétraitement nécessaire avant l'envoi
+  
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+  
+    try {
+      const response = await fetch(`https://${serverIP}:${portIP}/upload`, {
+        method: "POST",
+        body: formData,
+        headers: new Headers({
+          "ngrok-skip-browser-warning": "69420",
+        }),
+      });
+  
+      if (response.ok) {
+       
+        console.log("Fichier envoyé avec succès");
+        // Traitement supplémentaire en cas de succès
+      } else {
+        console.log("Échec de l'envoi du fichier");
+        // Gérer les erreurs ici
+      }
+    } catch (error) {
+      console.log("Erreur lors de l'envoi du fichier", error);
+      // Gérer les erreurs réseau ici
+    }
+  
+    setSelectedFile(null); // Réinitialiser le fichier sélectionné après l'envoi
+  }
+  
   async function handleUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -37,16 +91,18 @@ export default function FileUpload({ serverIP, setServerIP, portIP, setPortIP })
     const templateEstPresent = lignesTemplate.every(ligne => fileContent.includes(ligne.trim()));
 
     if (templateEstPresent) {
-      alert("La configuration ESP est présente dans le contenu.");
       // Créer un objet FormData et y ajouter le fichier
       const formData = new FormData();
       formData.append("file", file);
 
       try {
         // Utiliser l'API Fetch pour envoyer le fichier au serveur
-        const response = await fetch(`http://${serverIP}:${portIP}/upload`, {
+        const response = await fetch(`https://${serverIP}:${portIP}/upload`, {
           method: "POST",
           body: formData,
+          headers: new Headers({
+            "ngrok-skip-browser-warning": "69420",
+          }),
         });
 
         if (response.ok) {
@@ -95,7 +151,8 @@ export default function FileUpload({ serverIP, setServerIP, portIP, setPortIP })
         Server Port:
         <input type="number" value={portIP} onChange={handlePortIPChange} />
       </label>
-      <input type="file" accept=".ino"  onChange={handleUpload} />
+      <input type="file" accept=".ino" onChange={handleFileSelection} />
+    <button onClick={sendFile} class="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Envoyer le fichier</button>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const FreeRobots = () => {
+const FreeRobots = ({ serverIP, setServerIP, portIP, setPortIP }) => {
   const [robots, setRobots] = useState([]);
   const [selectedRobot, setSelectedRobot] = useState(null);
   const [error, setError] = useState(null);
@@ -8,7 +8,15 @@ const FreeRobots = () => {
   useEffect(() => {
     const fetchFreeRobots = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/robots/free`);
+        const response = await fetch(`https://${serverIP}:${portIP}/robots/free`, {
+          method: "GET",
+          headers: new Headers({
+            "ngrok-skip-browser-warning": "69420",
+          }),
+        });
+        if (!response.ok) {
+          throw new Error("Serveur indisponible"); // Peut indiquer une erreur 4XX/5XX
+        }
         const data = await response.json();
         setRobots(data);
       } catch (error) {
@@ -26,6 +34,7 @@ const FreeRobots = () => {
     onRobotSelect(selectedRobot);
   };
 
+  
   return (
     <div>
 

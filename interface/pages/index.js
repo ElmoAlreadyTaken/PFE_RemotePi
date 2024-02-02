@@ -49,19 +49,19 @@ export default function MainComponent() {
               <div class="text-content">
                 <h3>Bienvenue sur RemotePi</h3>
                 <h5>UN PROJET ECE</h5>
-                <a href="/about" class="main-stroked-button">
+                <Link href="/about" class="main-stroked-button">
                   En Savoir plus
-                </a>
+                </Link>
                 {isLoggedIn ? (
                   <>
-                    <a href="/upload" class="main-filled-button">
+                    <Link href="/upload" class="main-filled-button">
                       Téléverser maintenant
-                    </a>
+                    </Link>
                   </>
                 ) : (
-                  <a href="/login" class="main-filled-button">
+                  <Link href="/login" class="main-filled-button">
                     Téléverser maintenant
-                  </a>
+                  </Link>
                 )}
               </div>
             </div>

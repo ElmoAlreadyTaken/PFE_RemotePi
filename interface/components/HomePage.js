@@ -9,7 +9,10 @@ import AllRobots from "./AllRobots";
 import "ace-builds/src-noconflict/mode-c_cpp";
 import "ace-builds/src-noconflict/theme-monokai";
 
-export default function HomePage(props) {const [refreshKey, setRefreshKey] = useState(0);
+export default function HomePage(props) {
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [logList, setLogList] = useState([]);
 
   const refreshComponents = () => {
     // Incrémente la clé de rafraîchissement pour forcer le re-render des composants
@@ -36,7 +39,40 @@ export default function HomePage(props) {const [refreshKey, setRefreshKey] = use
   const [serverIP, setServerIP] = useState("4.tcp.eu.ngrok.io"); // Nouvelle adresse IP du serveur
   const [portIP, setPortIP] = useState(17707); // Nouveau port
   const [isAllRobotsVisible, setAllRobotsVisibility] = useState(false);
+  
+  const fetchLogs = async () => {
+    try {
+      const response = await fetch(`https://${serverIP}:${portIP}/log`, {
+        method: "GET",
+        headers: new Headers({
+          "ngrok-skip-browser-warning": "69420",
+        }),
+      });
+      if (!response.ok) {
+        throw new Error("Serveur indisponible"); // Peut indiquer une erreur 4XX/5XX
+      }
+      const log = await response.json();
+      const newLogList = Array.isArray(log) ? log : [log];
+      console.log("log :", log);
+      setLogList((prevLogList) => [...prevLogList, ...newLogList]);
+      setErrorMessage(""); // Réinitialiser le message d'erreur en cas de succès
+    } catch (error) {
+      console.error(error); // Conserver pour le debug, mais vous pourriez vouloir le retirer en production
+      setErrorMessage("Serveur indisponible."); // Utiliser un message générique pour l'utilisateur
+    }
+  };
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      fetchLogs();
+    }, 1000); // Exécute `fetchLogs` toutes les 1000 millisecondes (1 seconde)
+
+    return () => clearInterval(intervalId); // Nettoyage de l'intervalle lors du démontage du composant
+  }, [serverIP, portIP]); // Les dépendances assurent que l'intervalle est réinitialisé si `serverIP` ou `portIP` changent
+
+  const clearLogs = () => {
+    setLogList([]);
+  };
   const toggleAllRobotsVisibility = () => {
     setAllRobotsVisibility(!isAllRobotsVisible);
   };
@@ -110,7 +146,11 @@ export default function HomePage(props) {const [refreshKey, setRefreshKey] = use
     <div className="">
       <br></br>
       <div className="freeRobotsContainer flex justify-center items-center">
-        <FreeRobots  key={refreshKey}  onRobotSelect={setSelectedRobot} />
+        <FreeRobots  key={refreshKey}  onRobotSelect={setSelectedRobot}
+          serverIP={serverIP} 
+          setServerIP={setServerIP} 
+          portIP={portIP} 
+          setPortIP={setPortIP}  />
       </div>
       {!selectedRobot && (
         <p style={{ color: 'red', marginLeft: "1300px", position: "absolute", marginTop: "0px" }}>
@@ -192,6 +232,60 @@ export default function HomePage(props) {const [refreshKey, setRefreshKey] = use
       <br></br>
      
       <br></br>
+      <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <button
+          onClick={clearLogs}
+          className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Effacer
+        </button>
+        {errorMessage && (
+          <div style={{ color: "red", marginTop: "10px" }}>{errorMessage}</div>
+        )}
+        <div>
+          <br></br>
+        </div>
+        <div
+          className="relative overflow-x-auto shadow-md sm:rounded-lg"
+          style={{ maxHeight: "400px", overflowY: "auto" }}
+        >
+          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+              <tr>
+                <th scope="col" style={{ width: "10%" }} className="px-6 py-3">
+                  Robot
+                </th>
+                <th scope="col" style={{ width: "10%" }} className="px-6 py-3">
+                  Heure
+                </th>
+                <th scope="col" style={{ width: "80%" }} className="px-6 py-3">
+                  Message/Error
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {logList.map((log, index) => (
+                <tr key={index}>
+                  <td className="px-6 py-4">{log.id}</td>
+                  <td className="px-6 py-4">{log.time}</td>
+                  <td
+                    className={`px-6 py-4 ${
+                      log.error ? "text-red-500" : "text-black"
+                    }`}
+                  >
+                    {log.message || log.error}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <br></br>
+      <br></br>
+      <br></br>
+      <br></br>
+      </div>
     </div>
   );
 }

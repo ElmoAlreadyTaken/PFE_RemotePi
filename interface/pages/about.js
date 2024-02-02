@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Link from `next/link`
 import Head from "next/head";
 import { supabase } from "../lib/supabase";
 
@@ -55,25 +56,25 @@ export default function MainComponent() {
                 <div class="row">
                   <div class="col-md-6 col-sm-6">
                     <div class="service-item">
-                      <img src="/service-item-01.png" alt="" />
+                      <Image src="/service-item-01.png" alt="" />
                       <h4>Automatisé</h4>
                     </div>
                   </div>
                   <div class="col-md-6 col-sm-6">
                     <div class="service-item">
-                      <img src="/service-item-01.png" alt="" />
+                      <Image src="/service-item-01.png" alt="" />
                       <h4>Intuitif</h4>
                     </div>
                   </div>
                   <div class="col-md-6 col-sm-6">
                     <div class="service-item">
-                      <img src="/contact-info-03.png" alt="" />
+                      <Image src="/contact-info-03.png" alt="" />
                       <h4>Polyvalent</h4>
                     </div>
                   </div>
                   <div class="col-md-6 col-sm-6">
                     <div class="service-item">
-                      <img src="/contact-info-03.png" alt="" />
+                      <Image src="/contact-info-03.png" alt="" />
                       <h4>Sécurisé</h4>
                     </div>
                   </div>
@@ -81,16 +82,16 @@ export default function MainComponent() {
                   {isLoggedIn ? (
                     <>
                       <div class="col-md-12">
-                        <a href="/upload" class="main-button-icon">
+                        <Link href="/upload" class="main-button-icon">
                           SE LANCER <i class="fa fa-arrow-right"></i>
-                        </a>
+                        </Link>
                       </div>
                     </>
                   ) : (
                     <div class="col-md-12">
-                      <a href="/login" class="main-button-icon">
+                      <Link href="/login" class="main-button-icon">
                         SE LANCER <i class="fa fa-arrow-right"></i>
-                      </a>
+                      </Link>
                     </div>
                   )}
                 </div>
@@ -99,21 +100,21 @@ export default function MainComponent() {
             <div class="col-lg-6 col-md-6 col-xs-12">
               <div class="right-text-content">
                 <h3 className="text-black">Qui sommes-nous ?</h3>
-                Nous sommes un groupe d'étudiants en 5ème année du cursus
-                ingénieur à l’ECE Paris, passionnés par l'électronique et
-                l'informatique. Notre équipe a choisi de fusionner ces
+                Nous sommes un groupe d&apos;étudiants en 5ème année du cursus
+                ingénieur à l&apos;ECE Paris, passionnés par l&apos;électronique et
+                l&apos;informatique. Notre équipe a choisi de fusionner ces
                 compétences pour concrétiser RemotePi, une solution innovante
                 qui marque la conclusion de notre formation.
                 <br></br>
                 <br></br>
-                <h3 className="text-black">RemotePi, c'est quoi ?</h3>
-                RemotePi va au-delà d'un simple projet ; il incarne une
+                <h3 className="text-black">RemotePi, c&apos;est quoi ?</h3>
+                RemotePi va au-delà d&apos;un simple projet ; il incarne une
                 initiative audacieuse pour rendre la programmation électronique
                 accessible à chacun. Cette plateforme permet le contrôle à
                 distance de votre robot, facilitant le téléversement de code via
                 Internet. En repoussant les limites de la robotique éducative,
                 RemotePi offre aux équipes la possibilité de collaborer sur un
-                robot partagé, favorisant ainsi l'apprentissage à distance de
+                robot partagé, favorisant ainsi l&apos;apprentissage à distance de
                 manière interactive.
               </div>
             </div>

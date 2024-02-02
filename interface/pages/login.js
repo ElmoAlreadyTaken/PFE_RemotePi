@@ -116,7 +116,7 @@ export default function Login() {
               class="text-blue-600 focus:outline-none text-xs px-1"
               disabled={loading}
             >
-              S'INSCRIRE
+              S&apos;INSCRIRE
             </Link>
           </div>
           <br></br>
