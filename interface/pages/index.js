@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Head from "next/head";
+import Link from "next/link";
 import { supabase } from "../lib/supabase";
 
 export default function MainComponent() {
@@ -42,7 +43,7 @@ export default function MainComponent() {
       <Head>
         <title>Remote-PI</title>
       </Head>
-      <div className="header-container2 min-h-screen ">
+      <div className="min-h-screen header-container2 ">
         <div class="Modern-Slider  ">
           <div class="item ">
             <div class="img-fill">

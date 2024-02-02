@@ -85,7 +85,7 @@ export default function Header({ theme, setTheme }) {
                         </Link>
                       </div>
                     </ul>
-                    <Link class="menu-trigger">
+                    <Link class="menu-trigger" href="#">
                       <span>Menu</span>
                     </Link>
                   </nav>

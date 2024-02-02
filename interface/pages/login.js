@@ -52,7 +52,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center ">
+    <div className="flex items-center justify-center ">
       <div className={styles.loginContainer}>
         <Head>
           <title>Connection - Remote-PI</title>
