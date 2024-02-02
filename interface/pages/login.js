@@ -36,7 +36,7 @@ export default function Login() {
     try {
       setLoading(true);
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "http://localhost:3000/update-password", // URL de redirection après la réinitialisation
+        redirectTo: "/update-password", // URL de redirection après la réinitialisation
       });
 
       if (error) {

@@ -10,7 +10,6 @@ import "../assets/css/templatemo-breezed.css";
 
 export default function Header({ theme, setTheme }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
 
   
