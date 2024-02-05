@@ -1,9 +1,10 @@
 // components/FileUpload.js
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 export default function FileUpload({ serverIP, setServerIP, portIP, setPortIP }) {
   const [selectedFile, setSelectedFile] = useState(null);
-  
+  const fileInputRef = useRef(null); // Créez une référence pour l'input de fichier
+
   function handleFileSelection(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -57,6 +58,8 @@ export default function FileUpload({ serverIP, setServerIP, portIP, setPortIP })
     }
   
     setSelectedFile(null); // Réinitialiser le fichier sélectionné après l'envoi
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    alert("Votre code à été envoyé !")
   }
   
   async function handleUpload(event) {
@@ -156,8 +159,13 @@ export default function FileUpload({ serverIP, setServerIP, portIP, setPortIP })
         Server Port:
         <input type="number" value={portIP} onChange={handlePortIPChange} />
       </label>
-      <input type="file" accept=".ino" onChange={handleFileSelection} />
-    <button onClick={sendFile} class="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Envoyer le fichier</button>
+      <input
+        type="file"
+        accept=".ino"
+        onChange={handleFileSelection}
+        ref={fileInputRef} // Utilisez la référence ici
+      />
+      <button onClick={sendFile} className="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Envoyer le fichier</button>
     </div>
   );
 }
