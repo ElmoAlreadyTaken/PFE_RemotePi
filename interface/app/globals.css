@@ -26,4 +26,10 @@
     height: 10px; 
   }
 
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
   

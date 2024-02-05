@@ -1,8 +1,8 @@
 // AllRobots.js
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-const AllRobots = () => {
+const AllRobots = ({ serverIP, portIP }) => {
   const [robots, setRobots] = useState([]);
   const [error, setError] = useState(null);
 
@@ -10,19 +10,23 @@ const AllRobots = () => {
     const fetchAllRobots = async () => {
       try {
         // Déterminer le schéma en fonction de la valeur de serverIP
-        const scheme = serverIP === 'localhost' ? 'http' : 'https';
+        const scheme = serverIP === "localhost" ? "http" : "https";
 
         // Utiliser le schéma déterminé dans l'URL
-        const response = await fetch(`${scheme}://${serverIP}:${portIP}/robots`, {
-        method: "GET",
-        headers: new Headers({
-          "ngrok-skip-browser-warning": "69420",
-        }),
-      });
+        const response = await fetch(
+          `${scheme}://${serverIP}:${portIP}/robots`,
+          {
+            method: "GET",
+            headers: new Headers({
+              "ngrok-skip-browser-warning": "69420",
+            }),
+          }
+        );
+
         const data = await response.json();
         setRobots(data);
       } catch (error) {
-        setError('Erreur lors de la récupération des robots.');
+        setError("Erreur lors de la récupération des robots.");
       }
     };
 
@@ -31,13 +35,13 @@ const AllRobots = () => {
 
   return (
     <div>
-
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
 
       <ul>
         {robots.map((robot) => (
           <li key={robot.id}>
-            <strong>Robot ID:</strong> {robot.id}, <strong>Status:</strong> {robot.status}, <strong>Board:</strong> {robot.board}
+            <strong>Robot ID:</strong> {robot.id}, <strong>Status:</strong>{" "}
+            {robot.status}, <strong>Board:</strong> {robot.board}
           </li>
         ))}
       </ul>

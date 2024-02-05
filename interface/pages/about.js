@@ -57,25 +57,45 @@ export default function MainComponent() {
                 <div class="row">
                   <div class="col-md-6 col-sm-6">
                     <div class="service-item">
-                      <Image src="/service-item-01.png" alt="" />
+                      <Image
+                        src="/service-item-01.png"
+                        alt=""
+                        width={100}
+                        height={100}
+                      />
                       <h4>Automatisé</h4>
                     </div>
                   </div>
                   <div class="col-md-6 col-sm-6">
                     <div class="service-item">
-                      <Image src="/service-item-01.png" alt="" />
+                      <Image
+                        src="/service-item-01.png"
+                        alt=""
+                        width={100}
+                        height={100}
+                      />
                       <h4>Intuitif</h4>
                     </div>
                   </div>
                   <div class="col-md-6 col-sm-6">
                     <div class="service-item">
-                      <Image src="/contact-info-03.png" alt="" />
+                      <Image
+                        src="/contact-info-03.png"
+                        alt=""
+                        width={100}
+                        height={100}
+                      />
                       <h4>Polyvalent</h4>
                     </div>
                   </div>
                   <div class="col-md-6 col-sm-6">
                     <div class="service-item">
-                      <Image src="/contact-info-03.png" alt="" />
+                      <Image
+                        src="/contact-info-03.png"
+                        alt=""
+                        width={100}
+                        height={100}
+                      />
                       <h4>Sécurisé</h4>
                     </div>
                   </div>
@@ -102,8 +122,8 @@ export default function MainComponent() {
               <div class="right-text-content">
                 <h3 className="text-black">Qui sommes-nous ?</h3>
                 Nous sommes un groupe d&apos;étudiants en 5ème année du cursus
-                ingénieur à l&apos;ECE Paris, passionnés par l&apos;électronique et
-                l&apos;informatique. Notre équipe a choisi de fusionner ces
+                ingénieur à l&apos;ECE Paris, passionnés par l&apos;électronique
+                et l&apos;informatique. Notre équipe a choisi de fusionner ces
                 compétences pour concrétiser RemotePi, une solution innovante
                 qui marque la conclusion de notre formation.
                 <br></br>
@@ -115,8 +135,8 @@ export default function MainComponent() {
                 distance de votre robot, facilitant le téléversement de code via
                 Internet. En repoussant les limites de la robotique éducative,
                 RemotePi offre aux équipes la possibilité de collaborer sur un
-                robot partagé, favorisant ainsi l&apos;apprentissage à distance de
-                manière interactive.
+                robot partagé, favorisant ainsi l&apos;apprentissage à distance
+                de manière interactive.
               </div>
             </div>
           </div>

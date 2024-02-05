@@ -13,8 +13,15 @@ export default function HomePage(props) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [errorMessage, setErrorMessage] = useState("");
   const [logList, setLogList] = useState([]);
-
+  const [blink, setBlink] = useState(false);
   const refreshComponents = () => {
+    // Activer le clignotement
+    setBlink(true);
+
+    // Réinitialiser le clignotement après un court délai (par exemple, 500 ms)
+    setTimeout(() => {
+      setBlink(false);
+    }, 100);
     // Incrémente la clé de rafraîchissement pour forcer le re-render des composants
     setRefreshKey((prevKey) => prevKey + 1);
   };
@@ -39,14 +46,14 @@ export default function HomePage(props) {
   const [serverIP, setServerIP] = useState("4.tcp.eu.ngrok.io"); // Nouvelle adresse IP du serveur
   const [portIP, setPortIP] = useState(17707); // Nouveau port
   const [isAllRobotsVisible, setAllRobotsVisibility] = useState(false);
-  
+
   const fetchLogs = async () => {
     try {
-        // Déterminer le schéma en fonction de la valeur de serverIP
-        const scheme = serverIP === 'localhost' ? 'http' : 'https';
+      // Déterminer le schéma en fonction de la valeur de serverIP
+      const scheme = serverIP === "localhost" ? "http" : "https";
 
-        // Utiliser le schéma déterminé dans l'URL
-        const response = await fetch(`${scheme}://${serverIP}:${portIP}/log`, {
+      // Utiliser le schéma déterminé dans l'URL
+      const response = await fetch(`${scheme}://${serverIP}:${portIP}/log`, {
         method: "GET",
         headers: new Headers({
           "ngrok-skip-browser-warning": "69420",
@@ -72,7 +79,7 @@ export default function HomePage(props) {
     }, 1000); // Exécute `fetchLogs` toutes les 1000 millisecondes (1 seconde)
 
     return () => clearInterval(intervalId); // Nettoyage de l'intervalle lors du démontage du composant
-  }, [serverIP, portIP]); // Les dépendances assurent que l'intervalle est réinitialisé si `serverIP` ou `portIP` changent
+  }, [serverIP, portIP, refreshKey]); // Les dépendances assurent que l'intervalle est réinitialisé si `serverIP` ou `portIP` changent
 
   const clearLogs = () => {
     setLogList([]);
@@ -109,8 +116,8 @@ export default function HomePage(props) {
     );
     if (templateEstPresent) {
       alert("La configuration ESP est présente dans le contenu.");
-      console.log("ip : ",serverIP, "port :",portIP );
-      try { 
+      console.log("ip : ", serverIP, "port :", portIP);
+      try {
         // Créer un Blob avec le contenu de l'éditeur
         const blob = new Blob([editorContent], { type: "text/plain" });
 
@@ -120,12 +127,15 @@ export default function HomePage(props) {
 
         // Utiliser l'API Fetch pour envoyer le fichier au serveur
         // Déterminer le schéma en fonction de la valeur de serverIP
-          const scheme = serverIP === 'localhost' ? 'http' : 'https';
+        const scheme = serverIP === "localhost" ? "http" : "https";
 
-          const response = await fetch(`${scheme}://${serverIP}:${portIP}/upload`, {
-          method: "POST",
-          body: formData,
-        });
+        const response = await fetch(
+          `${scheme}://${serverIP}:${portIP}/upload`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
 
         if (response.ok) {
           console.log("Fichier envoyé avec succès");
@@ -153,14 +163,22 @@ export default function HomePage(props) {
     <div className="">
       <br></br>
       <div className="freeRobotsContainer flex justify-center items-center">
-        <FreeRobots  key={refreshKey}  onRobotSelect={setSelectedRobot}
-          serverIP={serverIP} 
-          setServerIP={setServerIP} 
-          portIP={portIP} 
-          setPortIP={setPortIP}  />
+        <FreeRobots
+          key={refreshKey}
+          onRobotSelect={setSelectedRobot}
+          serverIP={serverIP}
+          portIP={portIP}
+        />
       </div>
       {!selectedRobot && (
-        <p style={{ color: 'red', marginLeft: "1300px", position: "absolute", marginTop: "0px" }}>
+        <p
+          style={{
+            color: "red",
+            marginLeft: "1300px",
+            position: "absolute",
+            marginTop: "0px",
+          }}
+        >
           Veuillez sélectionner un robot.
         </p>
       )}
@@ -168,7 +186,15 @@ export default function HomePage(props) {
         src="refresh-icon.png"
         alt="Refresh Icon"
         onClick={refreshComponents}
-        style={{ marginLeft: "1200px",marginTop: "-25px", cursor: "pointer",position: "absolute", width: "35px", height: "35px" }}
+        style={{
+          marginLeft: "1200px",
+          marginTop: "-25px",
+          cursor: "pointer",
+          position: "absolute",
+          width: "35px",
+          height: "35px",
+          animation: blink ? "blink 1s" : "none", // Appliquer l'animation si le clignotement est activé
+        }}
       />
       <div>
         <button
@@ -182,20 +208,19 @@ export default function HomePage(props) {
         {isAllRobotsVisible && (
           <div className="AllRobotsContainer flex justify-center items-center ">
             <br></br>
-            <AllRobots  key={refreshKey}/>
+            <AllRobots serverIP={serverIP} portIP={portIP} />
           </div>
         )}
       </div>
-      
-      
-  
+
       <br></br>
       <div className="fileUploadContainer flex justify-center items-center">
-      <FileUpload 
-          serverIP={serverIP} 
-          setServerIP={setServerIP} 
-          portIP={portIP} 
-          setPortIP={setPortIP} 
+        <FileUpload
+          serverIP={serverIP}
+          setServerIP={setServerIP}
+          portIP={portIP}
+          setPortIP={setPortIP}
+          robotID={selectedRobot ? selectedRobot.id : null}
         />
       </div>
 
@@ -203,7 +228,7 @@ export default function HomePage(props) {
       <div className="flex ">
         <div className="streamContainer  ml-1">
           <iframe
-            src="https://player.twitch.tv/?channel=otplol_&parent=localhost"
+            src="" //"https://player.twitch.tv/?channel=otplol_&parent=localhost"
             height="720"
             width="1280"
             frameBorder="0"
@@ -237,7 +262,7 @@ export default function HomePage(props) {
         {boutonTexte}
       </button>
       <br></br>
-     
+
       <br></br>
       <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
         <button
@@ -289,9 +314,9 @@ export default function HomePage(props) {
           </table>
         </div>
         <br></br>
-      <br></br>
-      <br></br>
-      <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
       </div>
     </div>
   );

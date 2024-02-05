@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const FreeRobots = ({ serverIP, setServerIP, portIP, setPortIP }) => {
+const FreeRobots = ({ serverIP, portIP }) => {
   const [robots, setRobots] = useState([]);
   const [selectedRobot, setSelectedRobot] = useState(null);
   const [error, setError] = useState(null);
@@ -8,19 +8,20 @@ const FreeRobots = ({ serverIP, setServerIP, portIP, setPortIP }) => {
   useEffect(() => {
     const fetchFreeRobots = async () => {
       try {
-       // Déterminer le schéma en fonction de la valeur de serverIP
-          const scheme = serverIP === 'localhost' ? 'http' : 'https';
+        // Déterminer le schéma en fonction de la valeur de serverIP
+        const scheme = serverIP === "localhost" ? "http" : "https";
 
-          // Utiliser le schéma déterminé dans l'URL
-          const response = await fetch(`${scheme}://${serverIP}:${portIP}/robots/free`, {
-          method: "GET",
-          headers: new Headers({
-            "ngrok-skip-browser-warning": "69420",
-          }),
-        });
-        if (!response.ok) {
-          throw new Error("Serveur indisponible"); // Peut indiquer une erreur 4XX/5XX
-        }
+        // Utiliser le schéma déterminé dans l'URL
+        const response = await fetch(
+          `${scheme}://${serverIP}:${portIP}/robots/free`,
+          {
+            method: "GET",
+            headers: new Headers({
+              "ngrok-skip-browser-warning": "69420",
+            }),
+          }
+        );
+
         const data = await response.json();
         setRobots(data);
       } catch (error) {
@@ -38,10 +39,8 @@ const FreeRobots = ({ serverIP, setServerIP, portIP, setPortIP }) => {
     onRobotSelect(selectedRobot);
   };
 
-  
   return (
     <div>
-
       {error && <p style={{ color: "red" }}>{error}</p>}
 
       <label htmlFor="robotSelector">Sélectionnez un robot :</label>
@@ -57,11 +56,12 @@ const FreeRobots = ({ serverIP, setServerIP, portIP, setPortIP }) => {
       {selectedRobot && (
         <div>
           <p>
-            <strong>Robot ID:</strong> {selectedRobot.id}, <strong>Status:</strong> {selectedRobot.status}, <strong>Board:</strong> {selectedRobot.board}
+            <strong>Robot ID:</strong> {selectedRobot.id},{" "}
+            <strong>Status:</strong> {selectedRobot.status},{" "}
+            <strong>Board:</strong> {selectedRobot.board}
           </p>
         </div>
       )}
-
     </div>
   );
 };
