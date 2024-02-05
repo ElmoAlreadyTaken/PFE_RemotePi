@@ -27,16 +27,17 @@ export default function FileUpload({
 
         // Votre template
         const template = `#include <remotePi.h>
-  
-  void setup() {
-    Serial.begin(115200);
-    config.begin();
-  }
-  
-  void loop() {
-    config.handleClient();
-    MDNS.update();
-  }`;
+
+        void setup() {
+          Serial.begin(115200);
+          config.begin();
+        }
+      
+        void loop() {
+          config.handleClient();
+          MDNS.update();
+        }
+  `;
 
         const lignesTemplate = template.split("\n");
         const templateEstPresent = lignesTemplate.every((ligne) =>
@@ -118,32 +119,40 @@ export default function FileUpload({
         Server Port:
         <input type="number" value={portIP} onChange={handlePortIPChange} />
       </label>
-      <Dropzone
-        label={"Mets ton code ici 🚀"}
-        onChange={updateFiles}
-        value={files}
-        accept={".ino"}
-        maxFiles={1}
-        uploadConfig={{
-          url: `${scheme}://${serverIP}:${portIP}/upload`,
-          method: "POST",
-          headers: new Headers({
-            "ngrok-skip-browser-warning": "69420",
-            extraData: { robotId: 6 },
-          }),
-          cleanOnUpload: true,
+      {!selectedRobot && (
+      <div style={{ textAlign: "center", marginTop: "10px" }}>
+        Sélectionnez un robot pour activer le téléchargement.
+      </div>
+    )}
+
+      <div
+        style={{
+          pointerEvents: selectedRobot ? "auto" : "none", // Désactive les événements de pointeur si selectedRobot est null
+          opacity: selectedRobot ? 1 : 0.6, // Change l'opacité pour montrer visuellement que c'est désactivé
         }}
       >
-        {files.map((file) => (
-          <FileMosaic
-            key={file.id}
-            {...file}
-            onDelete={removeFile}
-            info
-            preview
-          />
-        ))}
-      </Dropzone>
+        <Dropzone
+          label={"Mets ton code ici 🚀"}
+          onChange={updateFiles}
+          value={files}
+          accept={".ino"}
+          maxFiles={1}
+          uploadConfig={{
+            url: `${scheme}://${serverIP}:${portIP}/upload`,
+            method: "POST",
+            headers: new Headers({
+              "ngrok-skip-browser-warning": "69420",
+              extraData: { robotId: selectedRobot ? selectedRobot.id : null },
+            }),
+            cleanOnUpload: true,
+          }}
+        >
+          {files.map((file) => (
+            <FileMosaic key={file.id} {...file} onDelete={removeFile} info preview />
+          ))}
+        </Dropzone>
+      </div>
+
       <button
         onClick={customFileSend}
         className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"

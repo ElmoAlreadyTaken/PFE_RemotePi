@@ -25,6 +25,7 @@ export default function HomePage(props) {
     // Incrémente la clé de rafraîchissement pour forcer le re-render des composants
     setRefreshKey((prevKey) => prevKey + 1);
   };
+  
   const handleSelectedRobotChange = (newSelectedRobot) => {
     setSelectedRobot(newSelectedRobot);
     // Vous pouvez effectuer d'autres actions en fonction de la nouvelle valeur de selectedRobot
@@ -41,7 +42,6 @@ export default function HomePage(props) {
     config.handleClient();
     MDNS.update();
   }`;
-  const router = useRouter();
   const [editorContent, setEditorContent] = useState(template);
   const [boutonStyle, setBoutonStyle] = useState(
     "text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
@@ -99,7 +99,7 @@ export default function HomePage(props) {
     const templateEstPresent = lignesTemplate.every((ligne) =>
       editorContent.includes(ligne.trim())
     );
-    if (templateEstPresent) {
+    if (templateEstPresent && selectedRobot) {
       setBoutonStyle(
         "text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
       );
@@ -108,7 +108,7 @@ export default function HomePage(props) {
       setBoutonStyle(
         "text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
       );
-      setBoutonTexte("Doit contenir le template");
+      setBoutonTexte("Doit contenir le template et sélectionner un robot");
     }
   }, [editorContent]);
 
@@ -262,7 +262,7 @@ export default function HomePage(props) {
           position: "absolute",
           marginTop: "-225px",
         }}
-        //disabled={!selectedRobot} // Désactiver le bouton si aucun robot n'est sélectionné
+        disabled={!selectedRobot} // Désactiver le bouton si aucun robot n'est sélectionné
       >
         {boutonTexte}
       </button>
