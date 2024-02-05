@@ -13,7 +13,10 @@ export default function AdminPage() {
 
   const fetchLogs = async () => {
     try {
-      const response = await fetch(`https://${serverIP}:${portIP}/log`, {
+      c// Déterminer le schéma en fonction de la valeur de serverIP
+      const scheme = serverIP === 'localhost' ? 'http' : 'https';
+
+      const response = await fetch(`${scheme}://${serverIP}:${portIP}/log`, {
         method: "GET",
         headers: new Headers({
           "ngrok-skip-browser-warning": "69420",

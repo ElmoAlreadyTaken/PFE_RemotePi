@@ -9,7 +9,16 @@ const AllRobots = () => {
   useEffect(() => {
     const fetchAllRobots = async () => {
       try {
-        const response = await fetch('http://localhost:5000/robots');
+        // Déterminer le schéma en fonction de la valeur de serverIP
+        const scheme = serverIP === 'localhost' ? 'http' : 'https';
+
+        // Utiliser le schéma déterminé dans l'URL
+        const response = await fetch(`${scheme}://${serverIP}:${portIP}/robots`, {
+        method: "GET",
+        headers: new Headers({
+          "ngrok-skip-browser-warning": "69420",
+        }),
+      });
         const data = await response.json();
         setRobots(data);
       } catch (error) {

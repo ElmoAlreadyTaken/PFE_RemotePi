@@ -32,7 +32,10 @@ export default function FileUpload({ serverIP, setServerIP, portIP, setPortIP })
     formData.append("file", selectedFile);
   
     try {
-      const response = await fetch(`https://${serverIP}:${portIP}/upload`, {
+      // Déterminer le schéma en fonction de la valeur de serverIP
+      const scheme = serverIP === 'localhost' ? 'http' : 'https';
+
+      const response = await fetch(`${scheme}://${serverIP}:${portIP}/upload`, {
         method: "POST",
         body: formData,
         headers: new Headers({
@@ -97,7 +100,9 @@ export default function FileUpload({ serverIP, setServerIP, portIP, setPortIP })
 
       try {
         // Utiliser l'API Fetch pour envoyer le fichier au serveur
-        const response = await fetch(`https://${serverIP}:${portIP}/upload`, {
+        const scheme = serverIP === 'localhost' ? 'http' : 'https';
+
+        const response = await fetch(`${scheme}://${serverIP}:${portIP}/upload`, {
           method: "POST",
           body: formData,
           headers: new Headers({

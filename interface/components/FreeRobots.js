@@ -8,7 +8,11 @@ const FreeRobots = ({ serverIP, setServerIP, portIP, setPortIP }) => {
   useEffect(() => {
     const fetchFreeRobots = async () => {
       try {
-        const response = await fetch(`https://${serverIP}:${portIP}/robots/free`, {
+       // Déterminer le schéma en fonction de la valeur de serverIP
+          const scheme = serverIP === 'localhost' ? 'http' : 'https';
+
+          // Utiliser le schéma déterminé dans l'URL
+          const response = await fetch(`${scheme}://${serverIP}:${portIP}/robots/free`, {
           method: "GET",
           headers: new Headers({
             "ngrok-skip-browser-warning": "69420",

@@ -42,7 +42,11 @@ export default function HomePage(props) {
   
   const fetchLogs = async () => {
     try {
-      const response = await fetch(`https://${serverIP}:${portIP}/log`, {
+        // Déterminer le schéma en fonction de la valeur de serverIP
+        const scheme = serverIP === 'localhost' ? 'http' : 'https';
+
+        // Utiliser le schéma déterminé dans l'URL
+        const response = await fetch(`${scheme}://${serverIP}:${portIP}/log`, {
         method: "GET",
         headers: new Headers({
           "ngrok-skip-browser-warning": "69420",
@@ -115,7 +119,10 @@ export default function HomePage(props) {
         formData.append("file", blob, "monFichier.ino");
 
         // Utiliser l'API Fetch pour envoyer le fichier au serveur
-        const response = await fetch(`http://${serverIP}:${portIP}/upload`, {
+        // Déterminer le schéma en fonction de la valeur de serverIP
+          const scheme = serverIP === 'localhost' ? 'http' : 'https';
+
+          const response = await fetch(`${scheme}://${serverIP}:${portIP}/upload`, {
           method: "POST",
           body: formData,
         });
