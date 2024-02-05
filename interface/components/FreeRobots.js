@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const FreeRobots = ({ serverIP, portIP }) => {
+const FreeRobots = ({ serverIP, portIP, onSelectedRobotChange }) => {
   const [robots, setRobots] = useState([]);
   const [selectedRobot, setSelectedRobot] = useState(null);
   const [error, setError] = useState(null);
@@ -36,7 +36,9 @@ const FreeRobots = ({ serverIP, portIP }) => {
     const selectedRobotId = parseInt(event.target.value, 10);
     const selectedRobot = robots.find((robot) => robot.id === selectedRobotId);
     setSelectedRobot(selectedRobot);
-    onRobotSelect(selectedRobot);
+    if (onSelectedRobotChange) {
+      onSelectedRobotChange(selectedRobot);
+    }
   };
 
   return (

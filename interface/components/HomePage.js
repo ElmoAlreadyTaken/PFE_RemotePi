@@ -25,6 +25,11 @@ export default function HomePage(props) {
     // Incrémente la clé de rafraîchissement pour forcer le re-render des composants
     setRefreshKey((prevKey) => prevKey + 1);
   };
+  const handleSelectedRobotChange = (newSelectedRobot) => {
+    setSelectedRobot(newSelectedRobot);
+    // Vous pouvez effectuer d'autres actions en fonction de la nouvelle valeur de selectedRobot
+    console.log("Selected Robot in Parent Component:", newSelectedRobot);
+  };
   var template = `#include <espConfig.h>
 
   void setup() {
@@ -165,9 +170,9 @@ export default function HomePage(props) {
       <div className="freeRobotsContainer flex justify-center items-center">
         <FreeRobots
           key={refreshKey}
-          onRobotSelect={setSelectedRobot}
           serverIP={serverIP}
           portIP={portIP}
+          onSelectedRobotChange={handleSelectedRobotChange}
         />
       </div>
       {!selectedRobot && (
@@ -220,7 +225,7 @@ export default function HomePage(props) {
           setServerIP={setServerIP}
           portIP={portIP}
           setPortIP={setPortIP}
-          robotID={selectedRobot ? selectedRobot.id : null}
+          selectedRobot={selectedRobot}
         />
       </div>
 
