@@ -18,7 +18,7 @@ export default function HomePage(props) {
     // Incrémente la clé de rafraîchissement pour forcer le re-render des composants
     setRefreshKey((prevKey) => prevKey + 1);
   };
-  var template = `#include <espConfig.h>
+  var template = `#include <remotePi.h>
 
   void setup() {
     Serial.begin(115200);
@@ -69,7 +69,7 @@ export default function HomePage(props) {
   useEffect(() => {
     const intervalId = setInterval(() => {
       fetchLogs();
-    }, 1000); // Exécute `fetchLogs` toutes les 1000 millisecondes (1 seconde)
+    }, 100000000000); // Exécute `fetchLogs` toutes les 1000 millisecondes (1 seconde)
 
     return () => clearInterval(intervalId); // Nettoyage de l'intervalle lors du démontage du composant
   }, [serverIP, portIP]); // Les dépendances assurent que l'intervalle est réinitialisé si `serverIP` ou `portIP` changent

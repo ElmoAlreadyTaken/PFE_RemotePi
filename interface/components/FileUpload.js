@@ -1,136 +1,88 @@
 // components/FileUpload.js
 import React, { useState, useRef } from 'react';
+import { Dropzone, FileMosaic } from "@files-ui/react";
 
 export default function FileUpload({ serverIP, setServerIP, portIP, setPortIP }) {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const fileInputRef = useRef(null); // Créez une référence pour l'input de fichier
+  const scheme = serverIP === 'localhost' ? 'http' : 'https';
+  const [files, setFiles] = React.useState([]);
 
-  function handleFileSelection(event) {
-    const file = event.target.files[0];
-    if (!file) return;
+  const updateFiles = (incommingFiles) => {
+    setFiles(incommingFiles);
   
-    // Vérifier l'extension du fichier
-    const fileExtension = file.name.split('.').pop();
-    if (fileExtension.toLowerCase() !== "ino") {
-      alert("Seuls les fichiers .ino sont acceptés.");
-      event.target.value = ''; // Réinitialiser la sélection de fichier
-      return;
-    }
+    incommingFiles.forEach((fileObj) => {
+      // Assurez-vous que fileObj est le File et non un objet personnalisé
+      const file = fileObj.file ? fileObj.file : fileObj;
   
-    setSelectedFile(file); // Stocker le fichier sélectionné
+      const reader = new FileReader();
+      reader.readAsText(file);
+  
+      reader.onload = (e) => {
+        const fileContent = e.target.result;
+  
+        // Votre template
+        const template = `#include <remotePi.h>
+  
+  void setup() {
+    Serial.begin(115200);
+    config.begin();
   }
   
-  async function sendFile() {
-    if (!selectedFile) {
-      alert("Veuillez sélectionner un fichier avant d'envoyer.");
-      return;
-    }
+  void loop() {
+    config.handleClient();
+    MDNS.update();
+  }`;
   
-    // Ici, vous pouvez inclure la logique de vérification du contenu du fichier
-    // ou tout autre prétraitement nécessaire avant l'envoi
+        const lignesTemplate = template.split('\n');
+        const templateEstPresent = lignesTemplate.every(ligne => fileContent.includes(ligne.trim()));
   
-    const formData = new FormData();
-    formData.append("file", selectedFile);
+        if (!templateEstPresent) {
+          alert("Le contenu du fichier doit au moins contenir le template de base.");
+          removeFile(file);
+        }
+      };
   
-    try {
-      // Déterminer le schéma en fonction de la valeur de serverIP
-      const scheme = serverIP === 'localhost' ? 'http' : 'https';
+      reader.onerror = (error) => {
+        console.log("Erreur lors de la lecture du fichier", error);
+      };
+    });
+  };
+  
 
+  const removeFile = (id) => {
+    setFiles(files.filter((x) => x.id !== id));
+   };
+
+  async function customFileSend() {
+    const formData = new FormData();
+    files.forEach((fileObj) => {
+      // Vous devrez peut-être ajuster cette ligne pour accéder correctement à l'objet File, selon la structure des données de fileObj.
+      const file = fileObj.file ? fileObj.file : fileObj; 
+      formData.append("file", file);
+    });
+    formData.append("robotId", "6"); // Ajouter votre robotId ici
+
+    try {
       const response = await fetch(`${scheme}://${serverIP}:${portIP}/upload`, {
         method: "POST",
         body: formData,
-        headers: new Headers({
+        headers: {
           "ngrok-skip-browser-warning": "69420",
-        }),
+        },
       });
-  
+
       if (response.ok) {
-       
         console.log("Fichier envoyé avec succès");
-        // Traitement supplémentaire en cas de succès
+        alert("Votre code a été envoyé !");
+        // Nettoyer l'état et l'UI si nécessaire
+        setFiles([]);
       } else {
         console.log("Échec de l'envoi du fichier");
-        // Gérer les erreurs ici
       }
     } catch (error) {
       console.log("Erreur lors de l'envoi du fichier", error);
-      // Gérer les erreurs réseau ici
     }
-  
-    setSelectedFile(null); // Réinitialiser le fichier sélectionné après l'envoi
-    if (fileInputRef.current) fileInputRef.current.value = '';
-    alert("Votre code à été envoyé !")
   }
   
-  async function handleUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    // Vérifier l'extension du fichier
-  const fileExtension = file.name.split('.').pop();
-  if (fileExtension.toLowerCase() !== "ino") {
-    alert("Seuls les fichiers .ino sont acceptés.");
-    event.target.value = '';
-    return;
-  }
-
-      // Lire le contenu du fichier
-    const reader = new FileReader();
-    reader.readAsText(file);
-
-    reader.onload = async (e) => {
-    const fileContent = e.target.result;
-
-    // Votre template
-    var template = `#include <espConfig.h>
-
-    void setup() {
-      Serial.begin(115200);
-      config.begin();
-    }
-
-    void loop() {
-      config.handleClient();
-      MDNS.update();
-    }`;
-    const lignesTemplate = template.split('\n');
-    const templateEstPresent = lignesTemplate.every(ligne => fileContent.includes(ligne.trim()));
-
-    if (templateEstPresent) {
-      // Créer un objet FormData et y ajouter le fichier
-      const formData = new FormData();
-      formData.append("file", file);
-
-      try {
-        // Utiliser l'API Fetch pour envoyer le fichier au serveur
-        const scheme = serverIP === 'localhost' ? 'http' : 'https';
-
-        const response = await fetch(`${scheme}://${serverIP}:${portIP}/upload`, {
-          method: "POST",
-          body: formData,
-          headers: new Headers({
-            "ngrok-skip-browser-warning": "69420",
-          }),
-        });
-
-        if (response.ok) {
-          console.log("Fichier envoyé avec succès");
-          // Traitement supplémentaire en cas de succès
-        } else {
-          console.log("Échec de l'envoi du fichier");
-          // Gérer les erreurs ici
-        }
-      } catch (error) {
-        console.log("Erreur lors de l'envoi du fichier", error);
-        // Gérer les erreurs réseau ici
-      }
-    }else {
-      alert("Le contenu du fichier doit au moins contenir le template de base.");
-    }
-  }; reader.onerror = (error) => {
-    console.log("Erreur lors de la lecture du fichier", error);
-  };
-  }
 
   // Fonction pour gérer le changement de l'adresse IP du serveur
   const handleServerIPChange = (e) => {
@@ -159,13 +111,29 @@ export default function FileUpload({ serverIP, setServerIP, portIP, setPortIP })
         Server Port:
         <input type="number" value={portIP} onChange={handlePortIPChange} />
       </label>
-      <input
-        type="file"
-        accept=".ino"
-        onChange={handleFileSelection}
-        ref={fileInputRef} // Utilisez la référence ici
-      />
-      <button onClick={sendFile} className="text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Envoyer le fichier</button>
+       <Dropzone
+       label={"Mets ton code ici 🚀"}
+        onChange={updateFiles}
+        value={files}
+        accept={".ino"}
+        maxFiles={1}
+        uploadConfig={{
+            url: `${scheme}://${serverIP}:${portIP}/upload`,
+            method: "POST",
+           headers: new Headers({
+          "ngrok-skip-browser-warning": "69420",
+          extraData :{"robotId":6},
+        }),
+            cleanOnUpload: true,
+         }}
+     >
+       {files.map((file) => (
+           <FileMosaic key={file.id} {...file} onDelete={removeFile} info preview/>
+         ))}
+     </Dropzone>
+     <button onClick={customFileSend} className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Envoyer le fichier
+      </button>
     </div>
   );
 }
