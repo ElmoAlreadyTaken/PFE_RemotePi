@@ -30,7 +30,7 @@ export default function HomePage(props) {
     // Vous pouvez effectuer d'autres actions en fonction de la nouvelle valeur de selectedRobot
     console.log("Selected Robot in Parent Component:", newSelectedRobot);
   };
-  var template = `#include <espConfig.h>
+  var template = `#include <remotePi.h>
 
   void setup() {
     Serial.begin(115200);
@@ -81,7 +81,7 @@ export default function HomePage(props) {
   useEffect(() => {
     const intervalId = setInterval(() => {
       fetchLogs();
-    }, 1000); // Exécute `fetchLogs` toutes les 1000 millisecondes (1 seconde)
+    }, 100000000000); // Exécute `fetchLogs` toutes les 1000 millisecondes (1 seconde)
 
     return () => clearInterval(intervalId); // Nettoyage de l'intervalle lors du démontage du composant
   }, [serverIP, portIP, refreshKey]); // Les dépendances assurent que l'intervalle est réinitialisé si `serverIP` ou `portIP` changent
