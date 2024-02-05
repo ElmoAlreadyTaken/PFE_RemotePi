@@ -12,7 +12,6 @@ export default function Header({ theme, setTheme }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
 
-  
   useEffect(() => {
     const checkSession = async () => {
       const { data: session } = await supabase.auth.getSession();
@@ -61,7 +60,7 @@ export default function Header({ theme, setTheme }) {
                             <Link href="/profile">Profil</Link>
                           </li>
                           <li class="scroll-to-section">
-                            <Link>
+                            <Link href='/'>
                               <button
                                 class="scroll-to-section"
                                 onClick={handleLogout}
@@ -80,12 +79,12 @@ export default function Header({ theme, setTheme }) {
                       )}
 
                       <div class="search-icon">
-                        <Link href="#search">
+                        <Link href="/">
                           <i class="fa fa-search"></i>
                         </Link>
                       </div>
                     </ul>
-                    <Link class="menu-trigger">
+                    <Link href="/" class="menu-trigger">
                       <span>Menu</span>
                     </Link>
                   </nav>
