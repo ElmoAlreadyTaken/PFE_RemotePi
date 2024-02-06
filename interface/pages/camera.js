@@ -1,10 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
-import AceEditor from "react-ace";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
-import FileUpload from "../components/FileUpload";
-import FreeRobots from "../components/FreeRobots";
-import AllRobots from "../components//AllRobots";
+
 
 export default function MainComponent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -37,7 +34,7 @@ export default function MainComponent() {
   };
 
   const handleNextPage = () => {
-    router.push("camera");
+    router.push("/camera")
   };
 
   useEffect(() => {
