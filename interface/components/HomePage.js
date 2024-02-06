@@ -63,10 +63,7 @@ export default function HomePage(props) {
     setRefreshKey((prevKey) => prevKey + 1);
   };
 
-  const handleSelectedRobotChange = (newSelectedRobot) => {
-    setSelectedRobot(newSelectedRobot);
-    // Vous pouvez effectuer d'autres actions en fonction de la nouvelle valeur de selectedRobot
-  };
+  
   var template = `#include <remotePi.h>
   remotePi config;
   void setup() {
@@ -85,6 +82,10 @@ export default function HomePage(props) {
   const [boutonTexte, setBoutonTexte] = useState("Téléverser");
   const [isAllRobotsVisible, setAllRobotsVisibility] = useState(false);
 
+  const handleSelectedRobotChange = (newSelectedRobot) => {
+    console.log(newSelectedRobot);
+    setSelectedRobot(newSelectedRobot);
+  };
   const fetchLogs = async () => {
     try {
       if (!baseURLServer || !serverPort) return;
@@ -109,9 +110,6 @@ export default function HomePage(props) {
     }
   };
 
-  const clearLogs = () => {
-    setLogList([]);
-  };
   const toggleAllRobotsVisibility = () => {
     setAllRobotsVisibility(!isAllRobotsVisible);
   };
@@ -133,7 +131,7 @@ export default function HomePage(props) {
       );
       setBoutonTexte("Doit contenir le template et sélectionner un robot");
     }
-  }, [editorContent]);
+  }, [editorContent,selectedRobot]);
 
   const verifierContenu = async () => {
     // Diviser le template en lignes ou en éléments clés
@@ -144,7 +142,6 @@ export default function HomePage(props) {
     );
     if (templateEstPresent) {
       alert("La configuration ESP est présente dans le contenu.");
-      console.log("ip : ", serverIp, "port :", serverPort);
       try {
         // Créer un Blob avec le contenu de l'éditeur
         const blob = new Blob([editorContent], { type: "text/plain" });
