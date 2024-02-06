@@ -63,9 +63,6 @@ export default function HomePage(props) {
     setRefreshKey((prevKey) => prevKey + 1);
   };
 
-  const handleSelectedRobotChange = (newSelectedRobot) => {
-    setSelectedRobot(newSelectedRobot);
-  };
   var template = `#include <remotePi.h>
   remotePi config;
   void setup() {
