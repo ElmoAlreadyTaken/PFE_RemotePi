@@ -1,16 +1,29 @@
 // components/FileUpload.js
-import React, { useState, useRef } from "react";
+import React, { useState,useEffect, useRef } from "react";
 import { Dropzone, FileMosaic } from "@files-ui/react";
+import { supabase } from "../lib/supabase";
 
-export default function FileUpload({
-  serverIp,
-  setServerIp,
-  serverPort,
-  setServerPort,
-  selectedRobot,
-}) {
-  const scheme = serverIp === "localhost" ? "http" : "https";
+export default function FileUpload({selectedRobot,}) {
+  
   const [files, setFiles] = React.useState([]);
+  const [baseURLServer, setbaseURLServer] = useState('');
+  const [serverPort, setServerPort] = useState('');
+  const [cameraPort, setCameraPort] = useState('');
+  const [baseURLCamera, setbaseURLCamera] = useState('');
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      const { data, error } = await supabase.from('server_configurations').select('*').single();
+      if (data) {
+        setbaseURLServer(data.baseURLServer); 
+        setbaseURLCamera(data.baseURLCamera);
+        setServerPort(data.serverPort);
+        setCameraPort(data.cameraPort);
+      }
+    };
+
+    fetchConfig();
+  }, []);
 
   const updateFiles = (incommingFiles) => {
     setFiles(incommingFiles);
@@ -27,7 +40,7 @@ export default function FileUpload({
 
         // Votre template
         const template = `#include <remotePi.h>
-
+        remotePi config;
         void setup() {
           Serial.begin(115200);
           config.begin();
@@ -35,9 +48,7 @@ export default function FileUpload({
       
         void loop() {
           config.handleClient();
-          MDNS.update();
-        }
-  `;
+        }`;
 
         const lignesTemplate = template.split("\n");
         const templateEstPresent = lignesTemplate.every((ligne) =>
@@ -72,7 +83,8 @@ export default function FileUpload({
     formData.append("robotId", selectedRobot.id);
 
     try {
-      const response = await fetch(`${scheme}://${serverIp}:${serverPort}/upload`, {
+      if (!baseURLServer || !serverPort) return;
+      const response = await fetch(`${baseURLServer}:${serverPort}/upload`, {
         method: "POST",
         body: formData,
         headers: {
@@ -93,38 +105,8 @@ export default function FileUpload({
     }
   }
 
-  // Fonction pour gérer le changement de l'adresse IP du serveur
-  const handleServerIPChange = (e) => {
-    setServerIp(e.target.value);
-    let ip = e.target.value;
-    // Vérifier si la chaîne se termine par un slash et le supprimer
-    if (ip.endsWith("/")) {
-      ip = ip.slice(0, -1);
-    }
-    setServerIp(ip);
-  };
-
-  // Fonction pour gérer le changement du port du serveur
-  const handlePortIPChange = (e) => {
-    setServerPort(e.target.value);
-  };
-
   return (
     <div>
-      <label>
-        Server IP:
-        <input type="text" value={serverIp} onChange={handleServerIPChange} />
-      </label>
-      <label>
-        Server Port:
-        <input type="number" value={serverPort} onChange={handlePortIPChange} />
-      </label>
-      {!selectedRobot && (
-      <div style={{ textAlign: "center", marginTop: "10px" }}>
-        Sélectionnez un robot pour activer le téléchargement.
-      </div>
-    )}
-
       <div
         style={{
           pointerEvents: selectedRobot ? "auto" : "none", // Désactive les événements de pointeur si selectedRobot est null
@@ -138,7 +120,7 @@ export default function FileUpload({
           accept={".ino"}
           maxFiles={1}
           uploadConfig={{
-            url: `${scheme}://${serverIp}:${serverPort}/upload`,
+            url: `${baseURLServer}:${serverPort}/upload`,
             method: "POST",
             headers: new Headers({
               "ngrok-skip-browser-warning": "69420",

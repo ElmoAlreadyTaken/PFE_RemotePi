@@ -14,6 +14,30 @@ export default function HomePage(props) {
   const [errorMessage, setErrorMessage] = useState("");
   const [logList, setLogList] = useState([]);
   const [blink, setBlink] = useState(false);
+  
+  const [serverIp, setServerIp] = useState("localhost"); // Nouvelle adresse IP du serveur
+  const [serverPort, setServerPort] = useState('');
+  const [cameraPort, setCameraPort] = useState('');
+  const [camStreamOn, setCamStreamOn] = useState(false);
+  const [streamURL, setStreamURL] = useState(''); // Initial URL or default value
+  const [baseURLServer, setbaseURLServer] = useState('');
+  const [baseURLCamera, setbaseURLCamera] = useState('');
+  
+  const streamURLRef = useRef(streamURL);
+    
+  useEffect(() => {
+    const fetchConfig = async () => {
+      const { data, error } = await supabase.from('server_configurations').select('*').single();
+      if (data) {
+        setbaseURLServer(data.baseURLServer); 
+        setbaseURLCamera(data.baseURLCamera);
+        setServerPort(data.serverPort);
+        setCameraPort(data.cameraPort);
+      }
+    };
+
+    fetchConfig();
+  }, []);
   const refreshComponents = () => {
     // Activer le clignotement
     setBlink(true);
@@ -32,7 +56,7 @@ export default function HomePage(props) {
     console.log("Selected Robot in Parent Component:", newSelectedRobot);
   };
   var template = `#include <remotePi.h>
-
+  remotePi config;
   void setup() {
     Serial.begin(115200);
     config.begin();
@@ -40,7 +64,6 @@ export default function HomePage(props) {
 
   void loop() {
     config.handleClient();
-    MDNS.update();
   }`;
   const [editorContent, setEditorContent] = useState(template);
   const [boutonStyle, setBoutonStyle] = useState(
@@ -48,39 +71,24 @@ export default function HomePage(props) {
   );
   const [selectedRobot, setSelectedRobot] = useState(null);
   const [boutonTexte, setBoutonTexte] = useState("Téléverser");
-  const [serverIp, setServerIp] = useState("localhost"); // Nouvelle adresse IP du serveur
-  const [serverPort, setServerPort] = useState(5000); // Nouveau port
-  const [cameraPort, setCameraPort] = useState(443); // Port stream camera
-  const [camStreamOn, setCamStreamOn] = useState(false);
-  const [streamURL, setStreamURL] = useState(`http://${serverIp}:${cameraPort}/cam`); // Initial URL or default value
   const [isAllRobotsVisible, setAllRobotsVisibility] = useState(false);
 
-  const serverIpRef = useRef(serverIp);
-  const serverPortRef = useRef(serverPort);
-  const cameraPortRef = useRef(cameraPort);
-  const streamURLRef = useRef(streamURL);
-  
   const fetchLogs = async () => {
     try {
-      // Déterminer le schéma en fonction de la valeur de serverIp
-      const scheme = serverIp === "localhost" ? "http" : "https";
-
-      // Utiliser le schéma déterminé dans l'URL
-      const response = await fetch(
-        `${scheme}://${serverIp}:${serverPort}/log`,
-        {
-          method: "GET",
-          headers: new Headers({
-            "ngrok-skip-browser-warning": "69420",
-          }),
-        }
-      );
+      if (!baseURLServer || !serverPort) return;
+  
+        const response = await fetch(
+          `${baseURLServer}:${serverPort}/log`, {
+        method: "GET",
+        headers: new Headers({
+          "ngrok-skip-browser-warning": "69420",
+        }),
+      });
       if (!response.ok) {
         throw new Error("Serveur indisponible"); // Peut indiquer une erreur 4XX/5XX
       }
       const log = await response.json();
       const newLogList = Array.isArray(log) ? log : [log];
-      console.log("log :", log);
       setLogList((prevLogList) => [...prevLogList, ...newLogList]);
       setErrorMessage(""); // Réinitialiser le message d'erreur en cas de succès
     } catch (error) {
@@ -134,11 +142,11 @@ export default function HomePage(props) {
         formData.append("file", blob, "monFichier.ino");
 
         // Utiliser l'API Fetch pour envoyer le fichier au serveur
-        // Déterminer le schéma en fonction de la valeur de serverIp
-        const scheme = serverIp === "localhost" ? "http" : "https";
-
+        // Déterminer le schéma en fonction de la valeur de serverIP
+        if (!baseURLServer || !serverPort) return;
+  
         const response = await fetch(
-          `${scheme}://${serverIp}:${serverPort}/upload`,
+          `${baseURLServer}:${serverPort}/upload`,
           {
             method: "POST",
             body: formData,
@@ -168,10 +176,6 @@ export default function HomePage(props) {
   };
   
   const checkStream = () => {
-    // const scheme = serverIp === "localhost" ? "http" : "https";
-    //const scheme = "http";
-    //const newURL = `${scheme}://${serverIp}:${cameraPort}/cam/`;
-    
     console.log("[+] Checking the camera stream on :", streamURLRef.current);
 
     // Start fetching the stream with the updated streamURL
@@ -183,28 +187,22 @@ export default function HomePage(props) {
       .then((response) => {
         if (response.status === 200 || response.status === 204) {
           setCamStreamOn(true);
-          console.log("CAMERA STREAM IS ON !!");
+          console.log("[+] CAMERA STREAM IS ON !!");
           console.log("Response Status :", response.status, response.statusText);
         } else {
-          console.log("ERROR Status :", response.status, response.statusText);
+          console.log("[-] ERROR Status :", response.status, response.statusText);
           throw new Error("Stream not available");
         }
       })
       .catch(() => {
-        console.log("Error : no camera stream available");
+        console.log("[-] Error : no camera stream available");
         setCamStreamOn(false);
       });
   };
 
   useEffect(() => {
-    serverIpRef.current = serverIp;
-    cameraPortRef.current = cameraPort;
-    serverPortRef.current = serverPort;
-
-    const scheme = serverIp === "localhost" ? "http" : "https";
-    
-    streamURLRef.current = `${scheme}://${serverIp}:${cameraPort}/cam`;
-  }, [serverIp, serverPort, cameraPort]); // Update refs when state changes
+    streamURLRef.current = `${baseURLCamera}:${cameraPort}/cam/`;
+  }, [cameraPort, baseURLCamera]); // Update refs when state changes
   
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -225,7 +223,7 @@ export default function HomePage(props) {
       console.log("Cleaning up the camera stream check...");
       clearInterval(intervalId);
     };
-  }, []); // Needed to re-run the effect when the server IP or port changes
+  }, [baseURLCamera, cameraPort]); // Needed to re-run the effect when the server IP or port changes
 
   return (
     <div className="">

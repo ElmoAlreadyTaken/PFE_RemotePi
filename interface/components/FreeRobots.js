@@ -1,19 +1,37 @@
 import React, { useState, useEffect } from "react";
+import { supabase } from "../lib/supabase";
 
-const FreeRobots = ({ serverIp, serverPort, onSelectedRobotChange }) => {
+const FreeRobots = ({onSelectedRobotChange }) => {
   const [robots, setRobots] = useState([]);
   const [selectedRobot, setSelectedRobot] = useState(null);
   const [error, setError] = useState(null);
+  const [baseURLServer, setbaseURLServer] = useState('');
+  const [baseURLCamera, setbaseURLCamera] = useState('');
+  const [serverPort, setServerPort] = useState('');
+  const [cameraPort, setCameraPort] = useState('');
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      const { data, error } = await supabase.from('server_configurations').select('*').single();
+      if (data) {
+        setbaseURLServer(data.baseURLServer); 
+        setbaseURLCamera(data.baseURLCamera)
+        setServerPort(data.serverPort);
+        setCameraPort(data.cameraPort);
+      }
+    };
+
+    fetchConfig();
+  }, []);
 
   useEffect(() => {
     const fetchFreeRobots = async () => {
       try {
-        // Déterminer le schéma en fonction de la valeur de serverIp
-        const scheme = serverIp === "localhost" ? "http" : "https";
-
-        // Utiliser le schéma déterminé dans l'URL
+        // Assurez-vous que baseURLServer et serverPort ne sont pas vides
+        if (!baseURLServer || !serverPort) return;
+  
         const response = await fetch(
-          `${scheme}://${serverIp}:${serverPort}/robots/free`,
+          `${baseURLServer}:${serverPort}/robots/free`, // Assurez-vous d'inclure le ":" pour séparer le port
           {
             method: "GET",
             headers: new Headers({
@@ -21,16 +39,16 @@ const FreeRobots = ({ serverIp, serverPort, onSelectedRobotChange }) => {
             }),
           }
         );
-
+  
         const data = await response.json();
         setRobots(data);
       } catch (error) {
         setError("Erreur lors de la récupération des robots.");
       }
     };
-
+  
     fetchFreeRobots();
-  }, []);
+  }, [baseURLServer, serverPort, cameraPort]);  
 
   const handleRobotSelection = (event) => {
     const selectedRobotId = parseInt(event.target.value, 10);

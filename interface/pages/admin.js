@@ -5,7 +5,8 @@
 
   export default function AdminPage() {
     const [userList, setUserList] = useState([]);
-    const [BaseURL, setBaseURL] = useState('');
+    const [baseURLServer, setbaseURLServer] = useState('');
+    const [baseURLCamera, setbaseURLCamera] = useState('');
     const [CameraPort, setCameraPort] = useState('');
     const [ServerPort, setServerPort] = useState('');
 
@@ -22,8 +23,6 @@
           .from('user_profiles')
           .select()
           .eq("user_id", (await user).data.user.id);
-
-      console.log("user",data);
       if (error) {
           console.error('Erreur lors de la récupération des utilisateurs:', error);
           }
@@ -73,7 +72,7 @@
     const updateServerConfig = async () => {
       const { data, error } = await supabase
         .from('server_configurations')
-        .update({ baseURL: BaseURL, serverPort: ServerPort, cameraPort:CameraPort })
+        .update({ baseURLServer: baseURLServer, serverPort: ServerPort, cameraPort:CameraPort, baseURLCamera : baseURLCamera })
         .eq('id', idUnique);
     
       if (error) {
@@ -93,7 +92,8 @@
         if (error) {
           console.error('Erreur lors de la récupération des configurations:', error);
         } else if (data) {
-          setBaseURL(data.baseURL);
+          setbaseURLServer(data.baseURLServer);
+          setbaseURLCamera(data.baseURLCamera);
           setServerPort(data.serverPort); // Assurez-vous que ces noms de propriétés correspondent
           setCameraPort(data.cameraPort); // à ceux de votre table dans Supabase
         }
@@ -152,18 +152,28 @@
         </div>
         <div>
           <h2>Modifier IP Serveur et Port</h2>
+          <label>URL du site : </label>
           <input
             type="text"
             placeholder="Server IP"
-            value={BaseURL}
-            onChange={(e) => setBaseURL(e.target.value)}
+            value={baseURLServer}
+            onChange={(e) => setbaseURLServer(e.target.value)}
           />
+          <label>Port du serveur : </label>
           <input
             type="text"
             placeholder="Serveur Port"
             value={ServerPort}
             onChange={(e) => setServerPort(e.target.value)}
           />
+          <label>URL de la camera : </label>
+          <input
+            type="text"
+            placeholder="Camera URL"
+            value={baseURLCamera}
+            onChange={(e) => setbaseURLCamera(e.target.value)}
+          />
+          <label>port caméra : </label>
           <input
             type="text"
             placeholder="Camara Port"

@@ -43,11 +43,8 @@ export default function Profile() {
             .select("*")
             .eq("user_id", user.user.id)
             .single();
-          console.log("request : ", profileData);
-          console.log("user : ", user);
           if (profileError) throw profileError;
           const userData = { ...profileData, ...user };
-          console.log("userData : ", userData);
           setUserProfile(userData);
         } else {
           router.push("/"); // Redirect to index if not logged in
