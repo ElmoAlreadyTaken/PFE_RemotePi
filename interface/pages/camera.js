@@ -23,7 +23,7 @@ export default function MainComponent() {
   };
 
   const handleNextPage = () => {
-    router.push("camera")
+    router.push("/camera")
   };
     return (
         <>
