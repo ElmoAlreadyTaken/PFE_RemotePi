@@ -3,8 +3,8 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
-import { supabase } from "../lib/supabase"; // Assurez-vous que le chemin est correct
-import styles from "../app/globals.css"; // Utilisez vos styles globaux ou CSS module
+import { supabase } from "../lib/supabase"; 
+import styles from "../app/globals.css"; 
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -29,14 +29,14 @@ export default function Login() {
       setError(error.message);
       setLoading(false);
     } else {
-      router.push("/"); // Redirect to index
+      router.push("/");
     }
   };
   const handleResetPassword = async () => {
     try {
       setLoading(true);
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://pfe-remote-pi.vercel.app/update-password", // URL de redirection après la réinitialisation
+        redirectTo: "https://pfe-remote-pi.vercel.app/update-password", 
       });
 
       if (error) {

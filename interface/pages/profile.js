@@ -32,12 +32,11 @@ export default function Profile() {
       try {
         setLoading(true);
 
-        // Fetch the current user
         const { data: user, error: userError } = await supabase.auth.getUser();
         if (userError) throw userError;
 
         if (user) {
-          // Fetch user profile data
+        
           const { data: profileData, error: profileError } = await supabase
             .from("user_profiles")
             .select("*")
@@ -47,7 +46,7 @@ export default function Profile() {
           const userData = { ...profileData, ...user };
           setUserProfile(userData);
         } else {
-          router.push("/"); // Redirect to index if not logged in
+          router.push("/"); 
         }
       } catch (error) {
         console.error("Error fetching profile:", error.message);
@@ -57,7 +56,7 @@ export default function Profile() {
     };
 
     fetchProfile();
-  }, []); // Dependencies array is empty as we want this to run only once on component mount
+  }, []); 
 
   return (
     <div className={styles.profileContainer}>

@@ -1,5 +1,3 @@
-// AllRobots.js
-
 import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 
@@ -20,15 +18,15 @@ const AllRobots = () => {
         setbaseURLCamera(data.baseURLCamera);
         setServerPort(data.serverPort);
         setCameraPort(data.cameraPort);
-        setConfigLoaded(true); // Indiquez que la configuration est chargée
+        setConfigLoaded(true);
       }
     };
   
     fetchConfig();
-  }, []); // Ce useEffect ne devrait être exécuté qu'une seule fois au montage du composant
+  }, []); 
   
   useEffect(() => {
-    if (configLoaded) { // Exécutez `fetchAllRobots` uniquement si la configuration est chargée
+    if (configLoaded) { 
       const fetchAllRobots = async () => {
         try {
           const response = await fetch(
@@ -50,7 +48,7 @@ const AllRobots = () => {
   
       fetchAllRobots();
     }
-  }, [configLoaded, baseURLServer, serverPort]); // Dépendez de `configLoaded` pour contrôler l'exécution
+  }, [configLoaded, baseURLServer, serverPort]); 
   
 
   return (
