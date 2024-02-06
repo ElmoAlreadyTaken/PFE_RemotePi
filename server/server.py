@@ -222,7 +222,7 @@ def is_valid_file(filename):
     allowed_extensions = {'py', 'java', 'cpp', 'c', 'ino', 'bin'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
-def init_hook(ip, filename):
+def init_hook(ip, filename, branch):
     if not os.path.exists('post-update.template'):
         return False
     if not os.path.exists('LocalPiServer/.git/hooks'):
@@ -233,7 +233,7 @@ def init_hook(ip, filename):
         hook_template = f.read()
     
     with open('LocalPiServer/.git/hooks/post-update', 'w') as f:
-        f.write(hook_template.format(esp_ip=ip, filename=filename))
+        f.write(hook_template.format(esp_ip=ip, filename=filename, branch=branch))
     
     print('[+] post-update hook initialized with robot IP :', ip)
 
@@ -308,6 +308,12 @@ def upload_file():
     if os.path.exists('./LocalPiServer'):
         shutil.rmtree('./LocalPiServer', ignore_errors=True)
 
+    # Init hook template with robot IP, filename, and branch
+    res = init_hook(robotIp, filename, branch)
+    if not res:
+        print('[-] Error initializing the post-update hook')
+        return Response('Error initializing the post-update hook', 400)
+    
     # Git clone the 'remote' repo to 'LocalPiServer'
     subprocess.run(['git', 'clone', './RemotePiServer', 'LocalPiServer'], check=True)
     
