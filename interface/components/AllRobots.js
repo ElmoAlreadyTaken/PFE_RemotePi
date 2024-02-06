@@ -1,20 +1,33 @@
 // AllRobots.js
 
 import React, { useState, useEffect } from "react";
+import { supabase } from "../lib/supabase";
 
-const AllRobots = ({ serverIP, portIP }) => {
+const AllRobots = () => {
   const [robots, setRobots] = useState([]);
   const [error, setError] = useState(null);
+  const [baseURL, setBaseURL] = useState('');
+  const [serverPort, setServerPort] = useState('');
+  const [cameraPort, setCameraPort] = useState('');
 
+  useEffect(() => {
+    const fetchConfig = async () => {
+      const { data, error } = await supabase.from('server_configurations').select('*').single();
+      if (data) {
+        setBaseURL(data.baseURL); // Assurez-vous que le nom du champ correspond à votre base de données
+        setServerPort(data.serverPort);
+        setCameraPort(data.cameraPort);
+      }
+    };
+
+    fetchConfig();
+  }, []);
   useEffect(() => {
     const fetchAllRobots = async () => {
       try {
-        // Déterminer le schéma en fonction de la valeur de serverIP
-        const scheme = serverIP === "localhost" ? "http" : "https";
-
-        // Utiliser le schéma déterminé dans l'URL
+        
         const response = await fetch(
-          `${scheme}://${serverIP}:${portIP}/robots`,
+          `${baseURL}:${serverPort}/robots`,
           {
             method: "GET",
             headers: new Headers({
@@ -36,7 +49,7 @@ const AllRobots = ({ serverIP, portIP }) => {
   return (
     <div>
       {error && <p style={{ color: "red" }}>{error}</p>}
-
+      
       <ul>
         {robots.map((robot) => (
           <li key={robot.id}>

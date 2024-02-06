@@ -1,16 +1,27 @@
 // components/FileUpload.js
-import React, { useState, useRef } from "react";
+import React, { useState,useEffect, useRef } from "react";
 import { Dropzone, FileMosaic } from "@files-ui/react";
+import { supabase } from "../lib/supabase";
 
-export default function FileUpload({
-  serverIP,
-  setServerIP,
-  portIP,
-  setPortIP,
-  selectedRobot,
-}) {
-  const scheme = serverIP === "localhost" ? "http" : "https";
+export default function FileUpload({selectedRobot,}) {
+  
   const [files, setFiles] = React.useState([]);
+  const [baseURL, setBaseURL] = useState('');
+  const [serverPort, setServerPort] = useState('');
+  const [cameraPort, setCameraPort] = useState('');
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      const { data, error } = await supabase.from('server_configurations').select('*').single();
+      if (data) {
+        setBaseURL(data.baseURL); // Assurez-vous que le nom du champ correspond à votre base de données
+        setServerPort(data.serverPort);
+        setCameraPort(data.cameraPort);
+      }
+    };
+
+    fetchConfig();
+  }, []);
 
   const updateFiles = (incommingFiles) => {
     setFiles(incommingFiles);
@@ -72,7 +83,8 @@ export default function FileUpload({
     formData.append("robotId", selectedRobot.id);
 
     try {
-      const response = await fetch(`${scheme}://${serverIP}:${portIP}/upload`, {
+      if (!baseURL || !serverPort) return;
+      const response = await fetch(`${baseURL}:${serverPort}/upload`, {
         method: "POST",
         body: formData,
         headers: {
@@ -93,38 +105,8 @@ export default function FileUpload({
     }
   }
 
-  // Fonction pour gérer le changement de l'adresse IP du serveur
-  const handleServerIPChange = (e) => {
-    setServerIP(e.target.value);
-    let ip = e.target.value;
-    // Vérifier si la chaîne se termine par un slash et le supprimer
-    if (ip.endsWith("/")) {
-      ip = ip.slice(0, -1);
-    }
-    setServerIP(ip);
-  };
-
-  // Fonction pour gérer le changement du port du serveur
-  const handlePortIPChange = (e) => {
-    setPortIP(e.target.value);
-  };
-
   return (
     <div>
-      <label>
-        Server IP:
-        <input type="text" value={serverIP} onChange={handleServerIPChange} />
-      </label>
-      <label>
-        Server Port:
-        <input type="number" value={portIP} onChange={handlePortIPChange} />
-      </label>
-      {!selectedRobot && (
-      <div style={{ textAlign: "center", marginTop: "10px" }}>
-        Sélectionnez un robot pour activer le téléchargement.
-      </div>
-    )}
-
       <div
         style={{
           pointerEvents: selectedRobot ? "auto" : "none", // Désactive les événements de pointeur si selectedRobot est null
@@ -138,7 +120,7 @@ export default function FileUpload({
           accept={".ino"}
           maxFiles={1}
           uploadConfig={{
-            url: `${scheme}://${serverIP}:${portIP}/upload`,
+            url: `${baseURL}:${serverPort}/upload`,
             method: "POST",
             headers: new Headers({
               "ngrok-skip-browser-warning": "69420",
