@@ -25,7 +25,7 @@ export default function HomePage(props) {
     // Incrémente la clé de rafraîchissement pour forcer le re-render des composants
     setRefreshKey((prevKey) => prevKey + 1);
   };
-  
+
   const handleSelectedRobotChange = (newSelectedRobot) => {
     setSelectedRobot(newSelectedRobot);
     // Vous pouvez effectuer d'autres actions en fonction de la nouvelle valeur de selectedRobot
@@ -167,51 +167,58 @@ export default function HomePage(props) {
   return (
     <div className="">
       <br></br>
-      <div className="freeRobotsContainer flex justify-center items-center">
-        <FreeRobots
-          key={refreshKey}
-          serverIP={serverIP}
-          portIP={portIP}
-          onSelectedRobotChange={handleSelectedRobotChange}
-        />
-      </div>
-      {!selectedRobot && (
-        <p
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <div
+          className="freeRobotsContainer"
           style={{
-            color: "red",
-            marginLeft: "1300px",
-            position: "absolute",
-            marginTop: "0px",
+            display: "flex",
+            justifyContent: "flex-start",
+            marginLeft: "400px",marginTop: "50px",
           }}
         >
-          Veuillez sélectionner un robot.
-        </p>
-      )}
-      <img
-        src="refresh-icon.png"
-        alt="Refresh Icon"
-        onClick={refreshComponents}
-        style={{
-          marginLeft: "1200px",
-          marginTop: "-25px",
-          cursor: "pointer",
-          position: "absolute",
-          width: "35px",
-          height: "35px",
-          animation: blink ? "blink 1s" : "none", // Appliquer l'animation si le clignotement est activé
-        }}
-      />
+          <FreeRobots
+            key={refreshKey}
+            serverIP={serverIP}
+            portIP={portIP}
+            onSelectedRobotChange={handleSelectedRobotChange}
+          />
+        </div>
+        <img
+          src="refresh-icon.png"
+          alt="Refresh Icon"
+          onClick={refreshComponents}
+          style={{
+            display: "flex",
+            justifyContent: "flex-start",
+            marginLeft: "30px",
+            cursor: "pointer",
+            width: "35px",
+            height: "35px",
+            animation: blink ? "blink 1s" : "none", // Appliquer l'animation si le clignotement est activé
+          }}
+        />{" "}
+      </div>
       <div>
         <button
           onClick={toggleAllRobotsVisibility}
           style={{
-            marginLeft: "875px",
+            display: "flex",
+            justifyContent: "flex-start",
+            marginLeft: "500px",
           }}
         >
           {isAllRobotsVisible ? "Masquer les robots" : "Afficher les robots"}
         </button>
         {isAllRobotsVisible && (
-          <div className="AllRobotsContainer flex justify-center items-center ">
+          <div
+            className="AllRobotsContainer "
+            style={{
+              display: "flex",
+              justifyContent: "flex-start",
+              marginLeft: "20px",
+              marginTop: "5px",
+            }}
+          >
             <br></br>
             <AllRobots serverIP={serverIP} portIP={portIP} />
           </div>
@@ -219,7 +226,15 @@ export default function HomePage(props) {
       </div>
 
       <br></br>
-      <div className="fileUploadContainer flex justify-center items-center">
+      <div
+        className="fileUploadContainer"
+        style={{
+          display: "flex",
+          justifyContent: "flex-start",
+          marginLeft: "1000px",
+          marginTop: "-75px",
+        }}
+      >
         <FileUpload
           serverIP={serverIP}
           setServerIP={setServerIP}
@@ -233,7 +248,7 @@ export default function HomePage(props) {
       <div className="flex ">
         <div className="streamContainer  ml-1">
           <iframe
-            src="" //"https://player.twitch.tv/?channel=otplol_&parent=localhost"
+            src="https://player.twitch.tv/?channel=otplol_&parent=localhost"
             height="720"
             width="1280"
             frameBorder="0"

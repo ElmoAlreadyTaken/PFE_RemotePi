@@ -96,7 +96,7 @@ export default function MainComponent() {
                         width={100}
                         height={100}
                       />
-                      <h4>Sécurisé</h4>
+                      <h4>Innovant</h4>
                     </div>
                   </div>
 

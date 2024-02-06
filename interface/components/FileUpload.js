@@ -111,19 +111,21 @@ export default function FileUpload({
 
   return (
     <div>
-      <label>
-        Server IP:
-        <input type="text" value={serverIP} onChange={handleServerIPChange} />
-      </label>
-      <label>
-        Server Port:
-        <input type="number" value={portIP} onChange={handlePortIPChange} />
-      </label>
-      {!selectedRobot && (
-      <div style={{ textAlign: "center", marginTop: "10px" }}>
-        Sélectionnez un robot pour activer le téléchargement.
+      <div style={{ textAlign: "center", marginLeft: "100px" }}>
+        <label>
+          Server IP:
+          <input type="text" value={serverIP} onChange={handleServerIPChange} />
+        </label>
+        <label>
+          Server Port:
+          <input type="number" value={portIP} onChange={handlePortIPChange} />
+        </label>
       </div>
-    )}
+      {!selectedRobot && (
+        <div style={{ textAlign: "center", marginTop: "10px", color: "red" }}>
+          Veuillez sélectionnez un robot avant de téléverser.
+        </div>
+      )}
 
       <div
         style={{
@@ -148,7 +150,13 @@ export default function FileUpload({
           }}
         >
           {files.map((file) => (
-            <FileMosaic key={file.id} {...file} onDelete={removeFile} info preview />
+            <FileMosaic
+              key={file.id}
+              {...file}
+              onDelete={removeFile}
+              info
+              preview
+            />
           ))}
         </Dropzone>
       </div>
