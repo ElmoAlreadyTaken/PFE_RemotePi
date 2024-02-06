@@ -5,9 +5,10 @@ import { supabase } from "../lib/supabase";
 
 export default function FileUpload({ selectedRobot }) {
   const [files, setFiles] = React.useState([]);
-  const [baseURL, setBaseURL] = useState("");
-  const [serverPort, setServerPort] = useState("");
-  const [cameraPort, setCameraPort] = useState("");
+  const [baseURLServer, setbaseURLServer] = useState('');
+  const [serverPort, setServerPort] = useState('');
+  const [cameraPort, setCameraPort] = useState('');
+  const [baseURLCamera, setbaseURLCamera] = useState('');
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -16,7 +17,8 @@ export default function FileUpload({ selectedRobot }) {
         .select("*")
         .single();
       if (data) {
-        setBaseURL(data.baseURL); // Assurez-vous que le nom du champ correspond à votre base de données
+        setbaseURLServer(data.baseURLServer); 
+        setbaseURLCamera(data.baseURLCamera);
         setServerPort(data.serverPort);
         setCameraPort(data.cameraPort);
       }
@@ -83,8 +85,8 @@ export default function FileUpload({ selectedRobot }) {
     formData.append("robotId", selectedRobot.id);
 
     try {
-      if (!baseURL || !serverPort) return;
-      const response = await fetch(`${baseURL}:${serverPort}/upload`, {
+      if (!baseURLServer || !serverPort) return;
+      const response = await fetch(`${baseURLServer}:${serverPort}/upload`, {
         method: "POST",
         body: formData,
         headers: {
@@ -120,7 +122,7 @@ export default function FileUpload({ selectedRobot }) {
           accept={".ino"}
           maxFiles={1}
           uploadConfig={{
-            url: `${baseURL}:${serverPort}/upload`,
+            url: `${baseURLServer}:${serverPort}/upload`,
             method: "POST",
             headers: new Headers({
               "ngrok-skip-browser-warning": "69420",
@@ -143,7 +145,7 @@ export default function FileUpload({ selectedRobot }) {
 
       <button
         onClick={customFileSend}
-        className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        className="px-4 py-2 mt-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
       >
         Envoyer le fichier
       </button>

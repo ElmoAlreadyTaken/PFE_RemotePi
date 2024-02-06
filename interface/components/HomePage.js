@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import AceEditor from "react-ace";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
@@ -14,10 +14,17 @@ export default function HomePage(props) {
   const [errorMessage, setErrorMessage] = useState("");
   const [logList, setLogList] = useState([]);
   const [blink, setBlink] = useState(false);
-  const [baseURL, setBaseURL] = useState("");
-  const [serverPort, setServerPort] = useState("");
-  const [cameraPort, setCameraPort] = useState("");
-
+  
+  const [serverIp, setServerIp] = useState("localhost"); // Nouvelle adresse IP du serveur
+  const [serverPort, setServerPort] = useState('');
+  const [cameraPort, setCameraPort] = useState('');
+  const [camStreamOn, setCamStreamOn] = useState(false);
+  const [streamURL, setStreamURL] = useState(''); // Initial URL or default value
+  const [baseURLServer, setbaseURLServer] = useState('');
+  const [baseURLCamera, setbaseURLCamera] = useState('');
+  
+  const streamURLRef = useRef(streamURL);
+    
   useEffect(() => {
     const fetchConfig = async () => {
       const { data, error } = await supabase
@@ -25,7 +32,8 @@ export default function HomePage(props) {
         .select("*")
         .single();
       if (data) {
-        setBaseURL(data.baseURL); // Assurez-vous que le nom du champ correspond à votre base de données
+        setbaseURLServer(data.baseURLServer); 
+        setbaseURLCamera(data.baseURLCamera);
         setServerPort(data.serverPort);
         setCameraPort(data.cameraPort);
       }
@@ -66,15 +74,14 @@ export default function HomePage(props) {
   );
   const [selectedRobot, setSelectedRobot] = useState(null);
   const [boutonTexte, setBoutonTexte] = useState("Téléverser");
-  const [serverIP, setServerIP] = useState("4.tcp.eu.ngrok.io"); // Nouvelle adresse IP du serveur
-  const [portIP, setPortIP] = useState(17707); // Nouveau port
   const [isAllRobotsVisible, setAllRobotsVisibility] = useState(false);
 
   const fetchLogs = async () => {
     try {
-      if (!baseURL || !serverPort) return;
-
-      const response = await fetch(`${baseURL}:${serverPort}/log`, {
+      if (!baseURLServer || !serverPort) return;
+  
+        const response = await fetch(
+          `${baseURLServer}:${serverPort}/log`, {
         method: "GET",
         headers: new Headers({
           "ngrok-skip-browser-warning": "69420",
@@ -92,14 +99,6 @@ export default function HomePage(props) {
       setErrorMessage("Serveur indisponible."); // Utiliser un message générique pour l'utilisateur
     }
   };
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      fetchLogs();
-    }, 10000); // Exécute `fetchLogs` toutes les 1000 millisecondes (1 seconde)
-
-    return () => clearInterval(intervalId); // Nettoyage de l'intervalle lors du démontage du composant
-  }, [serverIP, portIP, refreshKey]); // Les dépendances assurent que l'intervalle est réinitialisé si `serverIP` ou `portIP` changent
 
   const clearLogs = () => {
     setLogList([]);
@@ -136,7 +135,7 @@ export default function HomePage(props) {
     );
     if (templateEstPresent) {
       alert("La configuration ESP est présente dans le contenu.");
-      console.log("ip : ", serverIP, "port :", portIP);
+      console.log("ip : ", serverIp, "port :", serverPort);
       try {
         // Créer un Blob avec le contenu de l'éditeur
         const blob = new Blob([editorContent], { type: "text/plain" });
@@ -147,12 +146,15 @@ export default function HomePage(props) {
 
         // Utiliser l'API Fetch pour envoyer le fichier au serveur
         // Déterminer le schéma en fonction de la valeur de serverIP
-        if (!baseURL || !serverPort) return;
-
-        const response = await fetch(`${baseURL}:${serverPort}/upload`, {
-          method: "POST",
-          body: formData,
-        });
+        if (!baseURLServer || !serverPort) return;
+  
+        const response = await fetch(
+          `${baseURLServer}:${serverPort}/upload`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
 
         if (response.ok) {
           console.log("Fichier envoyé avec succès");
@@ -175,6 +177,56 @@ export default function HomePage(props) {
   const onChange = (newValue) => {
     setEditorContent(newValue);
   };
+  
+  const checkStream = () => {
+    console.log("[+] Checking the camera stream on :", streamURLRef.current);
+
+    // Start fetching the stream with the updated streamURL
+    fetch(streamURLRef.current, {
+      method: "OPTIONS",
+      cache: "no-cache",
+      signal: AbortSignal.timeout(3000)
+    })
+      .then((response) => {
+        if (response.status === 200 || response.status === 204) {
+          setCamStreamOn(true);
+          console.log("[+] CAMERA STREAM IS ON !!");
+          console.log("Response Status :", response.status, response.statusText);
+        } else {
+          console.log("[-] ERROR Status :", response.status, response.statusText);
+          throw new Error("Stream not available");
+        }
+      })
+      .catch(() => {
+        console.log("[-] Error : no camera stream available");
+        setCamStreamOn(false);
+      });
+  };
+
+  useEffect(() => {
+    streamURLRef.current = `${baseURLCamera}:${cameraPort}/cam/`;
+  }, [cameraPort, baseURLCamera]); // Update refs when state changes
+  
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      fetchLogs();
+    }, 100000000000); // Exécute `fetchLogs` toutes les 1000 millisecondes (1 seconde)
+
+    return () => clearInterval(intervalId); // Nettoyage de l'intervalle lors du démontage du composant
+  }, [serverIp, serverPort, refreshKey]); // Les dépendances assurent que l'intervalle est réinitialisé si `serverIp` ou `serverPort` changent
+
+  
+  useEffect(() => {
+    // Check the stream immediately and then every 10 seconds
+    checkStream(); // Initial check
+    const intervalId = setInterval(checkStream, 8000);
+
+    // Clean up
+    return () => {
+      console.log("Cleaning up the camera stream check...");
+      clearInterval(intervalId);
+    };
+  }, [baseURLCamera, cameraPort]); // Needed to re-run the effect when the server IP or port changes
   const [currentPage, setCurrentPage] = useState(1);
 
   const handlePageChange = (pageNumber) => {

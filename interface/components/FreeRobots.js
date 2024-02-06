@@ -5,7 +5,8 @@ const FreeRobots = ({onSelectedRobotChange }) => {
   const [robots, setRobots] = useState([]);
   const [selectedRobot, setSelectedRobot] = useState(null);
   const [error, setError] = useState(null);
-  const [baseURL, setBaseURL] = useState('');
+  const [baseURLServer, setbaseURLServer] = useState('');
+  const [baseURLCamera, setbaseURLCamera] = useState('');
   const [serverPort, setServerPort] = useState('');
   const [cameraPort, setCameraPort] = useState('');
 
@@ -13,7 +14,8 @@ const FreeRobots = ({onSelectedRobotChange }) => {
     const fetchConfig = async () => {
       const { data, error } = await supabase.from('server_configurations').select('*').single();
       if (data) {
-        setBaseURL(data.baseURL); // Assurez-vous que le nom du champ correspond à votre base de données
+        setbaseURLServer(data.baseURLServer); 
+        setbaseURLCamera(data.baseURLCamera)
         setServerPort(data.serverPort);
         setCameraPort(data.cameraPort);
       }
@@ -25,11 +27,11 @@ const FreeRobots = ({onSelectedRobotChange }) => {
   useEffect(() => {
     const fetchFreeRobots = async () => {
       try {
-        // Assurez-vous que baseURL et serverPort ne sont pas vides
-        if (!baseURL || !serverPort) return;
+        // Assurez-vous que baseURLServer et serverPort ne sont pas vides
+        if (!baseURLServer || !serverPort) return;
   
         const response = await fetch(
-          `${baseURL}:${serverPort}/robots/free`, // Assurez-vous d'inclure le ":" pour séparer le port
+          `${baseURLServer}:${serverPort}/robots/free`, // Assurez-vous d'inclure le ":" pour séparer le port
           {
             method: "GET",
             headers: new Headers({
@@ -46,7 +48,7 @@ const FreeRobots = ({onSelectedRobotChange }) => {
     };
   
     fetchFreeRobots();
-  }, [baseURL, serverPort, cameraPort]);  
+  }, [baseURLServer, serverPort, cameraPort]);  
 
   const handleRobotSelection = (event) => {
     const selectedRobotId = parseInt(event.target.value, 10);
