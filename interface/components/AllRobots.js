@@ -6,15 +6,17 @@ import { supabase } from "../lib/supabase";
 const AllRobots = () => {
   const [robots, setRobots] = useState([]);
   const [error, setError] = useState(null);
-  const [baseURL, setBaseURL] = useState('');
+  const [baseURLServer, setBaseURLServer] = useState('');
   const [serverPort, setServerPort] = useState('');
   const [cameraPort, setCameraPort] = useState('');
+  const [baseURLCamera, setbaseURLCamera] = useState('');
 
   useEffect(() => {
     const fetchConfig = async () => {
       const { data, error } = await supabase.from('server_configurations').select('*').single();
       if (data) {
-        setBaseURL(data.baseURL); // Assurez-vous que le nom du champ correspond à votre base de données
+        setBaseURLServer(data.baseURLServer); 
+        setbaseURLCamera(data.baseURLCamera);
         setServerPort(data.serverPort);
         setCameraPort(data.cameraPort);
       }
@@ -27,7 +29,7 @@ const AllRobots = () => {
       try {
         
         const response = await fetch(
-          `${baseURL}:${serverPort}/robots`,
+          `${baseURLServer}:${serverPort}/robots`,
           {
             method: "GET",
             headers: new Headers({
@@ -44,7 +46,7 @@ const AllRobots = () => {
     };
 
     fetchAllRobots();
-  }, [baseURL, serverPort, cameraPort]);
+  }, [baseURLServer,baseURLCamera, serverPort, cameraPort]);
 
   return (
     <div>

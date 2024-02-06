@@ -6,15 +6,17 @@ import { supabase } from "../lib/supabase";
 export default function FileUpload({selectedRobot,}) {
   
   const [files, setFiles] = React.useState([]);
-  const [baseURL, setBaseURL] = useState('');
+  const [baseURLServer, setbaseURLServer] = useState('');
   const [serverPort, setServerPort] = useState('');
   const [cameraPort, setCameraPort] = useState('');
+  const [baseURLCamera, setbaseURLCamera] = useState('');
 
   useEffect(() => {
     const fetchConfig = async () => {
       const { data, error } = await supabase.from('server_configurations').select('*').single();
       if (data) {
-        setBaseURL(data.baseURL); // Assurez-vous que le nom du champ correspond à votre base de données
+        setbaseURLServer(data.baseURLServer); 
+        setbaseURLCamera(data.baseURLCamera);
         setServerPort(data.serverPort);
         setCameraPort(data.cameraPort);
       }
@@ -81,8 +83,8 @@ export default function FileUpload({selectedRobot,}) {
     formData.append("robotId", selectedRobot.id);
 
     try {
-      if (!baseURL || !serverPort) return;
-      const response = await fetch(`${baseURL}:${serverPort}/upload`, {
+      if (!baseURLServer || !serverPort) return;
+      const response = await fetch(`${baseURLServer}:${serverPort}/upload`, {
         method: "POST",
         body: formData,
         headers: {
@@ -118,7 +120,7 @@ export default function FileUpload({selectedRobot,}) {
           accept={".ino"}
           maxFiles={1}
           uploadConfig={{
-            url: `${baseURL}:${serverPort}/upload`,
+            url: `${baseURLServer}:${serverPort}/upload`,
             method: "POST",
             headers: new Headers({
               "ngrok-skip-browser-warning": "69420",

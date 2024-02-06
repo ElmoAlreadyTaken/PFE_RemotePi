@@ -14,7 +14,8 @@ export default function HomePage(props) {
   const [errorMessage, setErrorMessage] = useState("");
   const [logList, setLogList] = useState([]);
   const [blink, setBlink] = useState(false);
-  const [baseURL, setBaseURL] = useState('');
+  const [baseURLServer, setbaseURLServer] = useState('');
+  const [baseURLCamera, setbaseURLCamera] = useState('');
   const [serverPort, setServerPort] = useState('');
   const [cameraPort, setCameraPort] = useState('');
 
@@ -22,7 +23,8 @@ export default function HomePage(props) {
     const fetchConfig = async () => {
       const { data, error } = await supabase.from('server_configurations').select('*').single();
       if (data) {
-        setBaseURL(data.baseURL); // Assurez-vous que le nom du champ correspond à votre base de données
+        setbaseURLServer(data.baseURLServer); 
+        setbaseURLCamera(data.baseURLCamera);
         setServerPort(data.serverPort);
         setCameraPort(data.cameraPort);
       }
@@ -69,10 +71,10 @@ export default function HomePage(props) {
 
   const fetchLogs = async () => {
     try {
-      if (!baseURL || !serverPort) return;
+      if (!baseURLServer || !serverPort) return;
   
         const response = await fetch(
-          `${baseURL}:${serverPort}/log`, {
+          `${baseURLServer}:${serverPort}/log`, {
         method: "GET",
         headers: new Headers({
           "ngrok-skip-browser-warning": "69420",
@@ -145,10 +147,10 @@ export default function HomePage(props) {
 
         // Utiliser l'API Fetch pour envoyer le fichier au serveur
         // Déterminer le schéma en fonction de la valeur de serverIP
-        if (!baseURL || !serverPort) return;
+        if (!baseURLServer || !serverPort) return;
   
         const response = await fetch(
-          `${baseURL}:${serverPort}/upload`,
+          `${baseURLServer}:${serverPort}/upload`,
           {
             method: "POST",
             body: formData,
