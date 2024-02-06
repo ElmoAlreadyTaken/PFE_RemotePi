@@ -40,7 +40,10 @@ export default function HomePage(props) {
     
   useEffect(() => {
     const fetchConfig = async () => {
-      const { data, error } = await supabase.from('server_configurations').select('*').single();
+      const { data, error } = await supabase
+        .from("server_configurations")
+        .select("*")
+        .single();
       if (data) {
         setbaseURLServer(data.baseURLServer); 
         setbaseURLCamera(data.baseURLCamera);
@@ -238,134 +241,332 @@ export default function HomePage(props) {
       clearInterval(intervalId);
     };
   }, [baseURLCamera, cameraPort]); // Needed to re-run the effect when the server IP or port changes
-  
+  const [currentPage, setCurrentPage] = useState(1);
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const renderPageContent = () => {
+    switch (currentPage) {
+      case 1:
+        return <PageOneContent />;
+      case 2:
+        return <PageTwoContent />;
+      default:
+        return null;
+    }
+  };
   return (
-    <div className="">
-      <br></br>
-      <div className="flex items-center justify-center freeRobotsContainer">
-        <FreeRobots
-          key={refreshKey}
-          serverIp={serverIp}
-          serverPort={serverPort}
-          onSelectedRobotChange={handleSelectedRobotChange}
-        />
+    <div>
+      <NavigationButtons onPageChange={handlePageChange} />
+      {renderPageContent()}
+    </div>
+  );
+
+  function NavigationButtons({ onPageChange }) {
+    const handlePreviousPage = () => {
+      onPageChange((prevPage) => Math.max(prevPage - 1, 1));
+    };
+
+    const handleNextPage = () => {
+      onPageChange((prevPage) => prevPage + 1);
+    };
+
+    return (
+      <div className="bg-gray-200 flex justify-center items-center">
+        <div
+          style={{
+            display: "flex",
+            marginRight: "50px",
+            marginTop: "5px",
+          }}
+        >
+          <button onClick={handlePreviousPage}>Configuration</button>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            marginRight: "50px",
+            marginTop: "5px",
+          }}
+        >
+          <button onClick={handleNextPage}>Caméra</button>
+        </div>
       </div>
-      {!selectedRobot && (
-        <p
-          style={{
-            color: "red",
-            marginLeft: "1300px",
-            position: "absolute",
-            marginTop: "0px",
-          }}
-        >
-          Veuillez sélectionner un robot.
-        </p>
-      )}
-      <img
-        src="refresh-icon.png"
-        alt="Refresh Icon"
-        onClick={refreshComponents}
-        style={{
-          marginLeft: "1200px",
-          marginTop: "-25px",
-          cursor: "pointer",
-          position: "absolute",
-          width: "35px",
-          height: "35px",
-          animation: blink ? "blink 1s" : "none", // Appliquer l'animation si le clignotement est activé
-        }}
-      />
-      <div>
-        <button
-          onClick={toggleAllRobotsVisibility}
-          style={{
-            marginLeft: "875px",
-          }}
-        >
-          {isAllRobotsVisible ? "Masquer les robots" : "Afficher les robots"}
-        </button>
-        {isAllRobotsVisible && (
-          <div className="flex items-center justify-center AllRobotsContainer ">
-            <br></br>
-            <AllRobots serverIp={serverIp} serverPort={serverPort} />
+    );
+  }
+
+  function PageOneContent() {
+    return (
+      <div className="bg-gray-200 " style={{ height: "calc(100vh - 100px)" }}>
+        <div className="flex">
+          <br></br>
+          <div
+            className="overflow-hidden bg-white shadow-xl sm:rounded-lg "
+            style={{
+              height: "150px",
+              width: "600px",
+              borderRadius: "20px",
+              marginTop: "150px",
+              marginLeft: "40px",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div
+                className="freeRobotsContainer"
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  marginLeft: "100px",
+                  marginTop: "45px",
+                }}
+              >
+                <FreeRobots
+                  key={refreshKey}
+                  onSelectedRobotChange={handleSelectedRobotChange}
+                />
+              </div>
+              <img
+                src="refresh-icon.png"
+                alt="Refresh Icon"
+                onClick={refreshComponents}
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  marginLeft: "30px",
+                  marginTop: "30px",
+                  cursor: "pointer",
+                  width: "35px",
+                  height: "35px",
+                  animation: blink ? "blink 1s" : "none", // Appliquer l'animation si le clignotement est activé
+                }}
+              />{" "}
+            </div>
+
+            <div>
+              <button
+                onClick={toggleAllRobotsVisibility}
+                style={{
+                  marginLeft: "200px",
+                }}
+              >
+                {isAllRobotsVisible
+                  ? "Masquer les robots"
+                  : "Afficher les robots"}
+              </button>
+              {isAllRobotsVisible && (
+                <div
+                  className="AllRobotsContainer "
+                  style={{
+                    marginLeft: "20px",
+                  }}
+                >
+                  <br></br>
+                  <AllRobots />
+                </div>
+              )}
+            </div>
           </div>
-        )}
-      </div>
+          <div
+            className="overflow-hidden bg-white shadow-xl sm:rounded-lg flex justify-center items-center "
+            style={{
+              height: "700px",
+              width: "600px",
+              borderRadius: "20px",
+              marginTop: "30px",
+              marginLeft: "40px",
+            }}
+          >
+            <div className="aceEditorContainer ml-2">
+              <AceEditor
+                mode="c_cpp"
+                theme="monokai"
+                onChange={onChange}
+                name="UNIQUE_ID_OF_DIV"
+                value={editorContent}
+                editorProps={{ $blockScrolling: true }}
+                className="aceEditor"
+                style={{
+                  height: "650px",
+                  width: "550px",
+                  marginRight: "6px"
+                }}
+              />
+            </div>{" "}
+          </div>
+          <br></br>{" "}
+          <div
+            className="overflow-hidden bg-white shadow-xl sm:rounded-lg "
+            style={{
+              height: "300px",
+              width: "550px",
+              borderRadius: "20px",
+              marginTop: "150px",
+              marginLeft: "40px",
+            }}
+          >
+            <div className="flex items-center justify-center">
+              <div
+                className="fileUploadContainer"
+                style={{
+                  height: "40px",
+                  width: "400px",
+                  marginTop: "35px",
+                }}
+              >
+                <FileUpload
+                  selectedRobot={selectedRobot}
+                  onRobotChangeFromUpload={handleRobotChangeFromUpload}
+                  onFileSent={handleFileSent}
+                />
+              </div>{" "}
+            </div>
 
-      <br></br>
-      <div className="flex items-center justify-center fileUploadContainer">
-        <FileUpload
-          serverIp={serverIp}
-          setServerIp={setServerIp}
-          serverPort={serverPort}
-          setServerPort={setServerPort}
-          selectedRobot={selectedRobot}
-          onRobotChangeFromUpload={handleRobotChangeFromUpload}
-          onFileSent={handleFileSent}
-        />
-      </div>
+            <br></br>
 
-      <br></br>
-      <div className="flex ">
-        <div className="ml-1 streamContainer">
-          {camStreamOn ? (
+            <br></br>
+
+            <button
+              onClick={verifierContenu}
+              class={boutonStyle}
+              style={{
+                marginLeft: "1300px",
+                position: "absolute",
+                marginTop: "-225px",
+              }}
+              disabled={!selectedRobot} // Désactiver le bouton si aucun robot n'est sélectionné
+            >
+              {boutonTexte}
+            </button>
+          </div>
+          <br></br>
+          <br></br> <br></br>
+          <br></br>
+        </div>
+        <div
+          className="overflow-hidden bg-white shadow-xl sm:rounded-lg "
+          style={{
+            height: "150px",
+            width: "600px",
+            borderRadius: "20px",
+            marginTop: "-385px",
+            marginLeft: "40px",
+            position: "absolute",
+          }}
+        ></div>
+      </div>
+    );
+  }
+
+  function PageTwoContent() {
+    return (
+      <div className="bg-gray-200">
+        <div className="flex ">
+          <div
+            className="overflow-hidden bg-white flex justify-center items-center  shadow-xl sm:rounded-lg "
+            style={{
+              height: "600px",
+              width: "1040px",
+              borderRadius: "20px",
+              marginTop: "80px",
+              marginLeft: "40px",
+            }}
+          >
             <iframe
-              src={streamURLRef.current}
-              height="480"
-              width="848"
+              src="https://player.twitch.tv/?channel=otplol_&parent=localhost"
+              height="560"
+              width="1000"
               frameBorder="0"
               scrolling="no"
               allowFullScreen={true}
             ></iframe>
-          ) : (
-            <div>
-              <iframe
-                src="" // "https://player.twitch.tv/?channel=otplol_&parent=localhost"
-                height="480"
-                width="848"
-                frameBorder="0"
-                scrolling="no"
-                allowFullScreen={true}
-              ></iframe>
-              Error: Unable to load the camera live stream, you get otplol_
-              instead.
-            </div>
-          )}
-        </div>
-        <div className="ml-2 aceEditorContainer">
-          <AceEditor
-            mode="c_cpp"
-            theme="monokai"
-            onChange={onChange}
-            name="UNIQUE_ID_OF_DIV"
-            value={editorContent}
-            editorProps={{ $blockScrolling: true }}
-            className="aceEditor"
-          />
-        </div>
-      </div>
-      <br></br>
-      <button
-        onClick={verifierContenu}
-        class={boutonStyle}
-        style={{
-          marginLeft: "1300px",
-          position: "absolute",
-          marginTop: "-225px",
-        }}
-        disabled={!selectedRobot} // Désactiver le bouton si aucun robot n'est sélectionné
-      >
-        {boutonTexte}
-      </button>
-      <br></br>
+          </div>
 
-      <br></br>
-      <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+          <div
+            className="overflow-hidden bg-white flex justify-center items-center  shadow-xl sm:rounded-lg "
+            style={{
+              height: "700px",
+              width: "750px",
+              borderRadius: "20px",
+              marginTop: "20px",
+              marginLeft: "40px",
+            }}
+          >
+            <div
+              class="relative overflow-x-auto shadow-md sm:rounded-lg"
+              style={{
+                height: "800px",
+                width: "700px",
+                marginTop: "80px",
+              }}
+            >
+              {errorMessage && (
+                <div style={{ color: "red", marginTop: "10px" }}>
+                  {errorMessage}
+                </div>
+              )}
+              <div>
+                <br></br>
+              </div>
+              <div
+                className="relative overflow-x-auto shadow-md sm:rounded-lg"
+                style={{ maxHeight: "400px", overflowY: "auto" }}
+              >
+                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                  <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                      <th
+                        scope="col"
+                        style={{ width: "10%" }}
+                        className="px-6 py-3"
+                      >
+                        Robot
+                      </th>
+                      <th
+                        scope="col"
+                        style={{ width: "10%" }}
+                        className="px-6 py-3"
+                      >
+                        Heure
+                      </th>
+                      <th
+                        scope="col"
+                        style={{ width: "80%" }}
+                        className="px-6 py-3"
+                      >
+                        Message/Error
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {logList.map((log, index) => (
+                      <tr key={index}>
+                        <td className="px-6 py-4">{log.id}</td>
+                        <td className="px-6 py-4">{log.time}</td>
+                        <td
+                          className={`px-6 py-4 ${
+                            log.error ? "text-red-500" : "text-black"
+                          }`}
+                        >
+                          {log.message || log.error}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
         <button
           onClick={clearLogs}
-          className="px-4 py-2 mt-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
+          className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          style={{
+            marginTop: "0px",
+            marginLeft: "1450px",
+          }}
         >
           Effacer
         </button>
@@ -420,6 +621,6 @@ export default function HomePage(props) {
         <br></br>
         <br></br>
       </div>
-    </div>
-  );
+    );
+  }
 }

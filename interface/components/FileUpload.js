@@ -1,5 +1,5 @@
 // components/FileUpload.js
-import React, { useState,useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Dropzone, FileMosaic } from "@files-ui/react";
 import { supabase } from "../lib/supabase";
 
@@ -14,7 +14,10 @@ export default function FileUpload({selectedRobot, onRobotChangeFromUpload,onFil
 
   useEffect(() => {
     const fetchConfig = async () => {
-      const { data, error } = await supabase.from('server_configurations').select('*').single();
+      const { data, error } = await supabase
+        .from("server_configurations")
+        .select("*")
+        .single();
       if (data) {
         setbaseURLServer(data.baseURLServer); 
         setbaseURLCamera(data.baseURLCamera);
@@ -133,7 +136,13 @@ void loop() {
           }}
         >
           {files.map((file) => (
-            <FileMosaic key={file.id} {...file} onDelete={removeFile} info preview />
+            <FileMosaic
+              key={file.id}
+              {...file}
+              onDelete={removeFile}
+              info
+              preview
+            />
           ))}
         </Dropzone>
       </div>

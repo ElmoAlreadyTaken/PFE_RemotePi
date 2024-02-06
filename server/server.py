@@ -222,7 +222,7 @@ def is_valid_file(filename):
     allowed_extensions = {'py', 'java', 'cpp', 'c', 'ino', 'bin'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
-def init_hook(ip, filename):
+def init_hook(ip, filename, branch):
     if not os.path.exists('post-update.template'):
         return False
     if not os.path.exists('LocalPiServer/.git/hooks'):
@@ -233,7 +233,7 @@ def init_hook(ip, filename):
         hook_template = f.read()
     
     with open('LocalPiServer/.git/hooks/post-update', 'w') as f:
-        f.write(hook_template.format(esp_ip=ip, filename=filename))
+        f.write(hook_template.format(esp_ip=ip, filename=filename, branch=branch))
     
     print('[+] post-update hook initialized with robot IP :', ip)
 
@@ -247,7 +247,7 @@ def upload_file():
 
     file = request.files['file']
 
-    print('Longueur du fichier : ', file.content_length)
+    print('Longueur du fichier : ', file)
 
     # If the user does not select a file, the browser submits an
     # empty file without a filename.
@@ -278,8 +278,8 @@ def upload_file():
     
     # Check if robot ID is present
     if request.form.get('robotId', None) is None:
-        print('[-] Missing \'robotId\' key in form data')
-        return Response('Missing \'robotId\' key in form data', 400)
+        print("[-] Missing 'robotId' key in form data")
+        return Response("Missing 'robotId' key in form data", 400)
     
     # Check if given robot ID is valid (int only)
     robotId = request.form['robotId']
@@ -308,6 +308,12 @@ def upload_file():
     if os.path.exists('./LocalPiServer'):
         shutil.rmtree('./LocalPiServer', ignore_errors=True)
 
+    # Init hook template with robot IP, filename, and branch
+    res = init_hook(robotIp, filename, branch)
+    if not res:
+        print('[-] Error initializing the post-update hook')
+        return Response('Error initializing the post-update hook', 400)
+    
     # Git clone the 'remote' repo to 'LocalPiServer'
     subprocess.run(['git', 'clone', './RemotePiServer', 'LocalPiServer'], check=True)
     
@@ -531,6 +537,38 @@ def free_robot(robot_id):
     else:
         return Response(f'Robot <{robot_id}> was either not found, or already free', 400)
 
+############################
+
+########## CAMERA ##########
+@app.route('/camera', methods=['POST'])
+def camera():
+    j = request.json
+    command = j.get('command', None)
+
+    # Check if command parameter is present
+    if command is None:
+        return Response("Missing parameter 'command'", 400)
+
+    # Start the camera using mediamtx
+    if command == 'start':
+        # Start the camera using mediamtx
+        try:
+            subprocess.Popen(['camera/mediamtx'])  # Assuming 'mediamtx' is the command to start the camera
+            return {"message": "Camera started successfully"}
+        except Exception as e:
+            return Response(str(e), 500)
+    # Stop the mediamtx process
+    elif command == 'stop':
+        # Stop the mediamtx process
+        try:
+            subprocess.call(['pkill', '-f', 'mediamtx'])  # Kill the process by name
+            return {"message": "Camera stopped successfully"}
+        except Exception as e:
+            print('[!!] Error stopping camera :', e)
+            return Response(str(e), 500)
+    else:
+        return Response("Invalid command. Must be 'start' or 'stop'", 400)
+    
 ############################
 
 ########## LOGS ##########
