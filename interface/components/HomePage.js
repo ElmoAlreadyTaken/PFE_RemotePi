@@ -14,6 +14,23 @@ export default function HomePage(props) {
   const [errorMessage, setErrorMessage] = useState("");
   const [logList, setLogList] = useState([]);
   const [blink, setBlink] = useState(false);
+  const [baseURL, setBaseURL] = useState('');
+  const [serverPort, setServerPort] = useState('');
+  const [cameraPort, setCameraPort] = useState('');
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      const { data, error } = await supabase.from('server_configurations').select('*').single();
+      if (data) {
+        setBaseURL(data.baseURL); // Assurez-vous que le nom du champ correspond à votre base de données
+        setServerPort(data.serverPort);
+        setCameraPort(data.cameraPort);
+      }
+      console.log(data);
+    };
+
+    fetchConfig();
+  }, []);
   const refreshComponents = () => {
     // Activer le clignotement
     setBlink(true);
@@ -32,7 +49,7 @@ export default function HomePage(props) {
     console.log("Selected Robot in Parent Component:", newSelectedRobot);
   };
   var template = `#include <remotePi.h>
-
+  remotePi config;
   void setup() {
     Serial.begin(115200);
     config.begin();
@@ -40,8 +57,8 @@ export default function HomePage(props) {
 
   void loop() {
     config.handleClient();
-    MDNS.update();
-  }`;
+  }
+`;
   const [editorContent, setEditorContent] = useState(template);
   const [boutonStyle, setBoutonStyle] = useState(
     "text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
@@ -54,11 +71,10 @@ export default function HomePage(props) {
 
   const fetchLogs = async () => {
     try {
-      // Déterminer le schéma en fonction de la valeur de serverIP
-      const scheme = serverIP === "localhost" ? "http" : "https";
-
-      // Utiliser le schéma déterminé dans l'URL
-      const response = await fetch(`${scheme}://${serverIP}:${portIP}/log`, {
+      if (!baseURL || !serverPort) return;
+  
+        const response = await fetch(
+          `${baseURL}:${serverPort}/log`, {
         method: "GET",
         headers: new Headers({
           "ngrok-skip-browser-warning": "69420",
@@ -132,10 +148,10 @@ export default function HomePage(props) {
 
         // Utiliser l'API Fetch pour envoyer le fichier au serveur
         // Déterminer le schéma en fonction de la valeur de serverIP
-        const scheme = serverIP === "localhost" ? "http" : "https";
-
+        if (!baseURL || !serverPort) return;
+  
         const response = await fetch(
-          `${scheme}://${serverIP}:${portIP}/upload`,
+          `${baseURL}:${serverPort}/upload`,
           {
             method: "POST",
             body: formData,

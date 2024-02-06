@@ -38,7 +38,7 @@ export default function FileUpload({selectedRobot,}) {
 
         // Votre template
         const template = `#include <remotePi.h>
-
+        remotePi config;
         void setup() {
           Serial.begin(115200);
           config.begin();
@@ -46,7 +46,6 @@ export default function FileUpload({selectedRobot,}) {
       
         void loop() {
           config.handleClient();
-          MDNS.update();
         }
   `;
 

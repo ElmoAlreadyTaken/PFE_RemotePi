@@ -36,7 +36,7 @@ export default function Login() {
     try {
       setLoading(true);
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "/update-password", // URL de redirection après la réinitialisation
+        redirectTo: "https://pfe-remote-pi.vercel.app/update-password", // URL de redirection après la réinitialisation
       });
 
       if (error) {
