@@ -1,4 +1,3 @@
-// components/FileUpload.js
 import React, { useState, useEffect, useRef } from "react";
 import { Dropzone, FileMosaic } from "@files-ui/react";
 import { supabase } from "../lib/supabase";
@@ -33,7 +32,7 @@ export default function FileUpload({selectedRobot, onRobotChangeFromUpload,onFil
     setFiles(incommingFiles);
 
     incommingFiles.forEach((fileObj) => {
-      // Assurez-vous que fileObj est le File et non un objet personnalisé
+      
       const file = fileObj.file ? fileObj.file : fileObj;
 
       const reader = new FileReader();
@@ -42,7 +41,7 @@ export default function FileUpload({selectedRobot, onRobotChangeFromUpload,onFil
       reader.onload = (e) => {
         const fileContent = e.target.result;
 
-        // Votre template
+       
         const template = `#include <remotePi.h>
 remotePi config;
 void setup() {
@@ -84,13 +83,12 @@ void loop() {
 
     const formData = new FormData();
     files.forEach((fileObj) => {
-      // Vous devrez peut-être ajuster cette ligne pour accéder correctement à l'objet File, selon la structure des données de fileObj.
+    
       const file = fileObj.file ? fileObj.file : fileObj;
       formData.append("file", file);
     });
     formData.append("robotId", selectedRobot.id);
-    onRobotChangeFromUpload(selectedRobot);
-    onFileSent();
+
     try {
       if (!baseURLServer || !serverPort) return;
       const response = await fetch(`${baseURLServer}:${serverPort}/upload`, {
@@ -104,7 +102,7 @@ void loop() {
       if (response.ok) {
         console.log("Fichier envoyé avec succès");
         alert("Votre code a été envoyé !");
-        // Nettoyer l'état et l'UI si nécessaire
+       
         setFiles([]);
         
       } else {
@@ -119,8 +117,8 @@ void loop() {
     <div>
       <div
         style={{
-          pointerEvents: selectedRobot ? "auto" : "none", // Désactive les événements de pointeur si selectedRobot est null
-          opacity: selectedRobot ? 1 : 0.6, // Change l'opacité pour montrer visuellement que c'est désactivé
+          pointerEvents: selectedRobot ? "auto" : "none", 
+          opacity: selectedRobot ? 1 : 0.6, 
         }}
       >
         <Dropzone

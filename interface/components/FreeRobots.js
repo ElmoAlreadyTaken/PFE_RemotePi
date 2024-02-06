@@ -27,11 +27,10 @@ const FreeRobots = ({onSelectedRobotChange }) => {
   useEffect(() => {
     const fetchFreeRobots = async () => {
       try {
-        // Assurez-vous que baseURLServer et serverPort ne sont pas vides
         if (!baseURLServer || !serverPort) return;
   
         const response = await fetch(
-          `${baseURLServer}:${serverPort}/robots/free`, // Assurez-vous d'inclure le ":" pour séparer le port
+          `${baseURLServer}:${serverPort}/robots/free`,
           {
             method: "GET",
             headers: new Headers({

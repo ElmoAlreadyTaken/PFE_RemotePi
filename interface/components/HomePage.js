@@ -15,11 +15,11 @@ export default function HomePage(props) {
   const [logList, setLogList] = useState([]);
   const [blink, setBlink] = useState(false);
 
-  const [serverIp, setServerIp] = useState("localhost"); // Nouvelle adresse IP du serveur
+  const [serverIp, setServerIp] = useState("localhost");
   const [serverPort, setServerPort] = useState("");
   const [cameraPort, setCameraPort] = useState("");
   const [camStreamOn, setCamStreamOn] = useState(false);
-  const [streamURL, setStreamURL] = useState(""); // Initial URL or default value
+  const [streamURL, setStreamURL] = useState(""); 
   const [baseURLServer, setbaseURLServer] = useState("");
   const [baseURLCamera, setbaseURLCamera] = useState("");
   const [selectedRobotIdForLogs, setSelectedRobotIdForLogs] = useState(null);
@@ -28,7 +28,7 @@ export default function HomePage(props) {
 
   const handleFileSent = () => {
     setIsFileSent(true);
-    fetchLogs(); // Appeler fetchLogs ici pour rafraîchir les logs après l'envoi du fichier
+    fetchLogs(); 
   };
 
   const handleRobotChangeFromUpload = (robot) => {
@@ -52,20 +52,19 @@ export default function HomePage(props) {
     fetchConfig();
   }, []);
   const refreshComponents = () => {
-    // Activer le clignotement
+
     setBlink(true);
 
-    // Réinitialiser le clignotement après un court délai (par exemple, 500 ms)
+   
     setTimeout(() => {
       setBlink(false);
     }, 100);
-    // Incrémente la clé de rafraîchissement pour forcer le re-render des composants
+   
     setRefreshKey((prevKey) => prevKey + 1);
   };
 
   const handleSelectedRobotChange = (newSelectedRobot) => {
     setSelectedRobot(newSelectedRobot);
-    // Vous pouvez effectuer d'autres actions en fonction de la nouvelle valeur de selectedRobot
   };
   var template = `#include <remotePi.h>
   remotePi config;
@@ -96,16 +95,16 @@ export default function HomePage(props) {
         }),
       });
       if (!response.ok) {
-        throw new Error("Serveur indisponible"); // Peut indiquer une erreur 4XX/5XX
+        throw new Error("Serveur indisponible"); 
       }
       const log = await response.json();
       console.log(log);
       const newLogList = Array.isArray(log) ? log : [log];
       setLogList((prevLogList) => [...prevLogList, ...newLogList]);
-      setErrorMessage(""); // Réinitialiser le message d'erreur en cas de succès
+      setErrorMessage(""); 
     } catch (error) {
-      console.error(error); // Conserver pour le debug, mais vous pourriez vouloir le retirer en production
-      setErrorMessage("Serveur indisponible."); // Utiliser un message générique pour l'utilisateur
+      console.error(error); 
+      setErrorMessage("Serveur indisponible."); 
     }
   };
 
@@ -116,9 +115,9 @@ export default function HomePage(props) {
     setAllRobotsVisibility(!isAllRobotsVisible);
   };
   useEffect(() => {
-    // Diviser le template en lignes ou en éléments clés
+
     const lignesTemplate = template.split("\n");
-    // Vérifier si chaque ligne du template est présente dans le contenu de l'éditeur
+   
     const templateEstPresent = lignesTemplate.every((ligne) =>
       editorContent.includes(ligne.trim())
     );
@@ -136,9 +135,9 @@ export default function HomePage(props) {
   }, [editorContent]);
 
   const verifierContenu = async () => {
-    // Diviser le template en lignes ou en éléments clés
+   
     const lignesTemplate = template.split("\n");
-    // Vérifier si chaque ligne du template est présente dans le contenu de l'éditeur
+   
     const templateEstPresent = lignesTemplate.every((ligne) =>
       editorContent.includes(ligne.trim())
     );
@@ -146,15 +145,13 @@ export default function HomePage(props) {
       alert("La configuration ESP est présente dans le contenu.");
       console.log("ip : ", serverIp, "port :", serverPort);
       try {
-        // Créer un Blob avec le contenu de l'éditeur
+       
         const blob = new Blob([editorContent], { type: "text/plain" });
 
-        // Créer un objet FormData et y ajouter le Blob en tant que fichier
+
         const formData = new FormData();
         formData.append("file", blob, "monFichier.ino");
 
-        // Utiliser l'API Fetch pour envoyer le fichier au serveur
-        // Déterminer le schéma en fonction de la valeur de serverIP
         if (!baseURLServer || !serverPort) return;
 
         const response = await fetch(`${baseURLServer}:${serverPort}/upload`, {
@@ -164,14 +161,14 @@ export default function HomePage(props) {
 
         if (response.ok) {
           console.log("Fichier envoyé avec succès");
-          // Traitement supplémentaire en cas de succès
+
         } else {
           console.error("Échec de l'envoi du fichier");
-          // Gérer les erreurs ici
+
         }
       } catch (error) {
         console.error("Erreur lors de l'envoi du fichier", error);
-        // Gérer les erreurs réseau ici
+      
       }
     } else {
       alert(
@@ -187,7 +184,7 @@ export default function HomePage(props) {
   const checkStream = () => {
     console.log("[+] Checking the camera stream on :", streamURLRef.current);
 
-    // Start fetching the stream with the updated streamURL
+
     fetch(streamURLRef.current, {
       method: "OPTIONS",
       cache: "no-cache",
@@ -219,27 +216,25 @@ export default function HomePage(props) {
 
   useEffect(() => {
     streamURLRef.current = `${baseURLCamera}:${cameraPort}/cam/`;
-  }, [cameraPort, baseURLCamera]); // Update refs when state changes
+  }, [cameraPort, baseURLCamera]); 
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      //fetchLogs();
-    }, 2000); // Exécute `fetchLogs` toutes les 1000 millisecondes (1 seconde)
+      fetchLogs();
+    }, 2000);
 
-    return () => clearInterval(intervalId); // Nettoyage de l'intervalle lors du démontage du composant
-  }, [serverIp, serverPort, refreshKey]); // Les dépendances assurent que l'intervalle est réinitialisé si `serverIp` ou `serverPort` changent
+    return () => clearInterval(intervalId); 
+  }, [serverIp, serverPort, refreshKey]); 
 
   useEffect(() => {
-    // Check the stream immediately and then every 10 seconds
-    checkStream(); // Initial check
+    checkStream(); 
     const intervalId = setInterval(checkStream, 8000);
 
-    // Clean up
     return () => {
       console.log("Cleaning up the camera stream check...");
       clearInterval(intervalId);
     };
-  }, [baseURLCamera, cameraPort]); // Needed to re-run the effect when the server IP or port changes
+  }, [baseURLCamera, cameraPort]); 
   const [currentPage, setCurrentPage] = useState(1);
 
   const handlePageChange = (pageNumber) => {
@@ -339,7 +334,7 @@ export default function HomePage(props) {
                   cursor: "pointer",
                   width: "35px",
                   height: "35px",
-                  animation: blink ? "blink 1s" : "none", // Appliquer l'animation si le clignotement est activé
+                  animation: blink ? "blink 1s" : "none",
                 }}
               />{" "}
             </div>
@@ -433,9 +428,9 @@ export default function HomePage(props) {
           class={boutonStyle}
           style={{
             marginLeft: "675px",
-            marginTop: "20px",
+            marginTop: "10px",
           }}
-          disabled={!selectedRobot} // Désactiver le bouton si aucun robot n'est sélectionné
+          disabled={!selectedRobot} 
         >
           {boutonTexte}
         </button>

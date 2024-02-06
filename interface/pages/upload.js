@@ -32,7 +32,7 @@ export default function MainComponent() {
     const subscription = supabase.auth.onAuthStateChange((_event, session) => {
       setIsLoggedIn(!!session);
       if (session) {
-        // Répétez la vérification de validation ici si nécessaire
+        
       }
     });
   }, []);

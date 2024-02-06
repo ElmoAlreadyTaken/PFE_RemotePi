@@ -1,10 +1,9 @@
-// components/Accueil.js
 import Head from 'next/head';
 
 import Image from 'next/image';
 import React from 'react';
 import Link from 'next/link';
-import styles from '../app/globals.css'; // Ajustez le chemin si nécessaire
+import styles from '../app/globals.css'; 
 
 export default function Accueil() {
   return (
@@ -17,7 +16,6 @@ export default function Accueil() {
 
       <main className={styles.main}>
         <div className={styles.logoContainer}>
-          {/* Remplacez 'path_to_logo.png' avec le chemin vers votre image de logo */}
           <Image src="/logo.png" alt="Remote Pi Logo" width={150} height={150} />
           <h1 className={styles.title}>Remote Pi</h1>
         </div>

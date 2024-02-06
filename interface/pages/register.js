@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { supabase } from "../lib/supabase"; // Ensure the path is correct
-import styles from "../app/globals.css"; // Ensure this points to your CSS module file
+import { supabase } from "../lib/supabase"; 
+import styles from "../app/globals.css";
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -18,10 +18,10 @@ export default function Register() {
     e.preventDefault();
     setError("");
 
-    // Liste des promotions valides
+   
     const validPromotions = ["ING5", "ING4", "ING3", "ING2", "ING1"];
 
-    // Vérification de la promotion
+    
     if (!validPromotions.includes(promotion)) {
       setError("La promotion doit être parmi les suivantes: ING5, ING4, ING3, ING2, ING1");
       return;
@@ -48,7 +48,7 @@ export default function Register() {
     if (insertError) {
       setError(insertError.message);
     } else {
-      router.push("/login"); // Redirect or handle the successful sign-up
+      router.push("/login");
     }
   };
 
