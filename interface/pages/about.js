@@ -44,6 +44,7 @@ export default function MainComponent() {
       <Head>
         <title>À Propos - Remote-PI</title>
       </Head>
+
       <section class="section " id="about">
         <div class="container">
           <div class="row">
@@ -144,8 +145,8 @@ export default function MainComponent() {
         <br></br>
         <br></br>
         <br></br>
-      </section>{" "}
-      <Footer />
+       
+      </section> <Footer></Footer>
     </>
   );
 }

@@ -310,8 +310,6 @@ export default function HomePage(props) {
               >
                 <FreeRobots
                   key={refreshKey}
-                  serverIP={serverIP}
-                  portIP={portIP}
                   onSelectedRobotChange={handleSelectedRobotChange}
                 />
               </div>
@@ -351,7 +349,7 @@ export default function HomePage(props) {
                   }}
                 >
                   <br></br>
-                  <AllRobots serverIP={serverIP} portIP={portIP} />
+                  <AllRobots />
                 </div>
               )}
             </div>
@@ -378,6 +376,7 @@ export default function HomePage(props) {
                 style={{
                   height: "650px",
                   width: "550px",
+                  marginRight: "6px"
                 }}
               />
             </div>{" "}
@@ -403,10 +402,6 @@ export default function HomePage(props) {
                 }}
               >
                 <FileUpload
-                  serverIP={serverIP}
-                  setServerIP={setServerIP}
-                  portIP={portIP}
-                  setPortIP={setPortIP}
                   selectedRobot={selectedRobot}
                 />
               </div>{" "}
