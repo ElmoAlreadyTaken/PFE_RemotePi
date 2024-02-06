@@ -14,30 +14,27 @@ export default function HomePage(props) {
   const [errorMessage, setErrorMessage] = useState("");
   const [logList, setLogList] = useState([]);
   const [blink, setBlink] = useState(false);
-  
+
   const [serverIp, setServerIp] = useState("localhost"); // Nouvelle adresse IP du serveur
-  const [serverPort, setServerPort] = useState('');
-  const [cameraPort, setCameraPort] = useState('');
+  const [serverPort, setServerPort] = useState("");
+  const [cameraPort, setCameraPort] = useState("");
   const [camStreamOn, setCamStreamOn] = useState(false);
-  const [streamURL, setStreamURL] = useState(''); // Initial URL or default value
-  const [baseURLServer, setbaseURLServer] = useState('');
-  const [baseURLCamera, setbaseURLCamera] = useState('');
+  const [streamURL, setStreamURL] = useState(""); // Initial URL or default value
+  const [baseURLServer, setbaseURLServer] = useState("");
+  const [baseURLCamera, setbaseURLCamera] = useState("");
   const [selectedRobotIdForLogs, setSelectedRobotIdForLogs] = useState(null);
   const streamURLRef = useRef(streamURL);
   const [isFileSent, setIsFileSent] = useState(false);
 
-
-  
   const handleFileSent = () => {
     setIsFileSent(true);
     fetchLogs(); // Appeler fetchLogs ici pour rafraîchir les logs après l'envoi du fichier
   };
-  
+
   const handleRobotChangeFromUpload = (robot) => {
     setSelectedRobotIdForLogs(robot.id);
   };
 
-    
   useEffect(() => {
     const fetchConfig = async () => {
       const { data, error } = await supabase
@@ -45,13 +42,12 @@ export default function HomePage(props) {
         .select("*")
         .single();
       if (data) {
-        setbaseURLServer(data.baseURLServer); 
+        setbaseURLServer(data.baseURLServer);
         setbaseURLCamera(data.baseURLCamera);
         setServerPort(data.serverPort);
         setCameraPort(data.cameraPort);
       }
     };
-    
 
     fetchConfig();
   }, []);
@@ -92,9 +88,8 @@ export default function HomePage(props) {
   const fetchLogs = async () => {
     try {
       if (!baseURLServer || !serverPort) return;
-  
-        const response = await fetch(
-          `${baseURLServer}:${serverPort}/log`, {
+
+      const response = await fetch(`${baseURLServer}:${serverPort}/log`, {
         method: "GET",
         headers: new Headers({
           "ngrok-skip-browser-warning": "69420",
@@ -161,14 +156,11 @@ export default function HomePage(props) {
         // Utiliser l'API Fetch pour envoyer le fichier au serveur
         // Déterminer le schéma en fonction de la valeur de serverIP
         if (!baseURLServer || !serverPort) return;
-  
-        const response = await fetch(
-          `${baseURLServer}:${serverPort}/upload`,
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
+
+        const response = await fetch(`${baseURLServer}:${serverPort}/upload`, {
+          method: "POST",
+          body: formData,
+        });
 
         if (response.ok) {
           console.log("Fichier envoyé avec succès");
@@ -191,7 +183,7 @@ export default function HomePage(props) {
   const onChange = (newValue) => {
     setEditorContent(newValue);
   };
-  
+
   const checkStream = () => {
     console.log("[+] Checking the camera stream on :", streamURLRef.current);
 
@@ -199,15 +191,23 @@ export default function HomePage(props) {
     fetch(streamURLRef.current, {
       method: "OPTIONS",
       cache: "no-cache",
-      signal: AbortSignal.timeout(3000)
+      signal: AbortSignal.timeout(3000),
     })
       .then((response) => {
         if (response.status === 200 || response.status === 204) {
           setCamStreamOn(true);
           console.log("[+] CAMERA STREAM IS ON !!");
-          console.log("Response Status :", response.status, response.statusText);
+          console.log(
+            "Response Status :",
+            response.status,
+            response.statusText
+          );
         } else {
-          console.log("[-] ERROR Status :", response.status, response.statusText);
+          console.log(
+            "[-] ERROR Status :",
+            response.status,
+            response.statusText
+          );
           throw new Error("Stream not available");
         }
       })
@@ -220,16 +220,15 @@ export default function HomePage(props) {
   useEffect(() => {
     streamURLRef.current = `${baseURLCamera}:${cameraPort}/cam/`;
   }, [cameraPort, baseURLCamera]); // Update refs when state changes
-  
+
   useEffect(() => {
     const intervalId = setInterval(() => {
-      fetchLogs();
+      //fetchLogs();
     }, 2000); // Exécute `fetchLogs` toutes les 1000 millisecondes (1 seconde)
 
     return () => clearInterval(intervalId); // Nettoyage de l'intervalle lors du démontage du composant
   }, [serverIp, serverPort, refreshKey]); // Les dépendances assurent que l'intervalle est réinitialisé si `serverIp` ou `serverPort` changent
 
-  
   useEffect(() => {
     // Check the stream immediately and then every 10 seconds
     checkStream(); // Initial check
@@ -270,7 +269,7 @@ export default function HomePage(props) {
     };
 
     const handleNextPage = () => {
-      onPageChange((prevPage) => Math.min(prevPage + 1, 2)); 
+      onPageChange((prevPage) => Math.min(prevPage + 1, 2));
     };
 
     return (
@@ -391,7 +390,7 @@ export default function HomePage(props) {
                 style={{
                   height: "650px",
                   width: "550px",
-                  marginRight: "6px"
+                  marginRight: "6px",
                 }}
               />
             </div>{" "}
@@ -427,25 +426,19 @@ export default function HomePage(props) {
             <br></br>
 
             <br></br>
-
-            <button
-              onClick={verifierContenu}
-              class={boutonStyle}
-              style={{
-                marginLeft: "1300px",
-                position: "absolute",
-                marginTop: "-225px",
-              }}
-              disabled={!selectedRobot} // Désactiver le bouton si aucun robot n'est sélectionné
-            >
-              {boutonTexte}
-            </button>
           </div>
-          <br></br>
-          <br></br> <br></br>
-          <br></br>
         </div>
-
+        <button
+          onClick={verifierContenu}
+          class={boutonStyle}
+          style={{
+            marginLeft: "675px",
+            marginTop: "20px",
+          }}
+          disabled={!selectedRobot} // Désactiver le bouton si aucun robot n'est sélectionné
+        >
+          {boutonTexte}
+        </button>
       </div>
     );
   }
@@ -568,44 +561,60 @@ export default function HomePage(props) {
           <br></br>
         </div>
         {isFileSent && (
-        <div
-          className="relative overflow-x-auto shadow-md sm:rounded-lg"
-          style={{ maxHeight: "400px", overflowY: "auto" }}
-        >
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-              <tr>
-                <th scope="col" style={{ width: "10%" }} className="px-6 py-3">
-                  Robot
-                </th>
-                <th scope="col" style={{ width: "10%" }} className="px-6 py-3">
-                  Heure
-                </th>
-                <th scope="col" style={{ width: "80%" }} className="px-6 py-3">
-                  Message/Error
-                </th>
-              </tr>
-            </thead>
-         
-            <tbody>
-              {logList
-              .filter((log) =>  !selectedRobotIdForLogs || log.id === selectedRobotIdForLogs)
-              .map((log, index) => (
-                <tr key={index}>
-                  <td className="px-6 py-4">{log.id}</td>
-                  <td className="px-6 py-4">{log.time}</td>
-                  <td
-                    className={`px-6 py-4 ${
-                      log.error ? "text-red-500" : "text-black"
-                    }`}
+          <div
+            className="relative overflow-x-auto shadow-md sm:rounded-lg"
+            style={{ maxHeight: "400px", overflowY: "auto" }}
+          >
+            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                  <th
+                    scope="col"
+                    style={{ width: "10%" }}
+                    className="px-6 py-3"
                   >
-                    {log.message || log.error}
-                  </td>
+                    Robot
+                  </th>
+                  <th
+                    scope="col"
+                    style={{ width: "10%" }}
+                    className="px-6 py-3"
+                  >
+                    Heure
+                  </th>
+                  <th
+                    scope="col"
+                    style={{ width: "80%" }}
+                    className="px-6 py-3"
+                  >
+                    Message/Error
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+
+              <tbody>
+                {logList
+                  .filter(
+                    (log) =>
+                      !selectedRobotIdForLogs ||
+                      log.id === selectedRobotIdForLogs
+                  )
+                  .map((log, index) => (
+                    <tr key={index}>
+                      <td className="px-6 py-4">{log.id}</td>
+                      <td className="px-6 py-4">{log.time}</td>
+                      <td
+                        className={`px-6 py-4 ${
+                          log.error ? "text-red-500" : "text-black"
+                        }`}
+                      >
+                        {log.message || log.error}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
         )}
         <br></br>
         <br></br>
