@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
 import { supabase } from "../lib/supabase";
+import Footer from "../components/Footer";
 
 export default function MainComponent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -95,7 +96,7 @@ export default function MainComponent() {
                         width={100}
                         height={100}
                       />
-                      <h4>Sécurisé</h4>
+                      <h4>Innovant</h4>
                     </div>
                   </div>
 
@@ -144,7 +145,8 @@ export default function MainComponent() {
         <br></br>
         <br></br>
         <br></br>
-      </section>
+       
+      </section> <Footer></Footer>
     </>
   );
 }
