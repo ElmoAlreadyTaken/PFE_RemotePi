@@ -11,7 +11,6 @@ export default function MainComponent() {
     const checkSessionAndValidation = async () => {
       const { data: user } = await supabase.auth.getUser();
       setIsLoggedIn(!!user);
-      console.log("data: ", user);
 
       if (user.user != null) {
         const { data: profile, error } = await supabase
