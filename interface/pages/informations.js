@@ -102,7 +102,7 @@ export default function MainComponent() {
                   {isLoggedIn ? (
                     <>
                       <div class="col-md-12">
-                        <Link href="/upload" class="main-button-icon">
+                        <Link href="/configuration" class="main-button-icon">
                           SE LANCER <i class="fa fa-arrow-right"></i>
                         </Link>
                       </div>

@@ -112,7 +112,7 @@ export default function Login() {
           <div className="text-xs" >
             Nouveau sur RemotePi ?
             <Link
-              href="/register"
+              href="/inscription"
               class="text-blue-600 focus:outline-none text-xs px-1"
               disabled={loading}
             >

@@ -11,55 +11,28 @@ import "ace-builds/src-noconflict/theme-monokai";
 
 export default function HomePage(props) {
   const [refreshKey, setRefreshKey] = useState(0);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [logList, setLogList] = useState([]);
   const [blink, setBlink] = useState(false);
   const router = useRouter();
-  const [serverIp, setServerIp] = useState("localhost"); // Nouvelle adresse IP du serveur
+  const [serverIp, setServerIp] = useState("localhost");
   const [serverPort, setServerPort] = useState("");
-  const [cameraPort, setCameraPort] = useState("");
-  const [camStreamOn, setCamStreamOn] = useState(false);
-  const [streamURL, setStreamURL] = useState(""); 
   const [baseURLServer, setbaseURLServer] = useState("");
-  const [baseURLCamera, setbaseURLCamera] = useState("");
-  const [selectedRobotIdForLogs, setSelectedRobotIdForLogs] = useState(null);
-  const streamURLRef = useRef(streamURL);
-  const [isFileSent, setIsFileSent] = useState(false);
 
   const handleFileSent = () => {
     setIsFileSent(true);
-    fetchLogs(); 
+    fetchLogs();
   };
 
   const handleRobotChangeFromUpload = (robot) => {
     setSelectedRobotIdForLogs(robot.id);
   };
 
-  useEffect(() => {
-    const fetchConfig = async () => {
-      const { data, error } = await supabase
-        .from("server_configurations")
-        .select("*")
-        .single();
-      if (data) {
-        setbaseURLServer(data.baseURLServer);
-        setbaseURLCamera(data.baseURLCamera);
-        setServerPort(data.serverPort);
-        setCameraPort(data.cameraPort);
-      }
-    };
-
-    fetchConfig();
-  }, []);
   const refreshComponents = () => {
-
     setBlink(true);
 
-   
     setTimeout(() => {
       setBlink(false);
-    }, 100);
-   
+    }, 125);
+
     setRefreshKey((prevKey) => prevKey + 1);
   };
 
@@ -96,16 +69,16 @@ export default function HomePage(props) {
         }),
       });
       if (!response.ok) {
-        throw new Error("Serveur indisponible"); 
+        throw new Error("Serveur indisponible");
       }
       const log = await response.json();
       console.log(log);
       const newLogList = Array.isArray(log) ? log : [log];
       setLogList((prevLogList) => [...prevLogList, ...newLogList]);
-      setErrorMessage(""); 
+      setErrorMessage("");
     } catch (error) {
-      console.error(error); 
-      setErrorMessage("Serveur indisponible."); 
+      console.error(error);
+      setErrorMessage("Serveur indisponible.");
     }
   };
 
@@ -113,9 +86,8 @@ export default function HomePage(props) {
     setAllRobotsVisibility(!isAllRobotsVisible);
   };
   useEffect(() => {
-
     const lignesTemplate = template.split("\n");
-   
+
     const templateEstPresent = lignesTemplate.every((ligne) =>
       editorContent.includes(ligne.trim())
     );
@@ -130,21 +102,18 @@ export default function HomePage(props) {
       );
       setBoutonTexte("Doit contenir le template et sélectionner un robot");
     }
-  }, [editorContent,selectedRobot]);
+  }, [editorContent, selectedRobot]);
 
   const verifierContenu = async () => {
-   
     const lignesTemplate = template.split("\n");
-   
+
     const templateEstPresent = lignesTemplate.every((ligne) =>
       editorContent.includes(ligne.trim())
     );
     if (templateEstPresent) {
       alert("La configuration ESP est présente dans le contenu.");
       try {
-       
         const blob = new Blob([editorContent], { type: "text/plain" });
-
 
         const formData = new FormData();
         formData.append("file", blob, "monFichier.ino");
@@ -158,14 +127,11 @@ export default function HomePage(props) {
 
         if (response.ok) {
           console.log("Fichier envoyé avec succès");
-
         } else {
           console.error("Échec de l'envoi du fichier");
-
         }
       } catch (error) {
         console.error("Erreur lors de l'envoi du fichier", error);
-      
       }
     } else {
       alert(
@@ -178,77 +144,16 @@ export default function HomePage(props) {
     setEditorContent(newValue);
   };
 
-  const checkStream = () => {
-    console.log("[+] Checking the camera stream on :", streamURLRef.current);
-
-
-    fetch(streamURLRef.current, {
-      method: "OPTIONS",
-      cache: "no-cache",
-      signal: AbortSignal.timeout(3000),
-    })
-      .then((response) => {
-        if (response.status === 200 || response.status === 204) {
-          setCamStreamOn(true);
-          console.log("[+] CAMERA STREAM IS ON !!");
-          console.log(
-            "Response Status :",
-            response.status,
-            response.statusText
-          );
-        } else {
-          console.log(
-            "[-] ERROR Status :",
-            response.status,
-            response.statusText
-          );
-          throw new Error("Stream not available");
-        }
-      })
-      .catch(() => {
-        console.log("[-] Error : no camera stream available");
-        setCamStreamOn(false);
-      });
-  };
-
-  useEffect(() => {
-    streamURLRef.current = `${baseURLCamera}:${cameraPort}/cam/`;
-  }, [cameraPort, baseURLCamera]); 
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      fetchLogs();
-    }, 2000);
-
-    return () => clearInterval(intervalId); 
-  }, [serverIp, serverPort, refreshKey]); 
-
-  useEffect(() => {
-    checkStream(); 
-    const intervalId = setInterval(checkStream, 8000);
-
-    return () => {
-      console.log("Cleaning up the camera stream check...");
-      clearInterval(intervalId);
-    };
-  }, [baseURLCamera, cameraPort]); 
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-
   const handlePreviousPage = () => {
-    router.push("/upload");
+    router.push("/configuration");
   };
 
   const handleNextPage = () => {
-    router.push("camera")
+    router.push("/camera");
   };
 
-    return (
-      <>
+  return (
+    <>
       <div className="bg-gray-200 flex justify-center items-center">
         <div
           style={{
@@ -407,11 +312,11 @@ export default function HomePage(props) {
             marginLeft: "675px",
             marginTop: "10px",
           }}
-          disabled={!selectedRobot} 
+          disabled={!selectedRobot}
         >
           {boutonTexte}
         </button>
       </div>
-      </>);
-  }
-
+    </>
+  );
+}

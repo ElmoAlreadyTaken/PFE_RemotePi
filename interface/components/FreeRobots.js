@@ -1,23 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 
-const FreeRobots = ({onSelectedRobotChange }) => {
+const FreeRobots = ({ onSelectedRobotChange }) => {
   const [robots, setRobots] = useState([]);
   const [selectedRobot, setSelectedRobot] = useState(null);
   const [error, setError] = useState(null);
-  const [baseURLServer, setbaseURLServer] = useState('');
-  const [baseURLCamera, setbaseURLCamera] = useState('');
-  const [serverPort, setServerPort] = useState('');
-  const [cameraPort, setCameraPort] = useState('');
+  const [baseURLServer, setbaseURLServer] = useState("");
+  const [baseURLCamera, setbaseURLCamera] = useState("");
+  const [serverPort, setServerPort] = useState("");
+  const [cameraPort, setCameraPort] = useState("");
 
   useEffect(() => {
     const fetchConfig = async () => {
-      const { data, error } = await supabase.from('server_configurations').select('*').single();
+      const { data, error } = await supabase
+        .from("server_configurations")
+        .select("*")
+        .single();
       if (data) {
-        setbaseURLServer(data.baseURLServer); 
-        setbaseURLCamera(data.baseURLCamera)
+        setbaseURLServer(data.baseURLServer);
+        setbaseURLCamera(data.baseURLCamera);
         setServerPort(data.serverPort);
-        setCameraPort(data.cameraPort); 
+        setCameraPort(data.cameraPort);
       }
     };
 
@@ -28,7 +31,7 @@ const FreeRobots = ({onSelectedRobotChange }) => {
     const fetchFreeRobots = async () => {
       try {
         if (!baseURLServer || !serverPort) return;
-  
+
         const response = await fetch(
           `${baseURLServer}:${serverPort}/robots/free`,
           {
@@ -38,16 +41,16 @@ const FreeRobots = ({onSelectedRobotChange }) => {
             }),
           }
         );
-  
+
         const data = await response.json();
         setRobots(data);
       } catch (error) {
         setError("Erreur lors de la récupération des robots.");
       }
     };
-  
+
     fetchFreeRobots();
-  }, [baseURLServer, serverPort, cameraPort]);  
+  }, [baseURLServer, serverPort, cameraPort]);
 
   const handleRobotSelection = (event) => {
     const selectedRobotId = parseInt(event.target.value, 10);

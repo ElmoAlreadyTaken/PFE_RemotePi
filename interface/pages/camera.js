@@ -7,27 +7,140 @@ import FreeRobots from "../components/FreeRobots";
 import AllRobots from "../components//AllRobots";
 
 export default function MainComponent() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAccountValidated, setIsAccountValidated] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [logList, setLogList] = useState([]);
   const router = useRouter();
   const [isFileSent, setIsFileSent] = useState(false);
+  const [selectedRobotIdForLogs, setSelectedRobotIdForLogs] = useState(null);
+
+  const [blink, setBlink] = useState(false);
+  const [serverIp, setServerIp] = useState("localhost");
+  const [serverPort, setServerPort] = useState("");
+  const [cameraPort, setCameraPort] = useState("");
+  const [camStreamOn, setCamStreamOn] = useState(false);
+  const [streamURL, setStreamURL] = useState("");
+  const [baseURLServer, setbaseURLServer] = useState("");
+  const [baseURLCamera, setbaseURLCamera] = useState("");
+  const streamURLRef = useRef(streamURL);
   const clearLogs = () => {
     setLogList([]);
   };
   const handleFileSent = () => {
     setIsFileSent(true);
-    fetchLogs(); // Appeler fetchLogs ici pour rafraîchir les logs après l'envoi du fichier
+    fetchLogs();
   };
+
   const handlePreviousPage = () => {
-    router.push("/upload");
+    router.push("/configuration");
   };
 
   const handleNextPage = () => {
-    router.push("camera")
+    router.push("camera");
   };
-    return (
-        <>
-        <div className="bg-gray-200 flex justify-center items-center">
+
+  useEffect(() => {
+    const checkSessionAndValidation = async () => {
+      const { data: user } = await supabase.auth.getUser();
+      setIsLoggedIn(!!user);
+
+      if (user.user != null) {
+        const { data: profile, error } = await supabase
+          .from("user_profiles")
+          .select("validated")
+          .eq("user_id", user.user.id)
+          .single();
+
+        if (error) {
+          console.error("Erreur lors de la récupération du profil:", error);
+        } else {
+          setIsAccountValidated(profile.validated);
+        }
+      }
+    };
+
+    checkSessionAndValidation();
+
+    const subscription = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+      if (session) {
+      }
+    });
+  }, []);
+  const checkStream = () => {
+    console.log("[+] Checking the camera stream on :", streamURLRef.current);
+
+    fetch(streamURLRef.current, {
+      method: "OPTIONS",
+      cache: "no-cache",
+      signal: AbortSignal.timeout(3000),
+    })
+      .then((response) => {
+        if (response.status === 200 || response.status === 204) {
+          setCamStreamOn(true);
+          console.log("[+] CAMERA STREAM IS ON !!");
+          console.log(
+            "Response Status :",
+            response.status,
+            response.statusText
+          );
+        } else {
+          console.log(
+            "[-] ERROR Status :",
+            response.status,
+            response.statusText
+          );
+          throw new Error("Stream not available");
+        }
+      })
+      .catch(() => {
+        console.log("[-] Error : no camera stream available");
+        setCamStreamOn(false);
+      });
+  };
+  useEffect(() => {
+    checkStream();
+    const intervalId = setInterval(checkStream, 8000);
+
+    return () => {
+      console.log("Cleaning up the camera stream check...");
+      clearInterval(intervalId);
+    };
+  }, [baseURLCamera, cameraPort]);
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      const { data, error } = await supabase
+        .from("server_configurations")
+        .select("*")
+        .single();
+      if (data) {
+        setbaseURLServer(data.baseURLServer);
+        setbaseURLCamera(data.baseURLCamera);
+        setServerPort(data.serverPort);
+        setCameraPort(data.cameraPort);
+      }
+    };
+
+    fetchConfig();
+  }, []);
+
+  useEffect(() => {
+    streamURLRef.current = `${baseURLCamera}:${cameraPort}/cam/`;
+  }, [cameraPort, baseURLCamera]);
+
+  if (!isLoggedIn) {
+    return <>You have to log in to see this content.</>;
+  }
+
+  if (!isAccountValidated) {
+    return <>You have to log in to see this content.</>;
+  }
+
+  return (
+    <>
+      <div className="bg-gray-200 flex justify-center items-center">
         <div
           style={{
             display: "flex",
@@ -47,179 +160,191 @@ export default function MainComponent() {
           <button onClick={handleNextPage}>Caméra</button>
         </div>
       </div>
-        <div className="bg-gray-200">
-            <div className="flex ">
-                <div
-                    className="overflow-hidden bg-white flex justify-center items-center  shadow-xl sm:rounded-lg "
-                    style={{
-                        height: "600px",
-                        width: "1040px",
-                        borderRadius: "20px",
-                        marginTop: "80px",
-                        marginLeft: "40px",
-                    }}
-                >
-                    <iframe
-                        src="https://player.twitch.tv/?channel=otplol_&parent=localhost"
-                        height="560"
-                        width="1000"
-                        frameBorder="0"
-                        scrolling="no"
-                        allowFullScreen={true}
-                    ></iframe>
+      <div className="bg-gray-200">
+        <div className="flex ">
+          <div
+            className="overflow-hidden bg-white flex justify-center items-center  shadow-xl sm:rounded-lg "
+            style={{
+              height: "600px",
+              width: "1040px",
+              borderRadius: "20px",
+              marginTop: "80px",
+              marginLeft: "40px",
+            }}
+          >
+            <div className="ml-1 streamContainer">
+              {camStreamOn ? (
+                <iframe
+                  src={streamURLRef.current}
+                  height="560"
+                  width="1000"
+                  frameBorder="0"
+                  scrolling="no"
+                  allowFullScreen={true}
+                ></iframe>
+              ) : (
+                <div>
+                  <div style={{ color: "red" }}>
+                  Erreur: Impossible de charger la caméra.</div>
                 </div>
-
-                <div
-                    className="overflow-hidden bg-white flex justify-center items-center  shadow-xl sm:rounded-lg "
-                    style={{
-                        height: "700px",
-                        width: "750px",
-                        borderRadius: "20px",
-                        marginTop: "20px",
-                        marginLeft: "40px",
-                    }}
-                >
-                    <div
-                        class="relative overflow-x-auto shadow-md sm:rounded-lg"
-                        style={{
-                            height: "800px",
-                            width: "700px",
-                            marginTop: "80px",
-                        }}
-                    >
-                        {errorMessage && (
-                            <div style={{ color: "red", marginTop: "10px" }}>
-                                {errorMessage}
-                            </div>
-                        )}
-                        <div>
-                            <br></br>
-                        </div>
-                        <div
-                            className="relative overflow-x-auto shadow-md sm:rounded-lg"
-                            style={{ maxHeight: "400px", overflowY: "auto" }}
-                        >
-                            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                                <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                    <tr>
-                                        <th
-                                            scope="col"
-                                            style={{ width: "10%" }}
-                                            className="px-6 py-3"
-                                        >
-                                            Robot
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            style={{ width: "10%" }}
-                                            className="px-6 py-3"
-                                        >
-                                            Heure
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            style={{ width: "80%" }}
-                                            className="px-6 py-3"
-                                        >
-                                            Message/Error
-                                        </th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    {logList.map((log, index) => (
-                                        <tr key={index}>
-                                            <td className="px-6 py-4">{log.id}</td>
-                                            <td className="px-6 py-4">{log.time}</td>
-                                            <td
-                                                className={`px-6 py-4 ${log.error ? "text-red-500" : "text-black"
-                                                    }`}
-                                            >
-                                                {log.message || log.error}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+              )}
             </div>
-            <button
-                onClick={clearLogs}
-                className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                style={{
-                    marginTop: "0px",
-                    marginLeft: "1450px",
-                }}
+          </div>
+
+          <div
+            className="overflow-hidden bg-white flex justify-center items-center  shadow-xl sm:rounded-lg "
+            style={{
+              height: "700px",
+              width: "750px",
+              borderRadius: "20px",
+              marginTop: "20px",
+              marginLeft: "40px",
+            }}
+          >
+            <div
+              class="relative overflow-x-auto shadow-md sm:rounded-lg"
+              style={{
+                height: "800px",
+                width: "700px",
+                marginTop: "80px",
+              }}
             >
-                Effacer
-            </button>
-            {errorMessage && (
-                <div style={{ color: "red", marginTop: "10px" }}>{errorMessage}</div>
-            )}
-            <div>
-                <br></br>
-            </div>
-            {isFileSent && (
-                <div
-                    className="relative overflow-x-auto shadow-md sm:rounded-lg"
-                    style={{ maxHeight: "400px", overflowY: "auto" }}
-                >
-                    <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                            <tr>
-                                <th
-                                    scope="col"
-                                    style={{ width: "10%" }}
-                                    className="px-6 py-3"
-                                >
-                                    Robot
-                                </th>
-                                <th
-                                    scope="col"
-                                    style={{ width: "10%" }}
-                                    className="px-6 py-3"
-                                >
-                                    Heure
-                                </th>
-                                <th
-                                    scope="col"
-                                    style={{ width: "80%" }}
-                                    className="px-6 py-3"
-                                >
-                                    Message/Error
-                                </th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {logList
-                                .filter(
-                                    (log) =>
-                                        !selectedRobotIdForLogs ||
-                                        log.id === selectedRobotIdForLogs
-                                )
-                                .map((log, index) => (
-                                    <tr key={index}>
-                                        <td className="px-6 py-4">{log.id}</td>
-                                        <td className="px-6 py-4">{log.time}</td>
-                                        <td
-                                            className={`px-6 py-4 ${log.error ? "text-red-500" : "text-black"
-                                                }`}
-                                        >
-                                            {log.message || log.error}
-                                        </td>
-                                    </tr>
-                                ))}
-                        </tbody>
-                    </table>
+              {errorMessage && (
+                <div style={{ color: "red", marginTop: "10px" }}>
+                  {errorMessage}
                 </div>
-            )}
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
+              )}
+              <div>
+                <br></br>
+              </div>
+              <div
+                className="relative overflow-x-auto shadow-md sm:rounded-lg"
+                style={{ maxHeight: "400px", overflowY: "auto" }}
+              >
+                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                  <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                      <th
+                        scope="col"
+                        style={{ width: "10%" }}
+                        className="px-6 py-3"
+                      >
+                        Robot
+                      </th>
+                      <th
+                        scope="col"
+                        style={{ width: "10%" }}
+                        className="px-6 py-3"
+                      >
+                        Heure
+                      </th>
+                      <th
+                        scope="col"
+                        style={{ width: "80%" }}
+                        className="px-6 py-3"
+                      >
+                        Message/Error
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {logList.map((log, index) => (
+                      <tr key={index}>
+                        <td className="px-6 py-4">{log.id}</td>
+                        <td className="px-6 py-4">{log.time}</td>
+                        <td
+                          className={`px-6 py-4 ${
+                            log.error ? "text-red-500" : "text-black"
+                          }`}
+                        >
+                          {log.message || log.error}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
-        </>);
+        <button
+          onClick={clearLogs}
+          className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          style={{
+            marginTop: "0px",
+            marginLeft: "1450px",
+          }}
+        >
+          Effacer
+        </button>
+        {errorMessage && (
+          <div style={{ color: "red", marginTop: "10px" }}>{errorMessage}</div>
+        )}
+        <div>
+          <br></br>
+        </div>
+        {isFileSent && (
+          <div
+            className="relative overflow-x-auto shadow-md sm:rounded-lg"
+            style={{ maxHeight: "400px", overflowY: "auto" }}
+          >
+            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                  <th
+                    scope="col"
+                    style={{ width: "10%" }}
+                    className="px-6 py-3"
+                  >
+                    Robot
+                  </th>
+                  <th
+                    scope="col"
+                    style={{ width: "10%" }}
+                    className="px-6 py-3"
+                  >
+                    Heure
+                  </th>
+                  <th
+                    scope="col"
+                    style={{ width: "80%" }}
+                    className="px-6 py-3"
+                  >
+                    Message/Error
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {logList
+                  .filter(
+                    (log) =>
+                      !selectedRobotIdForLogs ||
+                      log.id === selectedRobotIdForLogs
+                  )
+                  .map((log, index) => (
+                    <tr key={index}>
+                      <td className="px-6 py-4">{log.id}</td>
+                      <td className="px-6 py-4">{log.time}</td>
+                      <td
+                        className={`px-6 py-4 ${
+                          log.error ? "text-red-500" : "text-black"
+                        }`}
+                      >
+                        {log.message || log.error}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
+      </div>
+    </>
+  );
 }

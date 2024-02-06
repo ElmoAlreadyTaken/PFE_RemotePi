@@ -42,21 +42,7 @@ export default function MainComponent() {
   }
   
   if (!isAccountValidated) {
-    return (
-      <div className="min-h-screen header-container2 ">
-        <div class="Modern-Slider  ">
-          <div class="item ">
-            <div class="img-fill">
-              <div class="text-content">
-                <h3>Bienvenue sur RemotePi</h3>
-                <h5>UN PROJET ECE</h5>
-                <h5>En attente de validation du compte</h5>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <>You have to log in to see this content.</>;
   }
   return (
     <>

@@ -48,16 +48,16 @@ export default function Header({ theme, setTheme }) {
                         <Link href="/">ACCUEIL</Link>
                       </li>
                       <li class="scroll-to-section">
-                        <Link href="/about">à PROPOS</Link>
+                        <Link href="/informations">à PROPOS</Link>
                       </li>
 
                       {isLoggedIn ? (
                         <>
                           <li class="scroll-to-section">
-                            <Link href="/upload">téléverser</Link>
+                            <Link href="/configuration">téléverser</Link>
                           </li>
                           <li class="scroll-to-section">
-                            <Link href="/profile">Profil</Link>
+                            <Link href="/profil">Profil</Link>
                           </li>
                           <li class="scroll-to-section">
                             <Link href="/">
