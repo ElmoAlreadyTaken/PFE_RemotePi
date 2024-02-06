@@ -19,9 +19,9 @@ def generate_logs():
         # Randomly alternate between MESSAGE and ERROR
         is_error = random.choice([True, False])
         if is_error:
-            data = {'id': _id, 'error': 'This is a test error message.'}
+            data = {'id': 2, 'error': 'This is a test error message.'}
         else:
-            data = {'id': _id, 'message': 'This is a test message.'}
+            data = {'id': 1, 'message': 'This is a test message.'}
         
         # Post log to server /log endpoint
         requests.post(LOG_URL, json=data, verify=False)

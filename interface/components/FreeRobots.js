@@ -63,7 +63,7 @@ const FreeRobots = ({onSelectedRobotChange }) => {
     <div>
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      <label htmlFor="robotSelector">Sélectionnez un robot :</label>
+      <label htmlFor="robotSelector">Robot disponible : </label>
       <select id="robotSelector" onChange={handleRobotSelection}>
         <option value="">Sélectionnez un robot</option>
         {robots.map((robot) => (
