@@ -22,8 +22,21 @@ export default function HomePage(props) {
   const [streamURL, setStreamURL] = useState(''); // Initial URL or default value
   const [baseURLServer, setbaseURLServer] = useState('');
   const [baseURLCamera, setbaseURLCamera] = useState('');
-  
+  const [selectedRobotIdForLogs, setSelectedRobotIdForLogs] = useState(null);
   const streamURLRef = useRef(streamURL);
+  const [isFileSent, setIsFileSent] = useState(false);
+
+
+  
+  const handleFileSent = () => {
+    setIsFileSent(true);
+    fetchLogs(); // Appeler fetchLogs ici pour rafraîchir les logs après l'envoi du fichier
+  };
+  
+  const handleRobotChangeFromUpload = (robot) => {
+    setSelectedRobotIdForLogs(robot.id);
+  };
+
     
   useEffect(() => {
     const fetchConfig = async () => {
@@ -38,6 +51,7 @@ export default function HomePage(props) {
         setCameraPort(data.cameraPort);
       }
     };
+    
 
     fetchConfig();
   }, []);
@@ -56,7 +70,6 @@ export default function HomePage(props) {
   const handleSelectedRobotChange = (newSelectedRobot) => {
     setSelectedRobot(newSelectedRobot);
     // Vous pouvez effectuer d'autres actions en fonction de la nouvelle valeur de selectedRobot
-    console.log("Selected Robot in Parent Component:", newSelectedRobot);
   };
   var template = `#include <remotePi.h>
   remotePi config;
@@ -91,6 +104,7 @@ export default function HomePage(props) {
         throw new Error("Serveur indisponible"); // Peut indiquer une erreur 4XX/5XX
       }
       const log = await response.json();
+      console.log(log);
       const newLogList = Array.isArray(log) ? log : [log];
       setLogList((prevLogList) => [...prevLogList, ...newLogList]);
       setErrorMessage(""); // Réinitialiser le message d'erreur en cas de succès
@@ -210,7 +224,7 @@ export default function HomePage(props) {
   useEffect(() => {
     const intervalId = setInterval(() => {
       fetchLogs();
-    }, 100000000000); // Exécute `fetchLogs` toutes les 1000 millisecondes (1 seconde)
+    }, 2000); // Exécute `fetchLogs` toutes les 1000 millisecondes (1 seconde)
 
     return () => clearInterval(intervalId); // Nettoyage de l'intervalle lors du démontage du composant
   }, [serverIp, serverPort, refreshKey]); // Les dépendances assurent que l'intervalle est réinitialisé si `serverIp` ou `serverPort` changent
@@ -404,6 +418,8 @@ export default function HomePage(props) {
               >
                 <FileUpload
                   selectedRobot={selectedRobot}
+                  onRobotChangeFromUpload={handleRobotChangeFromUpload}
+                  onFileSent={handleFileSent}
                 />
               </div>{" "}
             </div>
@@ -545,6 +561,54 @@ export default function HomePage(props) {
         >
           Effacer
         </button>
+        {errorMessage && (
+          <div style={{ color: "red", marginTop: "10px" }}>{errorMessage}</div>
+        )}
+        <div>
+          <br></br>
+        </div>
+        {isFileSent && (
+        <div
+          className="relative overflow-x-auto shadow-md sm:rounded-lg"
+          style={{ maxHeight: "400px", overflowY: "auto" }}
+        >
+          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+              <tr>
+                <th scope="col" style={{ width: "10%" }} className="px-6 py-3">
+                  Robot
+                </th>
+                <th scope="col" style={{ width: "10%" }} className="px-6 py-3">
+                  Heure
+                </th>
+                <th scope="col" style={{ width: "80%" }} className="px-6 py-3">
+                  Message/Error
+                </th>
+              </tr>
+            </thead>
+         
+            <tbody>
+              {logList
+              .filter((log) =>  !selectedRobotIdForLogs || log.id === selectedRobotIdForLogs)
+              .map((log, index) => (
+                <tr key={index}>
+                  <td className="px-6 py-4">{log.id}</td>
+                  <td className="px-6 py-4">{log.time}</td>
+                  <td
+                    className={`px-6 py-4 ${
+                      log.error ? "text-red-500" : "text-black"
+                    }`}
+                  >
+                    {log.message || log.error}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        )}
+        <br></br>
+        <br></br>
         <br></br>
         <br></br>
       </div>

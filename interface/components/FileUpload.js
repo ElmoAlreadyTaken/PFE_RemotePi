@@ -3,12 +3,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { Dropzone, FileMosaic } from "@files-ui/react";
 import { supabase } from "../lib/supabase";
 
-export default function FileUpload({ selectedRobot }) {
+export default function FileUpload({selectedRobot, onRobotChangeFromUpload,onFileSent,}) {
+  
   const [files, setFiles] = React.useState([]);
-  const [baseURLServer, setbaseURLServer] = useState("");
-  const [serverPort, setServerPort] = useState("");
-  const [cameraPort, setCameraPort] = useState("");
-  const [baseURLCamera, setbaseURLCamera] = useState("");
+  const [baseURLServer, setbaseURLServer] = useState('');
+  const [serverPort, setServerPort] = useState('');
+  const [cameraPort, setCameraPort] = useState('');
+  const [baseURLCamera, setbaseURLCamera] = useState('');
+
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -42,15 +44,15 @@ export default function FileUpload({ selectedRobot }) {
 
         // Votre template
         const template = `#include <remotePi.h>
-        remotePi config;
-        void setup() {
-          Serial.begin(115200);
-          config.begin();
-        }
-      
-        void loop() {
-          config.handleClient();
-        }`;
+remotePi config;
+void setup() {
+  Serial.begin(115200);
+  config.begin();
+}
+
+void loop() {
+  config.handleClient();
+}`;
 
         const lignesTemplate = template.split("\n");
         const templateEstPresent = lignesTemplate.every((ligne) =>
@@ -86,10 +88,9 @@ export default function FileUpload({ selectedRobot }) {
       const file = fileObj.file ? fileObj.file : fileObj;
       formData.append("file", file);
     });
-    if (selectedRobot) {
-      formData.append("robotId", selectedRobot.id);
-    }
-
+    formData.append("robotId", selectedRobot.id);
+    onRobotChangeFromUpload(selectedRobot);
+    onFileSent();
     try {
       if (!baseURLServer || !serverPort) return;
       const response = await fetch(`${baseURLServer}:${serverPort}/upload`, {
@@ -99,12 +100,13 @@ export default function FileUpload({ selectedRobot }) {
           "ngrok-skip-browser-warning": "69420",
         },
       });
-
+      
       if (response.ok) {
         console.log("Fichier envoyé avec succès");
         alert("Votre code a été envoyé !");
         // Nettoyer l'état et l'UI si nécessaire
         setFiles([]);
+        
       } else {
         console.log("Échec de l'envoi du fichier");
       }
@@ -151,7 +153,7 @@ export default function FileUpload({ selectedRobot }) {
 
       <button
         onClick={customFileSend}
-        className="px-4 py-2 mt-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
+        className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
       >
         Envoyer le fichier
       </button>
