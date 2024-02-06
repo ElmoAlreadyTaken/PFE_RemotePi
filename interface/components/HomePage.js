@@ -256,7 +256,7 @@ export default function HomePage(props) {
     };
 
     const handleNextPage = () => {
-      onPageChange((prevPage) => prevPage + 1);
+      onPageChange((prevPage) => Math.min(prevPage + 1, 2)); 
     };
 
     return (
@@ -291,11 +291,12 @@ export default function HomePage(props) {
           <div
             className="overflow-hidden bg-white shadow-xl sm:rounded-lg "
             style={{
-              height: "150px",
-              width: "600px",
+              height: isAllRobotsVisible ? "400px" : "150px",
+              width: "560px",
               borderRadius: "20px",
-              marginTop: "150px",
+              marginTop: "225px",
               marginLeft: "40px",
+              transition: "height 0.5s ease",
             }}
           >
             <div style={{ display: "flex", alignItems: "center" }}>
@@ -345,7 +346,7 @@ export default function HomePage(props) {
                 <div
                   className="AllRobotsContainer "
                   style={{
-                    marginLeft: "20px",
+                    marginLeft: "100px",
                   }}
                 >
                   <br></br>
@@ -428,17 +429,7 @@ export default function HomePage(props) {
           <br></br> <br></br>
           <br></br>
         </div>
-        <div
-          className="overflow-hidden bg-white shadow-xl sm:rounded-lg "
-          style={{
-            height: "150px",
-            width: "600px",
-            borderRadius: "20px",
-            marginTop: "-385px",
-            marginLeft: "40px",
-            position: "absolute",
-          }}
-        ></div>
+
       </div>
     );
   }

@@ -10,6 +10,7 @@ const AllRobots = () => {
   const [serverPort, setServerPort] = useState('');
   const [cameraPort, setCameraPort] = useState('');
   const [baseURLCamera, setbaseURLCamera] = useState('');
+  const [configLoaded, setConfigLoaded] = useState(false);
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -19,34 +20,38 @@ const AllRobots = () => {
         setbaseURLCamera(data.baseURLCamera);
         setServerPort(data.serverPort);
         setCameraPort(data.cameraPort);
+        setConfigLoaded(true); // Indiquez que la configuration est chargée
       }
     };
-
+  
     fetchConfig();
-  }, []);
+  }, []); // Ce useEffect ne devrait être exécuté qu'une seule fois au montage du composant
+  
   useEffect(() => {
-    const fetchAllRobots = async () => {
-      try {
-        
-        const response = await fetch(
-          `${baseURLServer}:${serverPort}/robots`,
-          {
-            method: "GET",
-            headers: new Headers({
-              "ngrok-skip-browser-warning": "69420",
-            }),
-          }
-        );
-
-        const data = await response.json();
-        setRobots(data);
-      } catch (error) {
-        setError("Erreur lors de la récupération des robots.");
-      }
-    };
-
-    fetchAllRobots();
-  }, [baseURLServer,baseURLCamera, serverPort, cameraPort]);
+    if (configLoaded) { // Exécutez `fetchAllRobots` uniquement si la configuration est chargée
+      const fetchAllRobots = async () => {
+        try {
+          const response = await fetch(
+            `${baseURLServer}:${serverPort}/robots`,
+            {
+              method: "GET",
+              headers: new Headers({
+                "ngrok-skip-browser-warning": "69420",
+              }),
+            }
+          );
+  
+          const data = await response.json();
+          setRobots(data);
+        } catch (error) {
+          setError("Erreur lors de la récupération des robots.");
+        }
+      };
+  
+      fetchAllRobots();
+    }
+  }, [configLoaded, baseURLServer, serverPort]); // Dépendez de `configLoaded` pour contrôler l'exécution
+  
 
   return (
     <div>

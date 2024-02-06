@@ -5,10 +5,10 @@ import { supabase } from "../lib/supabase";
 
 export default function FileUpload({ selectedRobot }) {
   const [files, setFiles] = React.useState([]);
-  const [baseURLServer, setbaseURLServer] = useState('');
-  const [serverPort, setServerPort] = useState('');
-  const [cameraPort, setCameraPort] = useState('');
-  const [baseURLCamera, setbaseURLCamera] = useState('');
+  const [baseURLServer, setbaseURLServer] = useState("");
+  const [serverPort, setServerPort] = useState("");
+  const [cameraPort, setCameraPort] = useState("");
+  const [baseURLCamera, setbaseURLCamera] = useState("");
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -17,7 +17,7 @@ export default function FileUpload({ selectedRobot }) {
         .select("*")
         .single();
       if (data) {
-        setbaseURLServer(data.baseURLServer); 
+        setbaseURLServer(data.baseURLServer);
         setbaseURLCamera(data.baseURLCamera);
         setServerPort(data.serverPort);
         setCameraPort(data.cameraPort);
@@ -76,13 +76,19 @@ export default function FileUpload({ selectedRobot }) {
   };
 
   async function customFileSend() {
+    if (!selectedRobot) {
+      return;
+    }
+
     const formData = new FormData();
     files.forEach((fileObj) => {
       // Vous devrez peut-être ajuster cette ligne pour accéder correctement à l'objet File, selon la structure des données de fileObj.
       const file = fileObj.file ? fileObj.file : fileObj;
       formData.append("file", file);
     });
-    formData.append("robotId", selectedRobot.id);
+    if (selectedRobot) {
+      formData.append("robotId", selectedRobot.id);
+    }
 
     try {
       if (!baseURLServer || !serverPort) return;
