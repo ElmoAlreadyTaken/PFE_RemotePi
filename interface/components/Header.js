@@ -38,7 +38,7 @@ export default function Header({ theme, setTheme }) {
           <header class="header-area header-sticky">
             <div class="container">
               <div class="row">
-                <div class="col-12">
+                <div class="col-12 ">
                   <nav class="main-nav">
                     <Link href="/" class="logo">
                       .REMOTEPI
@@ -60,7 +60,7 @@ export default function Header({ theme, setTheme }) {
                             <Link href="/profile">Profil</Link>
                           </li>
                           <li class="scroll-to-section">
-                            <Link href='/'>
+                            <Link href="/">
                               <button
                                 class="scroll-to-section"
                                 onClick={handleLogout}
@@ -77,12 +77,6 @@ export default function Header({ theme, setTheme }) {
                           </li>
                         </div>
                       )}
-
-                      <div class="search-icon">
-                        <Link href="/">
-                          <i class="fa fa-search"></i>
-                        </Link>
-                      </div>
                     </ul>
                     <Link href="/" class="menu-trigger">
                       <span>Menu</span>

@@ -14,13 +14,16 @@ export default function HomePage(props) {
   const [errorMessage, setErrorMessage] = useState("");
   const [logList, setLogList] = useState([]);
   const [blink, setBlink] = useState(false);
-  const [baseURL, setBaseURL] = useState('');
-  const [serverPort, setServerPort] = useState('');
-  const [cameraPort, setCameraPort] = useState('');
+  const [baseURL, setBaseURL] = useState("");
+  const [serverPort, setServerPort] = useState("");
+  const [cameraPort, setCameraPort] = useState("");
 
   useEffect(() => {
     const fetchConfig = async () => {
-      const { data, error } = await supabase.from('server_configurations').select('*').single();
+      const { data, error } = await supabase
+        .from("server_configurations")
+        .select("*")
+        .single();
       if (data) {
         setBaseURL(data.baseURL); // Assurez-vous que le nom du champ correspond à votre base de données
         setServerPort(data.serverPort);
@@ -70,9 +73,8 @@ export default function HomePage(props) {
   const fetchLogs = async () => {
     try {
       if (!baseURL || !serverPort) return;
-  
-        const response = await fetch(
-          `${baseURL}:${serverPort}/log`, {
+
+      const response = await fetch(`${baseURL}:${serverPort}/log`, {
         method: "GET",
         headers: new Headers({
           "ngrok-skip-browser-warning": "69420",
@@ -146,14 +148,11 @@ export default function HomePage(props) {
         // Utiliser l'API Fetch pour envoyer le fichier au serveur
         // Déterminer le schéma en fonction de la valeur de serverIP
         if (!baseURL || !serverPort) return;
-  
-        const response = await fetch(
-          `${baseURL}:${serverPort}/upload`,
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
+
+        const response = await fetch(`${baseURL}:${serverPort}/upload`, {
+          method: "POST",
+          body: formData,
+        });
 
         if (response.ok) {
           console.log("Fichier envoyé avec succès");
@@ -176,181 +175,341 @@ export default function HomePage(props) {
   const onChange = (newValue) => {
     setEditorContent(newValue);
   };
+  const [currentPage, setCurrentPage] = useState(1);
 
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const renderPageContent = () => {
+    switch (currentPage) {
+      case 1:
+        return <PageOneContent />;
+      case 2:
+        return <PageTwoContent />;
+      default:
+        return null;
+    }
+  };
   return (
-    <div className="">
-      <br></br>
-      <div style={{ display: "flex", alignItems: "center" }}>
+    <div>
+      <NavigationButtons onPageChange={handlePageChange} />
+      {renderPageContent()}
+    </div>
+  );
+
+  function NavigationButtons({ onPageChange }) {
+    const handlePreviousPage = () => {
+      onPageChange((prevPage) => Math.max(prevPage - 1, 1));
+    };
+
+    const handleNextPage = () => {
+      onPageChange((prevPage) => prevPage + 1);
+    };
+
+    return (
+      <div className="bg-gray-200 flex justify-center items-center">
         <div
-          className="freeRobotsContainer"
           style={{
             display: "flex",
-            justifyContent: "flex-start",
-            marginLeft: "400px",marginTop: "50px",
+            marginRight: "50px",
+            marginTop: "5px",
           }}
         >
-          <FreeRobots
-            key={refreshKey}
-            serverIP={serverIP}
-            portIP={portIP}
-            onSelectedRobotChange={handleSelectedRobotChange}
-          />
+          <button onClick={handlePreviousPage}>Configuration</button>
         </div>
-        <img
-          src="refresh-icon.png"
-          alt="Refresh Icon"
-          onClick={refreshComponents}
+        <div
           style={{
             display: "flex",
-            justifyContent: "flex-start",
-            marginLeft: "30px",
-            cursor: "pointer",
-            width: "35px",
-            height: "35px",
-            animation: blink ? "blink 1s" : "none", // Appliquer l'animation si le clignotement est activé
-          }}
-        />{" "}
-      </div>
-      <div>
-        <button
-          onClick={toggleAllRobotsVisibility}
-          style={{
-            display: "flex",
-            justifyContent: "flex-start",
-            marginLeft: "500px",
+            marginRight: "50px",
+            marginTop: "5px",
           }}
         >
-          {isAllRobotsVisible ? "Masquer les robots" : "Afficher les robots"}
-        </button>
-        {isAllRobotsVisible && (
+          <button onClick={handleNextPage}>Caméra</button>
+        </div>
+      </div>
+    );
+  }
+
+  function PageOneContent() {
+    return (
+      <div className="bg-gray-200 " style={{ height: "calc(100vh - 100px)" }}>
+        <div className="flex">
+          <br></br>
           <div
-            className="AllRobotsContainer "
+            className="overflow-hidden bg-white shadow-xl sm:rounded-lg "
             style={{
-              display: "flex",
-              justifyContent: "flex-start",
-              marginLeft: "20px",
-              marginTop: "5px",
+              height: "150px",
+              width: "600px",
+              borderRadius: "20px",
+              marginTop: "150px",
+              marginLeft: "40px",
             }}
           >
-            <br></br>
-            <AllRobots serverIP={serverIP} portIP={portIP} />
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div
+                className="freeRobotsContainer"
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  marginLeft: "100px",
+                  marginTop: "45px",
+                }}
+              >
+                <FreeRobots
+                  key={refreshKey}
+                  serverIP={serverIP}
+                  portIP={portIP}
+                  onSelectedRobotChange={handleSelectedRobotChange}
+                />
+              </div>
+              <img
+                src="refresh-icon.png"
+                alt="Refresh Icon"
+                onClick={refreshComponents}
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  marginLeft: "30px",
+                  marginTop: "30px",
+                  cursor: "pointer",
+                  width: "35px",
+                  height: "35px",
+                  animation: blink ? "blink 1s" : "none", // Appliquer l'animation si le clignotement est activé
+                }}
+              />{" "}
+            </div>
+
+            <div>
+              <button
+                onClick={toggleAllRobotsVisibility}
+                style={{
+                  marginLeft: "200px",
+                }}
+              >
+                {isAllRobotsVisible
+                  ? "Masquer les robots"
+                  : "Afficher les robots"}
+              </button>
+              {isAllRobotsVisible && (
+                <div
+                  className="AllRobotsContainer "
+                  style={{
+                    marginLeft: "20px",
+                  }}
+                >
+                  <br></br>
+                  <AllRobots serverIP={serverIP} portIP={portIP} />
+                </div>
+              )}
+            </div>
           </div>
-        )}
-      </div>
+          <div
+            className="overflow-hidden bg-white shadow-xl sm:rounded-lg flex justify-center items-center "
+            style={{
+              height: "700px",
+              width: "600px",
+              borderRadius: "20px",
+              marginTop: "30px",
+              marginLeft: "40px",
+            }}
+          >
+            <div className="aceEditorContainer ml-2">
+              <AceEditor
+                mode="c_cpp"
+                theme="monokai"
+                onChange={onChange}
+                name="UNIQUE_ID_OF_DIV"
+                value={editorContent}
+                editorProps={{ $blockScrolling: true }}
+                className="aceEditor"
+                style={{
+                  height: "650px",
+                  width: "550px",
+                }}
+              />
+            </div>{" "}
+          </div>
+          <br></br>{" "}
+          <div
+            className="overflow-hidden bg-white shadow-xl sm:rounded-lg "
+            style={{
+              height: "300px",
+              width: "550px",
+              borderRadius: "20px",
+              marginTop: "150px",
+              marginLeft: "40px",
+            }}
+          >
+            <div className="flex items-center justify-center">
+              <div
+                className="fileUploadContainer"
+                style={{
+                  height: "40px",
+                  width: "400px",
+                  marginTop: "35px",
+                }}
+              >
+                <FileUpload
+                  serverIP={serverIP}
+                  setServerIP={setServerIP}
+                  portIP={portIP}
+                  setPortIP={setPortIP}
+                  selectedRobot={selectedRobot}
+                />
+              </div>{" "}
+            </div>
 
-      <br></br>
-      <div
-        className="fileUploadContainer"
-        style={{
-          display: "flex",
-          justifyContent: "flex-start",
-          marginLeft: "1000px",
-          marginTop: "-75px",
-        }}
-      >
-        <FileUpload
-          serverIP={serverIP}
-          setServerIP={setServerIP}
-          portIP={portIP}
-          setPortIP={setPortIP}
-          selectedRobot={selectedRobot}
-        />
-      </div>
+            <br></br>
 
-      <br></br>
-      <div className="flex ">
-        <div className="streamContainer  ml-1">
-          <iframe
-            src="https://player.twitch.tv/?channel=otplol_&parent=localhost"
-            height="720"
-            width="1280"
-            frameBorder="0"
-            scrolling="no"
-            allowFullScreen={true}
-          ></iframe>
-        </div>
-        <div className="aceEditorContainer ml-2">
-          <AceEditor
-            mode="c_cpp"
-            theme="monokai"
-            onChange={onChange}
-            name="UNIQUE_ID_OF_DIV"
-            value={editorContent}
-            editorProps={{ $blockScrolling: true }}
-            className="aceEditor"
-          />
-        </div>
-      </div>
-      <br></br>
-      <button
-        onClick={verifierContenu}
-        class={boutonStyle}
-        style={{
-          marginLeft: "1300px",
-          position: "absolute",
-          marginTop: "-225px",
-        }}
-        disabled={!selectedRobot} // Désactiver le bouton si aucun robot n'est sélectionné
-      >
-        {boutonTexte}
-      </button>
-      <br></br>
+            <br></br>
 
-      <br></br>
-      <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <button
-          onClick={clearLogs}
-          className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Effacer
-        </button>
-        {errorMessage && (
-          <div style={{ color: "red", marginTop: "10px" }}>{errorMessage}</div>
-        )}
-        <div>
+            <button
+              onClick={verifierContenu}
+              class={boutonStyle}
+              style={{
+                marginLeft: "1300px",
+                position: "absolute",
+                marginTop: "-225px",
+              }}
+              disabled={!selectedRobot} // Désactiver le bouton si aucun robot n'est sélectionné
+            >
+              {boutonTexte}
+            </button>
+          </div>
+          <br></br>
+          <br></br> <br></br>
           <br></br>
         </div>
         <div
-          className="relative overflow-x-auto shadow-md sm:rounded-lg"
-          style={{ maxHeight: "400px", overflowY: "auto" }}
-        >
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-              <tr>
-                <th scope="col" style={{ width: "10%" }} className="px-6 py-3">
-                  Robot
-                </th>
-                <th scope="col" style={{ width: "10%" }} className="px-6 py-3">
-                  Heure
-                </th>
-                <th scope="col" style={{ width: "80%" }} className="px-6 py-3">
-                  Message/Error
-                </th>
-              </tr>
-            </thead>
+          className="overflow-hidden bg-white shadow-xl sm:rounded-lg "
+          style={{
+            height: "150px",
+            width: "600px",
+            borderRadius: "20px",
+            marginTop: "-385px",
+            marginLeft: "40px",
+            position: "absolute",
+          }}
+        ></div>
+      </div>
+    );
+  }
 
-            <tbody>
-              {logList.map((log, index) => (
-                <tr key={index}>
-                  <td className="px-6 py-4">{log.id}</td>
-                  <td className="px-6 py-4">{log.time}</td>
-                  <td
-                    className={`px-6 py-4 ${
-                      log.error ? "text-red-500" : "text-black"
-                    }`}
-                  >
-                    {log.message || log.error}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+  function PageTwoContent() {
+    return (
+      <div className="bg-gray-200">
+        <div className="flex ">
+          <div
+            className="overflow-hidden bg-white flex justify-center items-center  shadow-xl sm:rounded-lg "
+            style={{
+              height: "600px",
+              width: "1040px",
+              borderRadius: "20px",
+              marginTop: "80px",
+              marginLeft: "40px",
+            }}
+          >
+            <iframe
+              src="https://player.twitch.tv/?channel=otplol_&parent=localhost"
+              height="560"
+              width="1000"
+              frameBorder="0"
+              scrolling="no"
+              allowFullScreen={true}
+            ></iframe>
+          </div>
+
+          <div
+            className="overflow-hidden bg-white flex justify-center items-center  shadow-xl sm:rounded-lg "
+            style={{
+              height: "700px",
+              width: "750px",
+              borderRadius: "20px",
+              marginTop: "20px",
+              marginLeft: "40px",
+            }}
+          >
+            <div
+              class="relative overflow-x-auto shadow-md sm:rounded-lg"
+              style={{
+                height: "800px",
+                width: "700px",
+                marginTop: "80px",
+              }}
+            >
+              {errorMessage && (
+                <div style={{ color: "red", marginTop: "10px" }}>
+                  {errorMessage}
+                </div>
+              )}
+              <div>
+                <br></br>
+              </div>
+              <div
+                className="relative overflow-x-auto shadow-md sm:rounded-lg"
+                style={{ maxHeight: "400px", overflowY: "auto" }}
+              >
+                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                  <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                      <th
+                        scope="col"
+                        style={{ width: "10%" }}
+                        className="px-6 py-3"
+                      >
+                        Robot
+                      </th>
+                      <th
+                        scope="col"
+                        style={{ width: "10%" }}
+                        className="px-6 py-3"
+                      >
+                        Heure
+                      </th>
+                      <th
+                        scope="col"
+                        style={{ width: "80%" }}
+                        className="px-6 py-3"
+                      >
+                        Message/Error
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {logList.map((log, index) => (
+                      <tr key={index}>
+                        <td className="px-6 py-4">{log.id}</td>
+                        <td className="px-6 py-4">{log.time}</td>
+                        <td
+                          className={`px-6 py-4 ${
+                            log.error ? "text-red-500" : "text-black"
+                          }`}
+                        >
+                          {log.message || log.error}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
-        <br></br>
-        <br></br>
+        <button
+          onClick={clearLogs}
+          className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          style={{
+            marginTop: "0px",
+            marginLeft: "1450px",
+          }}
+        >
+          Effacer
+        </button>
         <br></br>
         <br></br>
       </div>
-    </div>
-  );
+    );
+  }
 }

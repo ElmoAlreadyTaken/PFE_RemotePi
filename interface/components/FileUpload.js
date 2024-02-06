@@ -1,18 +1,20 @@
 // components/FileUpload.js
-import React, { useState,useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Dropzone, FileMosaic } from "@files-ui/react";
 import { supabase } from "../lib/supabase";
 
-export default function FileUpload({selectedRobot,}) {
-  
+export default function FileUpload({ selectedRobot }) {
   const [files, setFiles] = React.useState([]);
-  const [baseURL, setBaseURL] = useState('');
-  const [serverPort, setServerPort] = useState('');
-  const [cameraPort, setCameraPort] = useState('');
+  const [baseURL, setBaseURL] = useState("");
+  const [serverPort, setServerPort] = useState("");
+  const [cameraPort, setCameraPort] = useState("");
 
   useEffect(() => {
     const fetchConfig = async () => {
-      const { data, error } = await supabase.from('server_configurations').select('*').single();
+      const { data, error } = await supabase
+        .from("server_configurations")
+        .select("*")
+        .single();
       if (data) {
         setBaseURL(data.baseURL); // Assurez-vous que le nom du champ correspond à votre base de données
         setServerPort(data.serverPort);
@@ -105,22 +107,6 @@ export default function FileUpload({selectedRobot,}) {
 
   return (
     <div>
-      <div style={{ textAlign: "center", marginLeft: "100px" }}>
-        <label>
-          Server IP:
-          <input type="text" value={serverIP} onChange={handleServerIPChange} />
-        </label>
-        <label>
-          Server Port:
-          <input type="number" value={portIP} onChange={handlePortIPChange} />
-        </label>
-      </div>
-      {!selectedRobot && (
-        <div style={{ textAlign: "center", marginTop: "10px", color: "red" }}>
-          Veuillez sélectionnez un robot avant de téléverser.
-        </div>
-      )}
-
       <div
         style={{
           pointerEvents: selectedRobot ? "auto" : "none", // Désactive les événements de pointeur si selectedRobot est null

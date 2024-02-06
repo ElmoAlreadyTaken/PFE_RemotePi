@@ -44,7 +44,7 @@ export default function Profile() {
             .eq("user_id", user.user.id)
             .single();
           if (profileError) throw profileError;
-          const userData = { ...profileData, ...user };$
+          const userData = { ...profileData, ...user };
           setUserProfile(userData);
         } else {
           router.push("/"); // Redirect to index if not logged in
@@ -87,27 +87,7 @@ export default function Profile() {
                   Accéder à l&apos;Administration
                 </button>
               )}
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
+
           </div>
         </div>
       ) : (

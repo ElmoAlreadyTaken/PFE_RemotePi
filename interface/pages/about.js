@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
 import { supabase } from "../lib/supabase";
+import Footer from "../components/Footer";
 
 export default function MainComponent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -43,7 +44,6 @@ export default function MainComponent() {
       <Head>
         <title>À Propos - Remote-PI</title>
       </Head>
-
       <section class="section " id="about">
         <div class="container">
           <div class="row">
@@ -144,7 +144,8 @@ export default function MainComponent() {
         <br></br>
         <br></br>
         <br></br>
-      </section>
+      </section>{" "}
+      <Footer />
     </>
   );
 }
