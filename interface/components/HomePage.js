@@ -244,7 +244,7 @@ export default function HomePage(props) {
   };
 
   const handleNextPage = () => {
-    router.push("camera")
+    router.push("/camera")
   };
 
     return (
