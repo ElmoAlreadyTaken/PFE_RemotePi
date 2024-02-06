@@ -48,7 +48,6 @@ export default function Register() {
     if (insertError) {
       setError(insertError.message);
     } else {
-      console.log("User created:", data_user_profiles);
       router.push("/login"); // Redirect or handle the successful sign-up
     }
   };

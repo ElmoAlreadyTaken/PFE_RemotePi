@@ -17,7 +17,6 @@ const FreeRobots = ({onSelectedRobotChange }) => {
         setServerPort(data.serverPort);
         setCameraPort(data.cameraPort);
       }
-      console.log(data);
     };
 
     fetchConfig();
@@ -29,7 +28,6 @@ const FreeRobots = ({onSelectedRobotChange }) => {
         // Assurez-vous que baseURL et serverPort ne sont pas vides
         if (!baseURL || !serverPort) return;
   
-        console.log(`${baseURL}:${serverPort}/robots/free`);
         const response = await fetch(
           `${baseURL}:${serverPort}/robots/free`, // Assurez-vous d'inclure le ":" pour séparer le port
           {

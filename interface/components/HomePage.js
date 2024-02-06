@@ -26,7 +26,6 @@ export default function HomePage(props) {
         setServerPort(data.serverPort);
         setCameraPort(data.cameraPort);
       }
-      console.log(data);
     };
 
     fetchConfig();
@@ -57,8 +56,7 @@ export default function HomePage(props) {
 
   void loop() {
     config.handleClient();
-  }
-`;
+  }`;
   const [editorContent, setEditorContent] = useState(template);
   const [boutonStyle, setBoutonStyle] = useState(
     "text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-full text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
@@ -85,7 +83,6 @@ export default function HomePage(props) {
       }
       const log = await response.json();
       const newLogList = Array.isArray(log) ? log : [log];
-      console.log("log :", log);
       setLogList((prevLogList) => [...prevLogList, ...newLogList]);
       setErrorMessage(""); // Réinitialiser le message d'erreur en cas de succès
     } catch (error) {
@@ -97,7 +94,7 @@ export default function HomePage(props) {
   useEffect(() => {
     const intervalId = setInterval(() => {
       fetchLogs();
-    }, 100000000000); // Exécute `fetchLogs` toutes les 1000 millisecondes (1 seconde)
+    }, 10000); // Exécute `fetchLogs` toutes les 1000 millisecondes (1 seconde)
 
     return () => clearInterval(intervalId); // Nettoyage de l'intervalle lors du démontage du composant
   }, [serverIP, portIP, refreshKey]); // Les dépendances assurent que l'intervalle est réinitialisé si `serverIP` ou `portIP` changent

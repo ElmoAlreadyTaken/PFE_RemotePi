@@ -46,8 +46,7 @@ export default function FileUpload({selectedRobot,}) {
       
         void loop() {
           config.handleClient();
-        }
-  `;
+        }`;
 
         const lignesTemplate = template.split("\n");
         const templateEstPresent = lignesTemplate.every((ligne) =>

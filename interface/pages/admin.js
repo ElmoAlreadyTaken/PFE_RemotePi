@@ -22,8 +22,6 @@
           .from('user_profiles')
           .select()
           .eq("user_id", (await user).data.user.id);
-
-      console.log("user",data);
       if (error) {
           console.error('Erreur lors de la récupération des utilisateurs:', error);
           }

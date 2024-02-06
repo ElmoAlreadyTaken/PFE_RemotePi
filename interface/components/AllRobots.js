@@ -44,7 +44,7 @@ const AllRobots = () => {
     };
 
     fetchAllRobots();
-  }, []);
+  }, [baseURL, serverPort, cameraPort]);
 
   return (
     <div>
