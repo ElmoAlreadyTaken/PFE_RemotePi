@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const FreeRobots = ({ serverIP, portIP, onSelectedRobotChange }) => {
+const FreeRobots = ({ serverIp, serverPort, onSelectedRobotChange }) => {
   const [robots, setRobots] = useState([]);
   const [selectedRobot, setSelectedRobot] = useState(null);
   const [error, setError] = useState(null);
@@ -8,12 +8,12 @@ const FreeRobots = ({ serverIP, portIP, onSelectedRobotChange }) => {
   useEffect(() => {
     const fetchFreeRobots = async () => {
       try {
-        // Déterminer le schéma en fonction de la valeur de serverIP
-        const scheme = serverIP === "localhost" ? "http" : "https";
+        // Déterminer le schéma en fonction de la valeur de serverIp
+        const scheme = serverIp === "localhost" ? "http" : "https";
 
         // Utiliser le schéma déterminé dans l'URL
         const response = await fetch(
-          `${scheme}://${serverIP}:${portIP}/robots/free`,
+          `${scheme}://${serverIp}:${serverPort}/robots/free`,
           {
             method: "GET",
             headers: new Headers({

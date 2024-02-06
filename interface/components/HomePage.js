@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import AceEditor from "react-ace";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
@@ -25,7 +25,7 @@ export default function HomePage(props) {
     // Incrémente la clé de rafraîchissement pour forcer le re-render des composants
     setRefreshKey((prevKey) => prevKey + 1);
   };
-  
+
   const handleSelectedRobotChange = (newSelectedRobot) => {
     setSelectedRobot(newSelectedRobot);
     // Vous pouvez effectuer d'autres actions en fonction de la nouvelle valeur de selectedRobot
@@ -48,22 +48,33 @@ export default function HomePage(props) {
   );
   const [selectedRobot, setSelectedRobot] = useState(null);
   const [boutonTexte, setBoutonTexte] = useState("Téléverser");
-  const [serverIP, setServerIP] = useState("4.tcp.eu.ngrok.io"); // Nouvelle adresse IP du serveur
-  const [portIP, setPortIP] = useState(17707); // Nouveau port
+  const [serverIp, setServerIp] = useState("localhost"); // Nouvelle adresse IP du serveur
+  const [serverPort, setServerPort] = useState(5000); // Nouveau port
+  const [cameraPort, setCameraPort] = useState(443); // Port stream camera
+  const [camStreamOn, setCamStreamOn] = useState(false);
+  const [streamURL, setStreamURL] = useState(`http://${serverIp}:${cameraPort}/cam`); // Initial URL or default value
   const [isAllRobotsVisible, setAllRobotsVisibility] = useState(false);
 
+  const serverIpRef = useRef(serverIp);
+  const serverPortRef = useRef(serverPort);
+  const cameraPortRef = useRef(cameraPort);
+  const streamURLRef = useRef(streamURL);
+  
   const fetchLogs = async () => {
     try {
-      // Déterminer le schéma en fonction de la valeur de serverIP
-      const scheme = serverIP === "localhost" ? "http" : "https";
+      // Déterminer le schéma en fonction de la valeur de serverIp
+      const scheme = serverIp === "localhost" ? "http" : "https";
 
       // Utiliser le schéma déterminé dans l'URL
-      const response = await fetch(`${scheme}://${serverIP}:${portIP}/log`, {
-        method: "GET",
-        headers: new Headers({
-          "ngrok-skip-browser-warning": "69420",
-        }),
-      });
+      const response = await fetch(
+        `${scheme}://${serverIp}:${serverPort}/log`,
+        {
+          method: "GET",
+          headers: new Headers({
+            "ngrok-skip-browser-warning": "69420",
+          }),
+        }
+      );
       if (!response.ok) {
         throw new Error("Serveur indisponible"); // Peut indiquer une erreur 4XX/5XX
       }
@@ -77,14 +88,6 @@ export default function HomePage(props) {
       setErrorMessage("Serveur indisponible."); // Utiliser un message générique pour l'utilisateur
     }
   };
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      fetchLogs();
-    }, 100000000000); // Exécute `fetchLogs` toutes les 1000 millisecondes (1 seconde)
-
-    return () => clearInterval(intervalId); // Nettoyage de l'intervalle lors du démontage du composant
-  }, [serverIP, portIP, refreshKey]); // Les dépendances assurent que l'intervalle est réinitialisé si `serverIP` ou `portIP` changent
 
   const clearLogs = () => {
     setLogList([]);
@@ -121,7 +124,7 @@ export default function HomePage(props) {
     );
     if (templateEstPresent) {
       alert("La configuration ESP est présente dans le contenu.");
-      console.log("ip : ", serverIP, "port :", portIP);
+      console.log("ip : ", serverIp, "port :", serverPort);
       try {
         // Créer un Blob avec le contenu de l'éditeur
         const blob = new Blob([editorContent], { type: "text/plain" });
@@ -131,11 +134,11 @@ export default function HomePage(props) {
         formData.append("file", blob, "monFichier.ino");
 
         // Utiliser l'API Fetch pour envoyer le fichier au serveur
-        // Déterminer le schéma en fonction de la valeur de serverIP
-        const scheme = serverIP === "localhost" ? "http" : "https";
+        // Déterminer le schéma en fonction de la valeur de serverIp
+        const scheme = serverIp === "localhost" ? "http" : "https";
 
         const response = await fetch(
-          `${scheme}://${serverIP}:${portIP}/upload`,
+          `${scheme}://${serverIp}:${serverPort}/upload`,
           {
             method: "POST",
             body: formData,
@@ -163,15 +166,75 @@ export default function HomePage(props) {
   const onChange = (newValue) => {
     setEditorContent(newValue);
   };
+  
+  const checkStream = () => {
+    // const scheme = serverIp === "localhost" ? "http" : "https";
+    //const scheme = "http";
+    //const newURL = `${scheme}://${serverIp}:${cameraPort}/cam/`;
+    
+    console.log("[+] Checking the camera stream on :", streamURLRef.current);
+
+    // Start fetching the stream with the updated streamURL
+    fetch(streamURLRef.current, {
+      method: "OPTIONS",
+      cache: "no-cache",
+      signal: AbortSignal.timeout(3000)
+    })
+      .then((response) => {
+        if (response.status === 200 || response.status === 204) {
+          setCamStreamOn(true);
+          console.log("CAMERA STREAM IS ON !!");
+          console.log("Response Status :", response.status, response.statusText);
+        } else {
+          console.log("ERROR Status :", response.status, response.statusText);
+          throw new Error("Stream not available");
+        }
+      })
+      .catch(() => {
+        console.log("Error : no camera stream available");
+        setCamStreamOn(false);
+      });
+  };
+
+  useEffect(() => {
+    serverIpRef.current = serverIp;
+    cameraPortRef.current = cameraPort;
+    serverPortRef.current = serverPort;
+
+    const scheme = serverIp === "localhost" ? "http" : "https";
+    
+    streamURLRef.current = `${scheme}://${serverIp}:${cameraPort}/cam`;
+  }, [serverIp, serverPort, cameraPort]); // Update refs when state changes
+  
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      fetchLogs();
+    }, 100000000000); // Exécute `fetchLogs` toutes les 1000 millisecondes (1 seconde)
+
+    return () => clearInterval(intervalId); // Nettoyage de l'intervalle lors du démontage du composant
+  }, [serverIp, serverPort, refreshKey]); // Les dépendances assurent que l'intervalle est réinitialisé si `serverIp` ou `serverPort` changent
+
+  
+  useEffect(() => {
+    // Check the stream immediately and then every 10 seconds
+    checkStream(); // Initial check
+    const intervalId = setInterval(checkStream, 8000);
+
+    // Clean up
+    return () => {
+      console.log("Cleaning up the camera stream check...");
+      clearInterval(intervalId);
+    };
+  }, []); // Needed to re-run the effect when the server IP or port changes
 
   return (
     <div className="">
       <br></br>
-      <div className="freeRobotsContainer flex justify-center items-center">
+      <div className="flex items-center justify-center freeRobotsContainer">
         <FreeRobots
           key={refreshKey}
-          serverIP={serverIP}
-          portIP={portIP}
+          serverIp={serverIp}
+          serverPort={serverPort}
           onSelectedRobotChange={handleSelectedRobotChange}
         />
       </div>
@@ -211,37 +274,52 @@ export default function HomePage(props) {
           {isAllRobotsVisible ? "Masquer les robots" : "Afficher les robots"}
         </button>
         {isAllRobotsVisible && (
-          <div className="AllRobotsContainer flex justify-center items-center ">
+          <div className="flex items-center justify-center AllRobotsContainer ">
             <br></br>
-            <AllRobots serverIP={serverIP} portIP={portIP} />
+            <AllRobots serverIp={serverIp} serverPort={serverPort} />
           </div>
         )}
       </div>
 
       <br></br>
-      <div className="fileUploadContainer flex justify-center items-center">
+      <div className="flex items-center justify-center fileUploadContainer">
         <FileUpload
-          serverIP={serverIP}
-          setServerIP={setServerIP}
-          portIP={portIP}
-          setPortIP={setPortIP}
+          serverIp={serverIp}
+          setServerIp={setServerIp}
+          serverPort={serverPort}
+          setServerPort={setServerPort}
           selectedRobot={selectedRobot}
         />
       </div>
 
       <br></br>
       <div className="flex ">
-        <div className="streamContainer  ml-1">
-          <iframe
-            src="" //"https://player.twitch.tv/?channel=otplol_&parent=localhost"
-            height="720"
-            width="1280"
-            frameBorder="0"
-            scrolling="no"
-            allowFullScreen={true}
-          ></iframe>
+        <div className="ml-1 streamContainer">
+          {camStreamOn ? (
+            <iframe
+              src={streamURLRef.current}
+              height="480"
+              width="848"
+              frameBorder="0"
+              scrolling="no"
+              allowFullScreen={true}
+            ></iframe>
+          ) : (
+            <div>
+              <iframe
+                src="" // "https://player.twitch.tv/?channel=otplol_&parent=localhost"
+                height="480"
+                width="848"
+                frameBorder="0"
+                scrolling="no"
+                allowFullScreen={true}
+              ></iframe>
+              Error: Unable to load the camera live stream, you get otplol_
+              instead.
+            </div>
+          )}
         </div>
-        <div className="aceEditorContainer ml-2">
+        <div className="ml-2 aceEditorContainer">
           <AceEditor
             mode="c_cpp"
             theme="monokai"
@@ -272,7 +350,7 @@ export default function HomePage(props) {
       <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
         <button
           onClick={clearLogs}
-          className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="px-4 py-2 mt-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
         >
           Effacer
         </button>

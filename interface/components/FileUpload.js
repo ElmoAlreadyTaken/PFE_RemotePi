@@ -3,13 +3,13 @@ import React, { useState, useRef } from "react";
 import { Dropzone, FileMosaic } from "@files-ui/react";
 
 export default function FileUpload({
-  serverIP,
-  setServerIP,
-  portIP,
-  setPortIP,
+  serverIp,
+  setServerIp,
+  serverPort,
+  setServerPort,
   selectedRobot,
 }) {
-  const scheme = serverIP === "localhost" ? "http" : "https";
+  const scheme = serverIp === "localhost" ? "http" : "https";
   const [files, setFiles] = React.useState([]);
 
   const updateFiles = (incommingFiles) => {
@@ -72,7 +72,7 @@ export default function FileUpload({
     formData.append("robotId", selectedRobot.id);
 
     try {
-      const response = await fetch(`${scheme}://${serverIP}:${portIP}/upload`, {
+      const response = await fetch(`${scheme}://${serverIp}:${serverPort}/upload`, {
         method: "POST",
         body: formData,
         headers: {
@@ -95,29 +95,29 @@ export default function FileUpload({
 
   // Fonction pour gérer le changement de l'adresse IP du serveur
   const handleServerIPChange = (e) => {
-    setServerIP(e.target.value);
+    setServerIp(e.target.value);
     let ip = e.target.value;
     // Vérifier si la chaîne se termine par un slash et le supprimer
     if (ip.endsWith("/")) {
       ip = ip.slice(0, -1);
     }
-    setServerIP(ip);
+    setServerIp(ip);
   };
 
   // Fonction pour gérer le changement du port du serveur
   const handlePortIPChange = (e) => {
-    setPortIP(e.target.value);
+    setServerPort(e.target.value);
   };
 
   return (
     <div>
       <label>
         Server IP:
-        <input type="text" value={serverIP} onChange={handleServerIPChange} />
+        <input type="text" value={serverIp} onChange={handleServerIPChange} />
       </label>
       <label>
         Server Port:
-        <input type="number" value={portIP} onChange={handlePortIPChange} />
+        <input type="number" value={serverPort} onChange={handlePortIPChange} />
       </label>
       {!selectedRobot && (
       <div style={{ textAlign: "center", marginTop: "10px" }}>
@@ -138,7 +138,7 @@ export default function FileUpload({
           accept={".ino"}
           maxFiles={1}
           uploadConfig={{
-            url: `${scheme}://${serverIP}:${portIP}/upload`,
+            url: `${scheme}://${serverIp}:${serverPort}/upload`,
             method: "POST",
             headers: new Headers({
               "ngrok-skip-browser-warning": "69420",
@@ -155,7 +155,7 @@ export default function FileUpload({
 
       <button
         onClick={customFileSend}
-        className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        className="px-4 py-2 mt-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
       >
         Envoyer le fichier
       </button>
