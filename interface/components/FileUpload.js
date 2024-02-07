@@ -59,12 +59,12 @@ void loop() {
           fileContent.includes(ligne.trim())
         );
 
-        if (!templateEstPresent) {
+       /* if (!templateEstPresent) {
           alert(
             "Le contenu du fichier doit au moins contenir le template de base."
           );
           removeFile(file);
-        }
+        }*/
       };
 
       reader.onerror = (error) => {
@@ -130,7 +130,7 @@ void loop() {
           label={"Mets ton code ici 🚀"}
           onChange={updateFiles}
           value={files}
-          accept={".ino"}
+          accept={".ino,.bin"}
           maxFiles={1}
           uploadConfig={{
             url: `${baseURLServer}:${serverPort}/upload`,
