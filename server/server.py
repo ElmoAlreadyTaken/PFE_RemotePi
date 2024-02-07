@@ -704,7 +704,7 @@ def log():
 ############################
 
 ##### INIT ROBOTS LIST #####
-N = 0
+N = 6
 robots = [Robot(id, random.choice(list(Robot.STATUS)), random.choice(list(Robot.BOARDS))) for id in range(N)]
 robotsManager = RobotsManager(robots)
 
