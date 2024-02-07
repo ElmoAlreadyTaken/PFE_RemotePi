@@ -17,6 +17,7 @@ export default function HomePage(props) {
   const [serverPort, setServerPort] = useState('');
   const [cameraPort, setCameraPort] = useState('');
   const [baseURLCamera, setbaseURLCamera] = useState('');
+  const [selectedRobotIdForLogs, setSelectedRobotIdForLogs] = useState(null);
   
   useEffect(() => {
     const fetchConfig = async () => {
@@ -43,6 +44,7 @@ export default function HomePage(props) {
 
   const handleRobotChangeFromUpload = (robot) => {
     setSelectedRobotIdForLogs(robot.id);
+    console.log("robot upload:", robot);
   };
 
   const refreshComponents = () => {
@@ -124,6 +126,7 @@ export default function HomePage(props) {
   }, [editorContent, selectedRobot]);
 
   const verifierContenu = async () => {
+    console.log()
     const lignesTemplate = template.split("\n");
 
     const templateEstPresent = lignesTemplate.every((ligne) =>

@@ -89,7 +89,7 @@ void loop() {
       formData.append("file", file);
     });
     formData.append("robotId", selectedRobot.id);
-
+    onRobotChangeFromUpload(selectedRobot);
     try {
       if (!baseURLServer || !serverPort) {
         console.log("Erreur lors de l'envoi du fichier : pas de configuration de l'IP/PORT serveur")
