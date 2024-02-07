@@ -209,7 +209,8 @@ class RobotsManager:
         """
         for robot in self.robots:
             if robot.get_id() == id:
-                self.robots.remove(robot)
+                # self.robots.remove(robot)
+                robot.free()
                 return True
         return False
         
@@ -224,18 +225,24 @@ def is_valid_file(filename):
 
 def init_hook(ip, filename, branch):
     if not os.path.exists('post-update.template'):
+        print('[-] post-update.template not found !')
         return False
-    if not os.path.exists('LocalPiServer/.git/hooks'):
+    if not os.path.exists('RemotePiServer/hooks'):
+        print('[-] RemotePiServer/hooks not found !')
         return False
     
+    # Add .bin if file does not end with it (support for .ino files)
+    if not filename.endswith('.bin'):
+        filename += '.bin'
+
     # Init the post-update hook with the robot's IP
     with open('post-update.template', 'r') as f:
         hook_template = f.read()
     
-    with open('LocalPiServer/.git/hooks/post-update', 'w') as f:
+    with open('RemotePiServer/hooks/post-update', 'w') as f:
         f.write(hook_template.format(esp_ip=ip, filename=filename, branch=branch))
     
-    print('[+] post-update hook initialized with robot IP :', ip)
+    print('[+] `post-update` hook initialized with robot IP :', ip, ', filename :', filename, 'and branch :', branch)
 
     return True
 
@@ -305,9 +312,15 @@ def upload_file():
         print('[-] post-update.template not found !')
         return Response('post-update.template not found !', 400)
     
-    if os.path.exists('./LocalPiServer'):
-        shutil.rmtree('./LocalPiServer', ignore_errors=True)
+    if not os.path.exists('./clean.sh'):
+        print('[-] clean.sh not found !')
+        return Response('clean.sh not found !', 400)
+    
+        #shutil.rmtree('./LocalPiServer', ignore_errors=True)
+    subprocess.run(['./clean.sh'], check=True)
 
+    print('[.] Ran clean.sh successfully !')
+    
     # Init hook template with robot IP, filename, and branch
     res = init_hook(robotIp, filename, branch)
     if not res:
@@ -458,20 +471,31 @@ def register_robot():
     """Create and register a new robot
     """
     # Check ip parameters are presents
-    if 'ip' not in request.json or 'board' not in request.json:
-        return Response('Missing parameter "ip" or "board"', 400)
+    j = request.json
+    if 'ip' not in j or 'board' not in j or 'reserved' not in j:
+        print('[-] Missing parameter "ip" or "board" or "reserved"')
+        return Response('Missing parameter "ip" or "board" or "reserved"', 400)
     
     # Get board type from JSON body
     board = request.json['board']
     ip = request.json['ip']
+    reserved = request.json['reserved']
 
     # Create the robot from the given board type
     robot = robotsManager.create(board, ip)
     if robot is None:
+        print(f'[-] Error creating robot. Please check the board type : {board}')
         return Response('Error creating robot. Please check the board type', 400)
     
     # Register the robot to the RobotsManager
     robotsManager.register(robot)
+
+    # Mark the robot as reserved
+    if reserved:
+        res = robot.reserve()
+        if res == False:
+            print(f'[-] Error reserving robot <{robot.id}>')
+            return Response(f'Error reserving robot <{robot.id}>', 400)
 
     return robot.json()
 
@@ -543,7 +567,10 @@ def free_robot(robot_id):
 @app.route('/camera', methods=['POST'])
 def camera():
     j = request.json
+    print('[.] Received JSON :', j)
     command = j.get('command', None)
+
+    print('[.] Command :', command)
 
     # Check if command parameter is present
     if command is None:
@@ -553,9 +580,11 @@ def camera():
     if command == 'start':
         # Start the camera using mediamtx
         try:
-            subprocess.Popen(['camera/mediamtx'])  # Assuming 'mediamtx' is the command to start the camera
+            subprocess.Popen(['./mediamtx'], cwd='./camera') # Assuming 'mediamtx' is the command to start the camera
             return {"message": "Camera started successfully"}
         except Exception as e:
+            print('[!!] Error starting camera :')
+            print(e)
             return Response(str(e), 500)
     # Stop the mediamtx process
     elif command == 'stop':
@@ -564,7 +593,8 @@ def camera():
             subprocess.call(['pkill', '-f', 'mediamtx'])  # Kill the process by name
             return {"message": "Camera stopped successfully"}
         except Exception as e:
-            print('[!!] Error stopping camera :', e)
+            print('[!!] Error stopping camera :')
+            print(e)
             return Response(str(e), 500)
     else:
         return Response("Invalid command. Must be 'start' or 'stop'", 400)
