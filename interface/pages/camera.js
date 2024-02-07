@@ -94,7 +94,9 @@ export default function MainComponent() {
   }, []);
   const checkStream = () => {
     console.log("[+] Checking the camera stream on :", streamURLRef.current);
-
+    if (streamURLRef.current.trim().length==0){
+      return;
+    }
     fetch(streamURLRef.current, {
       method: "OPTIONS",
       cache: "no-cache",
