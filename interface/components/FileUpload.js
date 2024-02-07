@@ -18,6 +18,7 @@ export default function FileUpload({selectedRobot, onRobotChangeFromUpload,onFil
         .select("*")
         .single();
       if (data) {
+        console.log("Supabase Data : ", data)
         setbaseURLServer(data.baseURLServer);
         setbaseURLCamera(data.baseURLCamera);
         setServerPort(data.serverPort);
@@ -90,7 +91,11 @@ void loop() {
     formData.append("robotId", selectedRobot.id);
 
     try {
-      if (!baseURLServer || !serverPort) return;
+      if (!baseURLServer || !serverPort) {
+        console.log("Erreur lors de l'envoi du fichier : pas de configuration de l'IP/PORT serveur")
+        return;
+      }
+      
       const response = await fetch(`${baseURLServer}:${serverPort}/upload`, {
         method: "POST",
         body: formData,
@@ -151,7 +156,7 @@ void loop() {
 
       <button
         onClick={customFileSend}
-        className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        className="px-4 py-2 mt-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
       >
         Envoyer le fichier
       </button>

@@ -13,10 +13,29 @@ export default function HomePage(props) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [blink, setBlink] = useState(false);
   const router = useRouter();
-  const [serverIp, setServerIp] = useState("localhost");
-  const [serverPort, setServerPort] = useState("");
-  const [baseURLServer, setbaseURLServer] = useState("");
+  const [baseURLServer, setbaseURLServer] = useState('');
+  const [serverPort, setServerPort] = useState('');
+  const [cameraPort, setCameraPort] = useState('');
+  const [baseURLCamera, setbaseURLCamera] = useState('');
+  
+  useEffect(() => {
+    const fetchConfig = async () => {
+      const { data, error } = await supabase
+        .from("server_configurations")
+        .select("*")
+        .single();
+      if (data) {
+        console.log("[--] Supabase Data : ", data)
+        setbaseURLServer(data.baseURLServer);
+        setbaseURLCamera(data.baseURLCamera);
+        setServerPort(data.serverPort);
+        setCameraPort(data.cameraPort);
+      }
+    };
 
+    fetchConfig();
+  }, []);
+  
   const handleFileSent = () => {
     setIsFileSent(true);
     fetchLogs();
@@ -117,8 +136,12 @@ export default function HomePage(props) {
 
         const formData = new FormData();
         formData.append("file", blob, "monFichier.ino");
+        formData.append("robotId", selectedRobot.id);
 
-        if (!baseURLServer || !serverPort) return;
+        if (!baseURLServer || !serverPort){
+          console.log("[-] Erreur lors de l'envoi du fichier : pas de configuration de l'IP/PORT serveur")
+          return;
+        }
 
         const response = await fetch(`${baseURLServer}:${serverPort}/upload`, {
           method: "POST",
@@ -154,7 +177,7 @@ export default function HomePage(props) {
 
   return (
     <>
-      <div className="bg-gray-200 flex justify-center items-center">
+      <div className="flex items-center justify-center bg-gray-200">
         <div
           style={{
             display: "flex",
@@ -246,7 +269,7 @@ export default function HomePage(props) {
             </div>
           </div>
           <div
-            className="overflow-hidden bg-white shadow-xl sm:rounded-lg flex justify-center items-center "
+            className="flex items-center justify-center overflow-hidden bg-white shadow-xl sm:rounded-lg "
             style={{
               height: "700px",
               width: "600px",
@@ -255,7 +278,7 @@ export default function HomePage(props) {
               marginLeft: "40px",
             }}
           >
-            <div className="aceEditorContainer ml-2">
+            <div className="ml-2 aceEditorContainer">
               <AceEditor
                 mode="c_cpp"
                 theme="monokai"
