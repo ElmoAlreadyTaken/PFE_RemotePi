@@ -22,6 +22,7 @@ export default function MainComponent() {
   const [baseURLServer, setbaseURLServer] = useState("");
   const [baseURLCamera, setbaseURLCamera] = useState("");
   const streamURLRef = useRef(streamURL);
+  const isFirstRun = useRef(true);
   const clearLogs = () => {
     setLogList([]);
   };
@@ -160,6 +161,10 @@ export default function MainComponent() {
     return () => clearInterval(intervalId); // Nettoyage de l'intervalle lors du démontage du composant
   }, [serverIp, serverPort, refreshKey]);
   useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false; // Marque le premier rendu et empêche l'exécution ci-dessous
+      return;
+    }
     streamURLRef.current = `${baseURLCamera}:${cameraPort}/cam/`;
   }, [cameraPort, baseURLCamera]);
 
