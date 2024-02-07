@@ -105,6 +105,36 @@ class Robot:
         else:
             return False
     
+    def update(self, _board: str, _ip: str, _status):
+        """Free the robot, only if it is reserved or busy
+        """
+        # Check if board type is valid
+        if _board not in [b.name for b in Robot.BOARDS]:
+            print(f"[!] Invalid board for robot update : {_board}")
+            return False
+        
+        # Check if status is valid
+        if _status not in [s.name for s in Robot.STATUS]:
+            print(f"[!] Invalid status for robot update : {_status}")
+            return False
+        
+        # Update the status based on the string value
+        for status in Robot.STATUS:
+            if status.name == _status:
+                self.status = status
+                break
+
+        # Update the board based on the string value
+        for board in Robot.BOARDS:
+            if board.name == _board:
+                self.board = board
+                break
+
+        # Update the IP
+        self.ip = _ip
+
+        return True
+        
     def matches(self, filter: dict[str, str]) -> bool:
         """Check if the robot matches the filter
         """
@@ -180,6 +210,25 @@ class RobotsManager:
     ### Registering robots
     def get_next_id(self) -> int:
         return len(self.robots)
+    
+    def assign_id(self, _robot:Robot) -> int:
+        """Assign a new ID to a robot if the robot IP is not already registered.
+        Else, return the ID of the robot with the given IP
+        """
+        target_ip = _robot.get_ip()
+        for robot in self.robots:
+            if robot.get_ip() == target_ip:
+                print('[+] Robot IP already registered. Returning its previous ID :', robot.get_id())
+                # If the robot IP is already registered, return its previous ID
+                return robot.get_id()
+        
+        # If the robot IP is not already registered, return the next available ID
+        return self.get_next_id()
+    
+    def get_ip_dict(self) -> dict[int, str]:
+        """Return a dictionary of the form {ip: id} for all registered robots
+        """
+        return {robot.get_ip(): robot.get_id() for robot in self.robots}
     
     def create(self, board_type: str, ip: str) -> Robot:
         """Create a new robot but does NOT register it to the RobotsManager.
@@ -451,6 +500,43 @@ def get_template():
         template = f.read()
     return template
 
+def handleRobotRegister(board: str, ip: str, reserved: bool):
+    ip_dict = robotsManager.get_ip_dict()
+    
+    # Check if the robot is already registered
+    if ip in ip_dict:
+        id = ip_dict[ip]
+
+        # Generate status from reserved boolean
+        status = 'Reserved' if reserved else 'Free'
+
+        # Update robot data
+        robot = robotsManager.get_robot(id)
+        res = robot.update(board, ip, status)
+        if res == False:
+            print(f'[-] Error updating robot <{id}>')
+            return Response(f'Error updating robot <{id}>', 400)
+        
+        return robot.json()
+    
+    # Else, reate the robot from the given board type
+    robot = robotsManager.create(board, ip)
+    if robot is None:
+        print(f'[-] Error creating robot. Please check the board type : {board}')
+        return Response('Error creating robot. Please check the board type', 400)
+    
+    # Register the robot to the RobotsManager
+    robotsManager.register(robot)
+
+    # Mark the robot as reserved
+    if reserved:
+        res = robot.reserve()
+        if res == False:
+            print(f'[-] Error reserving robot <{robot.id}>')
+            return Response(f'Error reserving robot <{robot.id}>', 400)
+
+    return robot.json()
+
 @app.route('/')
 def redirect_doc():
     return redirect('/doc')
@@ -481,23 +567,9 @@ def register_robot():
     ip = request.json['ip']
     reserved = request.json['reserved']
 
-    # Create the robot from the given board type
-    robot = robotsManager.create(board, ip)
-    if robot is None:
-        print(f'[-] Error creating robot. Please check the board type : {board}')
-        return Response('Error creating robot. Please check the board type', 400)
-    
-    # Register the robot to the RobotsManager
-    robotsManager.register(robot)
-
-    # Mark the robot as reserved
-    if reserved:
-        res = robot.reserve()
-        if res == False:
-            print(f'[-] Error reserving robot <{robot.id}>')
-            return Response(f'Error reserving robot <{robot.id}>', 400)
-
-    return robot.json()
+    # Create and register the robot, or update it if its IP is already registered
+    res = handleRobotRegister(board, ip, reserved)
+    return res
 
 @app.route('/unregister', methods=['POST'])
 def unregister_robot():
@@ -632,7 +704,7 @@ def log():
 ############################
 
 ##### INIT ROBOTS LIST #####
-N = 6
+N = 0
 robots = [Robot(id, random.choice(list(Robot.STATUS)), random.choice(list(Robot.BOARDS))) for id in range(N)]
 robotsManager = RobotsManager(robots)
 
