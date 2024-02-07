@@ -8,11 +8,13 @@ import enum
 import json
 import random
 import datetime
+import signal
 
 ########## SWAGGER DOC ##########
 SWAGGER_URL = '/doc'  # URL for exposing Swagger UI (without trailing '/')
 API_URL = '/swagger.yaml'  # URL to access swagger.yaml file
 TEMPLATE_PATH = 'template.ino' # Path to the template file
+LAST_MEDIAMTX_PID = -1 # PID of the last mediamtx process
 
 # Call factory function to create our blueprint
 swaggerui_blueprint = get_swaggerui_blueprint(
@@ -638,6 +640,9 @@ def free_robot(robot_id):
 ########## CAMERA ##########
 @app.route('/camera', methods=['POST'])
 def camera():
+    # Use the global variable to store the PID of the last mediamtx process
+    global LAST_MEDIAMTX_PID
+
     j = request.json
     print('[.] Received JSON :', j)
     command = j.get('command', None)
@@ -652,7 +657,10 @@ def camera():
     if command == 'start':
         # Start the camera using mediamtx
         try:
-            subprocess.Popen(['./mediamtx'], cwd='./camera') # Assuming 'mediamtx' is the command to start the camera
+            #subprocess.Popen(['./mediamtx'], cwd='./camera') # Assuming 'mediamtx' is the command to start the camera
+            process = subprocess.Popen(['./mediamtx'], cwd='./camera', preexec_fn=os.setsid)
+            LAST_MEDIAMTX_PID = process.pid  # Store the PID of the process group leader
+            print('[.] mediamtx started with PID:', LAST_MEDIAMTX_PID)
             return {"message": "Camera started successfully"}
         except Exception as e:
             print('[!!] Error starting camera :')
@@ -662,7 +670,15 @@ def camera():
     elif command == 'stop':
         # Stop the mediamtx process
         try:
-            subprocess.call(['pkill', '-f', 'mediamtx'])  # Kill the process by name
+            #process = subprocess.call(['pkill', '-f', 'mediamtx'])  # Kill the process by name
+            if LAST_MEDIAMTX_PID != -1:
+                # Kill the process group
+                os.killpg(LAST_MEDIAMTX_PID, signal.SIGTERM)
+                LAST_MEDIAMTX_PID = -1
+            else:
+                print('[!] No mediamtx process running')
+                raise Exception("Camera is not up, can't stop it.")
+            
             return {"message": "Camera stopped successfully"}
         except Exception as e:
             print('[!!] Error stopping camera :')
