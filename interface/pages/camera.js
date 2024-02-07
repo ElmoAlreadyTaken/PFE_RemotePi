@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
 
-
 export default function MainComponent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -33,9 +32,8 @@ export default function MainComponent() {
   const fetchLogs = async () => {
     try {
       if (!baseURLServer || !serverPort) return;
-  
-        const response = await fetch(
-          `${baseURLServer}:${serverPort}/log`, {
+
+      const response = await fetch(`${baseURLServer}:${serverPort}/log`, {
         method: "GET",
         headers: new Headers({
           "ngrok-skip-browser-warning": "69420",
@@ -49,8 +47,6 @@ export default function MainComponent() {
       const newLogList = Array.isArray(log) ? log : [log];
       setLogList((prevLogList) => [...prevLogList, ...newLogList]);
       setErrorMessage(""); // Réinitialiser le message d'erreur en cas de succès
-
-  
     } catch (error) {
       console.error(error); // Conserver pour le debug, mais vous pourriez vouloir le retirer en production
       setErrorMessage("Serveur indisponible."); // Utiliser un message générique pour l'utilisateur
@@ -65,7 +61,7 @@ export default function MainComponent() {
   };
 
   const handleNextPage = () => {
-    router.push("/camera")
+    router.push("/camera");
   };
 
   useEffect(() => {
@@ -167,13 +163,30 @@ export default function MainComponent() {
     }
     streamURLRef.current = `${baseURLCamera}:${cameraPort}/cam/`;
   }, [cameraPort, baseURLCamera]);
-
   if (!isLoggedIn) {
-    return <>You have to log in to see this content.</>;
+    return (
+      <>
+        <div
+          class="flex items-center justify-center"
+          style={{ height: "calc(100vh - 100px)" }}
+        >
+          Vous devez être connecté pour accéder à cette page.
+        </div>
+      </>
+    );
   }
 
   if (!isAccountValidated) {
-    return <>You have to log in to see this content.</>;
+    return (
+      <>
+        <div
+          class="flex items-center justify-center"
+          style={{ height: "calc(100vh - 100px)" }}
+        >
+          Un admnistrateur doit valider votre compte.
+        </div>
+      </>
+    );
   }
 
   return (
@@ -223,7 +236,8 @@ export default function MainComponent() {
               ) : (
                 <div>
                   <div style={{ color: "red" }}>
-                  Erreur: Impossible de charger la caméra.</div>
+                    Erreur: Impossible de charger la caméra.
+                  </div>
                 </div>
               )}
             </div>
@@ -287,19 +301,25 @@ export default function MainComponent() {
                   </thead>
 
                   <tbody>
-                    {logList.filter((log) => !selectedRobotIdForLogs || log.id === selectedRobotIdForLogs).map((log, index) => (
-                      <tr key={index}>
-                        <td className="px-6 py-4">{log.id}</td>
-                        <td className="px-6 py-4">{log.time}</td>
-                        <td
-                          className={`px-6 py-4 ${
-                            log.error ? "text-red-500" : "text-black"
-                          }`}
-                        >
-                          {log.message || log.error}
-                        </td>
-                      </tr>
-                    ))}
+                    {logList
+                      .filter(
+                        (log) =>
+                          !selectedRobotIdForLogs ||
+                          log.id === selectedRobotIdForLogs
+                      )
+                      .map((log, index) => (
+                        <tr key={index}>
+                          <td className="px-6 py-4">{log.id}</td>
+                          <td className="px-6 py-4">{log.time}</td>
+                          <td
+                            className={`px-6 py-4 ${
+                              log.error ? "text-red-500" : "text-black"
+                            }`}
+                          >
+                            {log.message || log.error}
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
               </div>
@@ -355,21 +375,19 @@ export default function MainComponent() {
               </thead>
 
               <tbody>
-                {logList
-                  
-                  .map((log, index) => (
-                    <tr key={index}>
-                      <td className="px-6 py-4">{log.id}</td>
-                      <td className="px-6 py-4">{log.time}</td>
-                      <td
-                        className={`px-6 py-4 ${
-                          log.error ? "text-red-500" : "text-black"
-                        }`}
-                      >
-                        {log.message || log.error}
-                      </td>
-                    </tr>
-                  ))}
+                {logList.map((log, index) => (
+                  <tr key={index}>
+                    <td className="px-6 py-4">{log.id}</td>
+                    <td className="px-6 py-4">{log.time}</td>
+                    <td
+                      className={`px-6 py-4 ${
+                        log.error ? "text-red-500" : "text-black"
+                      }`}
+                    >
+                      {log.message || log.error}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

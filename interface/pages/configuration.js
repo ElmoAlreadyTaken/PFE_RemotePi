@@ -32,17 +32,34 @@ export default function MainComponent() {
     const subscription = supabase.auth.onAuthStateChange((_event, session) => {
       setIsLoggedIn(!!session);
       if (session) {
-        
       }
     });
   }, []);
 
   if (!isLoggedIn) {
-    return <>You have to log in to see this content.</>;
+    return (
+      <>
+        <div
+          class="flex items-center justify-center"
+          style={{ height: "calc(100vh - 100px)" }}
+        >
+          Vous devez être connecté pour accéder à cette page.
+        </div>
+      </>
+    );
   }
-  
+
   if (!isAccountValidated) {
-    return <>You have to log in to see this content.</>;
+    return (
+      <>
+        <div
+          class="flex items-center justify-center"
+          style={{ height: "calc(100vh - 100px)" }}
+        >
+          Un admnistrateur doit valider votre compte.
+        </div>
+      </>
+    );
   }
   return (
     <>
