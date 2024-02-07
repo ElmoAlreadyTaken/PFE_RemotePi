@@ -135,7 +135,6 @@ export default function HomePage(props) {
       editorContent.includes(ligne.trim())
     );
     if (templateEstPresent) {
-      alert("La configuration ESP est présente dans le contenu.");
       try {
         const blob = new Blob([editorContent], { type: "text/plain" });
 
@@ -346,7 +345,7 @@ export default function HomePage(props) {
           disabled={!selectedRobot || isUploading}
         >
           {isUploading ? (
-            <div className="flex items-center">Téléversement...</div>
+            <div className="flex items-center">Compilation...</div>
           ) : (
             boutonTexte
           )}

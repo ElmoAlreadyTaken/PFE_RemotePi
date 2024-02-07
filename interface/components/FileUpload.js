@@ -162,7 +162,7 @@ void loop() {
         disabled={isSending}
       >
         {isSending ? (
-          <div className="flex items-center">Téléversement...</div>
+          <div className="flex items-center">Compilation...</div>
         ) : (
           "Envoyer le fichier"
         )}
