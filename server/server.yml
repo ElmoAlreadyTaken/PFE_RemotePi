@@ -1,163 +1,194 @@
 swagger: "2.0"
 info:
-  title: Robot Management API
-  description: API for managing robots with various functionalities.
-  version: "1.0.0"
+  title: "RemotePi API"
+  description: "API for managing and interacting with robots remotely"
+  version: "1.0.1"
 host: "localhost:5000"
 basePath: "/"
 schemes:
-- "http"
-
+  - "http"
+  - "https"
 paths:
+  /swagger.yaml:
+    get:
+      summary: "Serve the Swagger YAML file"
+      responses:
+        200:
+          description: "Swagger YAML file served successfully"
+
   /upload:
     post:
-      summary: "Uploads a file and commits it to the git repo"
-      description: "Uploads a file to the server and commits it to the git repository."
+      summary: "Upload a file to a specific robot"
+      consumes:
+        - "multipart/form-data"
+      parameters:
+        - in: "formData"
+          name: "file"
+          type: "file"
+          description: "The file to upload"
+          required: true
+        - in: "formData"
+          name: "robotId"
+          type: "string"
+          description: "The ID of the robot to upload the file to"
+          required: true
       responses:
         200:
           description: "File uploaded and committed successfully"
 
+  /:
+    get:
+      summary: "Redirect to the Swagger UI documentation"
+      responses:
+        302:
+          description: "Redirected to /doc"
+
+  /template:
+    get:
+      summary: "Retrieve the Arduino code template"
+      responses:
+        200:
+          description: "Template retrieved successfully"
+
   /register:
     post:
       summary: "Create and register a new robot"
-      description: "Creates a new robot based on the specified board type and registers it."
+      consumes:
+        - "application/json"
       parameters:
-      - in: "body"
-        name: "board"
-        required: true
-        schema:
-          type: "object"
-          properties:
-            board:
-              type: "string"
+        - in: "body"
+          name: "body"
+          description: "Information required to register a robot"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              ip:
+                type: "string"
+              board:
+                type: "string"
+              reserved:
+                type: "boolean"
       responses:
         200:
-          description: "Robot created and registered successfully"
-        400:
-          description: "Error in creating robot. Invalid board type."
+          description: "Robot registered successfully"
 
   /unregister:
     post:
       summary: "Unregister an existing robot"
-      description: "Unregisters a robot given its ID."
+      consumes:
+        - "application/json"
       parameters:
-      - in: "body"
-        name: "id"
-        required: true
-        schema:
-          type: "object"
-          properties:
-            id:
-              type: "integer"
+        - in: "body"
+          name: "body"
+          description: "ID of the robot to unregister"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              id:
+                type: "integer"
       responses:
         200:
           description: "Robot unregistered successfully"
-        404:
-          description: "Robot not found"
 
   /robots:
     get:
       summary: "List all robots"
-      description: "Returns a list of all robots currently known to the system."
       responses:
         200:
-          description: "List of all robots"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Robot"
+          description: "List of robots returned successfully"
 
   /robots/{robot_id}:
     get:
-      summary: "Get robot information"
-      description: "Returns the information of a robot given its ID."
+      summary: "Get information about a specific robot"
       parameters:
-      - name: "robot_id"
-        in: "path"
-        required: true
-        type: "integer"
+        - in: "path"
+          name: "robot_id"
+          type: "string"
+          required: true
+          description: "The ID of the robot"
       responses:
         200:
-          description: "Robot information"
-          schema:
-            $ref: "#/definitions/Robot"
-        404:
-          description: "Robot not found"
+          description: "Robot information returned successfully"
 
-  /robots/free/:
-    get:
-      summary: "List all free robots"
-      description: "Returns a list of all free robots. Optionally filters by board type as a query parameter."
-      parameters:
-      - name: "board"
-        in: "query"
-        required: false
-        type: "string"
-        description: "Board type to filter free robots"
-      responses:
-        200:
-          description: "List of free robots"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Robot"
-        400:
-          description: "Invalid board type provided"
-          
   /robots/{robot_id}/status:
     get:
-      summary: "Get robot status"
-      description: "Returns the status of a robot given its ID."
+      summary: "Get the status of a specific robot"
       parameters:
-      - name: "robot_id"
-        in: "path"
-        required: true
-        type: "integer"
+        - in: "path"
+          name: "robot_id"
+          type: "string"
+          required: true
+          description: "The ID of the robot"
       responses:
         200:
-          description: "Robot status"
-          schema:
-            type: "string"
-        404:
-          description: "Robot not found"
+          description: "Robot status returned successfully"
+
+  /robots/free:
+    get:
+      summary: "List all free robots"
+      parameters:
+        - in: "query"
+          name: "board"
+          type: "string"
+          description: "Optional board type to filter free robots"
+      responses:
+        200:
+          description: "List of free robots returned successfully"
 
   /free/{robot_id}:
     post:
-      summary: "Free a robot"
-      description: "Frees a robot given its ID."
+      summary: "Free a specific robot"
       parameters:
-      - name: "robot_id"
-        in: "path"
-        required: true
-        type: "integer"
+        - in: "path"
+          name: "robot_id"
+          type: "string"
+          required: true
+          description: "The ID of the robot to free"
       responses:
         200:
           description: "Robot freed successfully"
-        404:
-          description: "Robot not found"
 
-  /reserve/{robot_id}:
+  /camera:
     post:
-      summary: "Reserve a robot"
-      description: "Reserves a robot given its ID."
+      summary: "Control the camera"
+      consumes:
+        - "application/json"
       parameters:
-      - name: "robot_id"
-        in: "path"
-        required: true
-        type: "integer"
+        - in: "body"
+          name: "body"
+          description: "Command to start or stop the camera"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              command:
+                type: "string"
       responses:
         200:
-          description: "Robot reserved successfully"
-        404:
-          description: "Robot not found"
+          description: "Camera command executed successfully"
 
-definitions:
-  Robot:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-      status:
-        type: "string"
-      board:
-        type: "string"
+  /log:
+    post:
+      summary: "Post a log message"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Log message to post"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+      responses:
+        200:
+          description: "Log message posted successfully"
+    get:
+      summary: "Get log messages"
+      responses:
+        200:
+          description: "Log messages returned successfully"
