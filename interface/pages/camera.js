@@ -237,9 +237,9 @@ export default function MainComponent() {
             <div
               class="relative overflow-x-auto shadow-md sm:rounded-lg"
               style={{
-                height: "800px",
+                height: "660px",
                 width: "700px",
-                marginTop: "80px",
+                marginTop: "-40px",
               }}
             >
               {errorMessage && (
@@ -252,7 +252,7 @@ export default function MainComponent() {
               </div>
               <div
                 className="relative overflow-x-auto shadow-md sm:rounded-lg"
-                style={{ maxHeight: "400px", overflowY: "auto" }}
+                style={{ maxHeight: "630px", overflowY: "auto" }}
               >
                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                   <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
