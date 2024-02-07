@@ -13,7 +13,7 @@ export default function MainComponent() {
   const [selectedRobotIdForLogs, setSelectedRobotIdForLogs] = useState(null);
 
   const [blink, setBlink] = useState(false);
-  const [serverIp, setServerIp] = useState("localhost");
+  const [serverIp, setServerIp] = useState("");
   const [serverPort, setServerPort] = useState("");
   const [cameraPort, setCameraPort] = useState("");
   const [camStreamOn, setCamStreamOn] = useState(false);
@@ -191,7 +191,7 @@ export default function MainComponent() {
 
   return (
     <>
-      <div className="bg-gray-200 flex justify-center items-center">
+      <div className="flex items-center justify-center bg-gray-200">
         <div
           style={{
             display: "flex",
@@ -214,7 +214,7 @@ export default function MainComponent() {
       <div className="bg-gray-200">
         <div className="flex ">
           <div
-            className="overflow-hidden bg-white flex justify-center items-center  shadow-xl sm:rounded-lg "
+            className="flex items-center justify-center overflow-hidden bg-white shadow-xl sm:rounded-lg "
             style={{
               height: "600px",
               width: "1040px",
@@ -244,7 +244,7 @@ export default function MainComponent() {
           </div>
 
           <div
-            className="overflow-hidden bg-white flex justify-center items-center  shadow-xl sm:rounded-lg "
+            className="flex items-center justify-center overflow-hidden bg-white shadow-xl sm:rounded-lg "
             style={{
               height: "700px",
               width: "750px",
@@ -328,7 +328,7 @@ export default function MainComponent() {
         </div>
         <button
           onClick={clearLogs}
-          className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="px-4 py-2 mt-4 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
           style={{
             marginTop: "0px",
             marginLeft: "1450px",
