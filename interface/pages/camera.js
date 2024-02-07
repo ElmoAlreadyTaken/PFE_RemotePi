@@ -5,6 +5,7 @@ import { supabase } from "../lib/supabase";
 
 export default function MainComponent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [isAccountValidated, setIsAccountValidated] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [logList, setLogList] = useState([]);
@@ -21,6 +22,7 @@ export default function MainComponent() {
   const [baseURLServer, setbaseURLServer] = useState("");
   const [baseURLCamera, setbaseURLCamera] = useState("");
   const streamURLRef = useRef(streamURL);
+  const isFirstRun = useRef(true);
   const clearLogs = () => {
     setLogList([]);
   };
@@ -28,7 +30,36 @@ export default function MainComponent() {
     setIsFileSent(true);
     fetchLogs();
   };
+  const fetchLogs = async () => {
+    try {
+      if (!baseURLServer || !serverPort) return;
+  
+        const response = await fetch(
+          `${baseURLServer}:${serverPort}/log`, {
+        method: "GET",
+        headers: new Headers({
+          "ngrok-skip-browser-warning": "69420",
+        }),
+      });
+      if (!response.ok) {
+        throw new Error("Serveur indisponible"); // Peut indiquer une erreur 4XX/5XX
+      }
+      const log = await response.json();
+      console.log(log);
+      const newLogList = Array.isArray(log) ? log : [log];
+      setLogList((prevLogList) => [...prevLogList, ...newLogList]);
+      setErrorMessage(""); // Réinitialiser le message d'erreur en cas de succès
 
+  
+    } catch (error) {
+      console.error(error); // Conserver pour le debug, mais vous pourriez vouloir le retirer en production
+      setErrorMessage("Serveur indisponible."); // Utiliser un message générique pour l'utilisateur
+    }
+  };
+  const handleRobotChangeFromUpload = (robot) => {
+    setSelectedRobotIdForLogs(robot.id);
+    console.log("robot camera:", robot);
+  };
   const handlePreviousPage = () => {
     router.push("/configuration");
   };
@@ -122,8 +153,18 @@ export default function MainComponent() {
 
     fetchConfig();
   }, []);
-
   useEffect(() => {
+    const intervalId = setInterval(() => {
+      fetchLogs();
+      console.log(selectedRobotIdForLogs);
+    }, 2000); // Exécute `fetchLogs` toutes les 1000 millisecondes (1 seconde)
+    return () => clearInterval(intervalId); // Nettoyage de l'intervalle lors du démontage du composant
+  }, [serverIp, serverPort, refreshKey]);
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false; // Marque le premier rendu et empêche l'exécution ci-dessous
+      return;
+    }
     streamURLRef.current = `${baseURLCamera}:${cameraPort}/cam/`;
   }, [cameraPort, baseURLCamera]);
 
@@ -201,9 +242,9 @@ export default function MainComponent() {
             <div
               class="relative overflow-x-auto shadow-md sm:rounded-lg"
               style={{
-                height: "800px",
+                height: "660px",
                 width: "700px",
-                marginTop: "80px",
+                marginTop: "-40px",
               }}
             >
               {errorMessage && (
@@ -216,7 +257,7 @@ export default function MainComponent() {
               </div>
               <div
                 className="relative overflow-x-auto shadow-md sm:rounded-lg"
-                style={{ maxHeight: "400px", overflowY: "auto" }}
+                style={{ maxHeight: "630px", overflowY: "auto" }}
               >
                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                   <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -246,7 +287,7 @@ export default function MainComponent() {
                   </thead>
 
                   <tbody>
-                    {logList.map((log, index) => (
+                    {logList.filter((log) => !selectedRobotIdForLogs || log.id === selectedRobotIdForLogs).map((log, index) => (
                       <tr key={index}>
                         <td className="px-6 py-4">{log.id}</td>
                         <td className="px-6 py-4">{log.time}</td>
@@ -315,11 +356,7 @@ export default function MainComponent() {
 
               <tbody>
                 {logList
-                  .filter(
-                    (log) =>
-                      !selectedRobotIdForLogs ||
-                      log.id === selectedRobotIdForLogs
-                  )
+                  
                   .map((log, index) => (
                     <tr key={index}>
                       <td className="px-6 py-4">{log.id}</td>

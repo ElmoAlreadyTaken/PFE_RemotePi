@@ -13,11 +13,13 @@ export default function HomePage(props) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [blink, setBlink] = useState(false);
   const router = useRouter();
-  const [baseURLServer, setbaseURLServer] = useState('');
-  const [serverPort, setServerPort] = useState('');
-  const [cameraPort, setCameraPort] = useState('');
-  const [baseURLCamera, setbaseURLCamera] = useState('');
-  
+  const [baseURLServer, setbaseURLServer] = useState("");
+  const [serverPort, setServerPort] = useState("");
+  const [cameraPort, setCameraPort] = useState("");
+  const [baseURLCamera, setbaseURLCamera] = useState("");
+  const [selectedRobotIdForLogs, setSelectedRobotIdForLogs] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+
   useEffect(() => {
     const fetchConfig = async () => {
       const { data, error } = await supabase
@@ -25,7 +27,7 @@ export default function HomePage(props) {
         .select("*")
         .single();
       if (data) {
-        console.log("[--] Supabase Data : ", data)
+        console.log("[--] Supabase Data : ", data);
         setbaseURLServer(data.baseURLServer);
         setbaseURLCamera(data.baseURLCamera);
         setServerPort(data.serverPort);
@@ -35,7 +37,7 @@ export default function HomePage(props) {
 
     fetchConfig();
   }, []);
-  
+
   const handleFileSent = () => {
     setIsFileSent(true);
     fetchLogs();
@@ -43,6 +45,7 @@ export default function HomePage(props) {
 
   const handleRobotChangeFromUpload = (robot) => {
     setSelectedRobotIdForLogs(robot.id);
+    console.log("robot upload:", robot);
   };
 
   const refreshComponents = () => {
@@ -124,13 +127,14 @@ export default function HomePage(props) {
   }, [editorContent, selectedRobot]);
 
   const verifierContenu = async () => {
+    console.log();
+    setIsUploading(true);
     const lignesTemplate = template.split("\n");
 
     const templateEstPresent = lignesTemplate.every((ligne) =>
       editorContent.includes(ligne.trim())
     );
     if (templateEstPresent) {
-      alert("La configuration ESP est présente dans le contenu.");
       try {
         const blob = new Blob([editorContent], { type: "text/plain" });
 
@@ -138,8 +142,10 @@ export default function HomePage(props) {
         formData.append("file", blob, "monFichier.ino");
         formData.append("robotId", selectedRobot.id);
 
-        if (!baseURLServer || !serverPort){
-          console.log("[-] Erreur lors de l'envoi du fichier : pas de configuration de l'IP/PORT serveur")
+        if (!baseURLServer || !serverPort) {
+          console.log(
+            "[-] Erreur lors de l'envoi du fichier : pas de configuration de l'IP/PORT serveur"
+          );
           return;
         }
 
@@ -161,6 +167,7 @@ export default function HomePage(props) {
         "Le contenu de l'éditeur doit au moins contenir le template de base."
       );
     }
+    setIsUploading(false);
   };
 
   const onChange = (newValue) => {
@@ -299,7 +306,7 @@ export default function HomePage(props) {
           <div
             className="overflow-hidden bg-white shadow-xl sm:rounded-lg "
             style={{
-              height: "300px",
+              height: "330px",
               width: "550px",
               borderRadius: "20px",
               marginTop: "150px",
@@ -330,14 +337,18 @@ export default function HomePage(props) {
         </div>
         <button
           onClick={verifierContenu}
-          class={boutonStyle}
+          className={boutonStyle}
           style={{
             marginLeft: "675px",
             marginTop: "10px",
           }}
-          disabled={!selectedRobot}
+          disabled={!selectedRobot || isUploading}
         >
-          {boutonTexte}
+          {isUploading ? (
+            <div className="flex items-center">Compilation...</div>
+          ) : (
+            boutonTexte
+          )}
         </button>
       </div>
     </>
