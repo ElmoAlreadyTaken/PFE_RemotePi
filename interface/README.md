@@ -1,8 +1,6 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Lancer le projet
 
-## Getting Started
-
-First, run the development server:
+Premièrement, exécuter le serveur de développement:
 
 ```bash
 npm run dev
@@ -14,23 +12,28 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ouvrez [http://localhost:3000](http://localhost:3000) avec votre navigateur pour voir le résultat.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Plateforme web 
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Sur cette plateforme web, vous aurez a disposition la création de compte, la réinitialisation de mot de passe et le panel adminatateur pour les comptes administrateur.
 
-## Learn More
+Pour cela il faut lier la plateform web à un projet supabase. Pour cela il faudra modifier les valeurs NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY dans .env.local.
 
-To learn more about Next.js, take a look at the following resources:
+## Supabase
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Supabase doit contenir un table **server_configurations** en la créant ainsi :
+```CREATE TABLE server_configurations (
+  id INT PRIMARY KEY,
+  baseURLServer TEXT,
+  serverPort TEXT,
+  cameraPort TEXT,
+  baseURLCamera TEXT
+);
+```
+et ainsi créer une row qui servira pour la communication entre le server web et l'API du server :
+```
+INSERT INTO server_configurations (id, baseURLServer, serverPort, cameraPort, baseURLCamera) 
+VALUES (1, 'http://exemple-server.com', '8080', '9090', 'http://exemple-camera.com');
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
