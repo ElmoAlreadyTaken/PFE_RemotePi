@@ -22,7 +22,7 @@ Pour cela il faut lier la plateform web à un projet supabase. Pour cela il faud
 
 ## Supabase
 
-Supabase doit contenir un table **server_configurations** en la créant ainsi :
+Supabase doit contenir une table **server_configurations** en la créant ainsi :
 ```CREATE TABLE server_configurations (
   id INT PRIMARY KEY,
   baseURLServer TEXT,
@@ -37,3 +37,16 @@ INSERT INTO server_configurations (id, baseURLServer, serverPort, cameraPort, ba
 VALUES (1, 'http://exemple-server.com', '8080', '9090', 'http://exemple-camera.com');
 ```
 
+
+Supabase doit contenur une table **user_profiles** en la créant ainsi : 
+```
+CREATE TABLE user_profiles (
+  id BIGINT PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id),
+  nom TEXT,
+  prénom TEXT,
+  promotion TEXT,
+  is_admin BOOLEAN,
+  validated BOOLEAN
+);
+```
