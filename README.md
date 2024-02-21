@@ -14,7 +14,7 @@ Ce projet de fin d'études a comme objectif de fournir une plateforme web visant
 
   **Majeur :** Système d'information cybersécurité 
 
-  **contribution :** Management de projet et  coordination de l'équipe
+  **contribution :** Implémentation du serveur et de l'API pour la communication plateforme web <--> Serveur
 
 * **Nom :** Quentin Sereno
 
