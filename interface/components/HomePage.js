@@ -255,7 +255,7 @@ export default function HomePage(props) {
               <button
                 onClick={toggleAllRobotsVisibility}
                 style={{
-                  marginLeft: "200px",
+                  marginLeft: "170px",
                 }}
               >
                 {isAllRobotsVisible

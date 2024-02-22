@@ -77,10 +77,13 @@ const FreeRobots = ({ onSelectedRobotChange }) => {
 
       {selectedRobot && (
         <div>
-          <p>
+          <p style={{ marginRight: '-10px' }}>
             <strong>Robot ID:</strong> {selectedRobot.id},{" "}
-            <strong>Status:</strong> {selectedRobot.status},{" "}
-            <strong>Board:</strong> {selectedRobot.board}
+            <strong>Statut:</strong> {selectedRobot.status
+                                    .replace("Free", "Disponible")
+                                    .replace("Busy", "Occupé")
+                                    .replace("Reserved", "Réservé")},{" "}
+            <strong>Carte:</strong> {selectedRobot.board}
           </p>
         </div>
       )}

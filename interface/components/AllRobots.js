@@ -58,8 +58,12 @@ const AllRobots = () => {
       <ul>
         {robots.map((robot) => (
           <li key={robot.id}>
-            <strong>Robot ID:</strong> {robot.id}, <strong>Status:</strong>{" "}
-            {robot.status}, <strong>Board:</strong> {robot.board}
+            <strong>Robot ID:</strong> {robot.id},
+             <strong>Status:</strong>{" "}{robot.status
+                                    .replace("Free", "Disponible")
+                                    .replace("Busy", "Occupé")
+                                    .replace("Reserved", "Réservé")},
+             <strong>Carte:</strong> {robot.board}
           </li>
         ))}
       </ul>
