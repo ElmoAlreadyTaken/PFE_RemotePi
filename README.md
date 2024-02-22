@@ -48,8 +48,8 @@ Cet onglet permet de valider les comptes utilisateurs en attente, de révoquer l
 
 ### Matériel
 
-Raspberry Pi utilisée : Raspberry
-Caméra utilisée : Raspberry Pi module 3
+- Raspberry Pi utilisée : [Raspberry Pi 4 Module B](https://www.raspberrypi.com/products/raspberry-pi-4-model-b/)
+- Caméra utilisée : [Raspberry Pi Camera Module 3](https://www.raspberrypi.com/products/camera-module-3/)
 
 _Note : Le projet a été mené et testé uniquement avec les modèles énoncés ci-dessus. Il se peut que le processus d'installation diffère pour tout autre modèle._
 
@@ -118,7 +118,7 @@ Déployer l'interface web :
 npm run dev
 ```
 
-L'interface web est accessible sur **<http://localhost:5000>**.
+L'interface web est accessible sur **<http://localhost:3000>**.
 
 Pour le dévelopement, il est possible d'ajouter manuellement les IP publiques et ports attribuées à la backend et au serveur Flask par `ngrok`.
 
