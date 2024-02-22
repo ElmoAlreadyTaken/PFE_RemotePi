@@ -354,20 +354,14 @@ def upload_file():
     # Generate branch from robotId
     branch = f"Robot-{robotId}"
 
-    print('[+] Branch is :', branch)
     # If all checks are successful, save the file to disk
     filename = file.filename
     file.save(filename)
-
-    if not os.path.exists('./post-update.template'):
-        print('[-] post-update.template not found !')
-        return Response('post-update.template not found !', 400)
     
     if not os.path.exists('./clean.sh'):
         print('[-] clean.sh not found !')
         return Response('clean.sh not found !', 400)
     
-        #shutil.rmtree('./LocalPiServer', ignore_errors=True)
     subprocess.run(['./clean.sh'], check=True)
 
     print('[.] Ran clean.sh successfully !')
@@ -495,10 +489,13 @@ def run_file():
 
 ########## ROBOTS ##########
 def get_template():
-    if not os.path.exists(TEMPLATE_PATH):
+    my_dir = os.path.dirname(__file__)
+    path = os.path.join(my_dir, TEMPLATE_PATH)
+    
+    if not os.path.exists(path):
         return None
     
-    with open(TEMPLATE_PATH, 'r') as f:
+    with open(path, 'r') as f:
         template = f.read()
     return template
 
