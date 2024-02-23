@@ -5,15 +5,29 @@ info:
   version: "1.0.1"
 basePath: "/"
 schemes:
-  - "https"
   - "http"
+  - "https"
 paths:
+  /:
+    get:
+      summary: "Redirect to the Swagger UI documentation"
+      responses:
+        302:
+          description: "Redirected to /doc"
+
   /swagger.yaml:
     get:
       summary: "Serve the Swagger YAML file"
       responses:
         200:
           description: "Swagger YAML file served successfully"
+
+  /template:
+    get:
+      summary: "Retrieve the Arduino code template"
+      responses:
+        200:
+          description: "Template retrieved successfully"
 
   /upload:
     post:
@@ -34,20 +48,6 @@ paths:
       responses:
         200:
           description: "File uploaded and committed successfully"
-
-  /:
-    get:
-      summary: "Redirect to the Swagger UI documentation"
-      responses:
-        302:
-          description: "Redirected to /doc"
-
-  /template:
-    get:
-      summary: "Retrieve the Arduino code template"
-      responses:
-        200:
-          description: "Template retrieved successfully"
 
   /register:
     post:
