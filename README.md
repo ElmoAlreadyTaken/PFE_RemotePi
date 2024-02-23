@@ -2,7 +2,7 @@
 
 [![Vercel](https://img.shields.io/badge/deployment-success-brightgreen)](https://pfe-remote-pi.vercel.app/)
 
-## Table of contents
+## Table des matières
 
 - [Introduction](#introduction)
 - [Utilisation](#utilisation)
@@ -13,6 +13,7 @@
   - [Matériel](#matériel)
   - [Téléchargement local](#téléchargement-local)
   - [Backend](#backend)
+  - [Compilation](#compilation)
   - [Interface web](#interface-web-1)
   - [Tests [optionnel]](#tests--optionnel-)
   - [Documentation](#documentation)
@@ -30,6 +31,8 @@ Ce projet de fin d'études a comme objectif de fournir une plateforme web visant
 
 L'interface web de RemotePi est accessible à l'adresse <https://pfe-remote-pi.vercel.app>.
 
+_NOTE: Le matériel ayant été rendu à la fin du PFE, la compilation de code et le retour caméra ont depuis été désactivés sur ce déploiement._
+
 ### Création de compte
 
 Inscrivez-vous via l'onglet `SE CONNECTER`, en cliquant sur `Nouveau sur RemotePi? S'INSCRIRE`.
@@ -37,6 +40,14 @@ Inscrivez-vous via l'onglet `SE CONNECTER`, en cliquant sur `Nouveau sur RemoteP
 Remplissez les champs, et confirmez votre adresse mail via l'email reçu.
 
 Une fois votre inscription terminée, un administrateur doit valider votre compte pour vous donner accès au reste de la plateforme.
+
+### Téléversement
+
+L'onglet `Téléverser` permet de lister et choisir un robot sur lequel téléverser le choisi.
+
+Le code peut-être édité directement dans l'IDE intégré à la page principale, ou importé du disque par le formulaire d'envoi de fichiers.
+
+![RemotePi_Upload](./assets/remotepi-upload.png)
 
 ### Administrateurs
 
@@ -83,7 +94,19 @@ Installer les modules python nécessaires :
 pip install -r requirements.txt
 ```
 
-[optionnel] Créer un compte ngrok, et modifier le `authtoken` dans `ngrok/ngrok.conf`.
+Démarrer le serveur backend local :
+
+```bash
+python server.py
+```
+
+La backend est accessible sur **<http://localhost:5000>**.
+
+[optionnel] Cette dernière sous-partie est optionnelle, pour exposer publiquement la backend sur Internet.
+
+Créer un compte ngrok, et modifier le `authtoken` dans `ngrok/ngrok.conf`.
+
+Au lieu de démarrer la backend avec `python server.py`, nous allons utiliser le script `startServers.sh` qui se trouve dans le dossier `servers`.
 
 Démarrer le serveur Flask, et les tunnels ngrok pour le serveur et la caméra :
 
@@ -97,6 +120,10 @@ Ce script génèrera deux IP publiques:
 - Une pour la caméra, hébergée en local sur le port 8888
 
 Ces deux IP publiques seront à renseigner dans l'onglet `Admin` de l'interface web.
+
+### Compilation
+
+Pour activer et configurer la compilation de code de la Raspberry Pi vers les ESP8266, se référer au [guide de prise en main du projet](./guide-prise-en-main.pdf).
 
 ### Interface web
 
@@ -133,16 +160,20 @@ Pour s'assurer du bon déploiement et fonctionnement des différents services, R
 Pour l'exécuter, placez-vous dans le dossier `server` et entrez la commande :
 
 ```bash
-pytest
+pytest -v
 ```
 
 Si vous avez correctement suivi les étapes de déploiement du projet, tous les tests devraient apparaître en vert au bout de quelques minutes.
 
+![PyTest_Passed](./assets/pytest-passed.png)
+
 ### Documentation
 
-La documentation des routes API est accessible sur la page `/doc`, au format SwaggerUI.
+La documentation de l'API au format Swagger UI est accessible sur <https://localhost:5000/doc>.
 
 Il est possible de tester les différents paramètres des requêtes, observer les réponses de la backend, etc.
+
+![SwaggerUI_Doc](./assets/swaggerui-doc.png)
 
 Cette page permet d'accélérer le développement ainsi que le débogage pendant les phases de tests.
 
