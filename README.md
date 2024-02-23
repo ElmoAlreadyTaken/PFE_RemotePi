@@ -169,7 +169,7 @@ Si vous avez correctement suivi les étapes de déploiement du projet, tous les 
 
 ### Documentation
 
-La documentation de l'API au format Swagger UI est accessible sur <https://localhost:5000/doc>.
+La documentation de l'API au format Swagger UI est accessible sur <http://localhost:5000/doc>.
 
 Il est possible de tester les différents paramètres des requêtes, observer les réponses de la backend, etc.
 
